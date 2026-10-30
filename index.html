@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FaturaPay Pro — TL Yükleme, Fatura Tahsilat & Alt Bayi Otomasyonu (Canlı Demo)</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --navy: #0f172a;
+      --navy-2: #1e293b;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --primary-soft: #e0f2fe;
+      --emerald: #059669;
+      --emerald-soft: #d1fae5;
+      --amber: #d97706;
+      --amber-soft: #fef3c7;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 12px rgba(15, 23, 42, 0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      font-variant-numeric: tabular-nums;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Demo Role Switcher Top Ribbon */
+    .demo-ribbon {
+      background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
+      color: #f8fafc;
+      padding: 10px 16px;
+      border-bottom: 1px solid #334155;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .demo-ribbon-inner {
+      max-width: 1340px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .demo-badge-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+    .live-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.22);
+      flex-shrink: 0;
+    }
+    .role-switcher {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .role-btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 7px 13px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .role-btn:hover { background: rgba(255, 255, 255, 0.15); color: #fff; }
+    .role-btn.active {
+      background: #38bdf8;
+      color: #0f172a;
+      border-color: #38bdf8;
+      font-weight: 700;
+    }
+
+    /* Main App Header */
+    .app-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px;
+    }
+    .app-header-inner {
+      max-width: 1340px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0284c7, #0f172a);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: -0.5px;
+    }
+    .brand-title { font-weight: 800; font-size: 17px; letter-spacing: -0.3px; color: var(--navy); }
+    .brand-sub { font-size: 12px; color: var(--muted); }
+
+    .wallet-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .wallet-pill {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 7px 13px;
+      display: flex;
+      flex-direction: column;
+    }
+    .wallet-pill span { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+    .wallet-pill strong { font-size: 15.5px; font-weight: 800; color: var(--navy); }
+    .wallet-pill.profit strong { color: var(--emerald); }
+    .tier-tag {
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      border: 1px solid #bae6fd;
+      padding: 6px 11px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1340px;
+      margin: 20px auto 56px;
+      padding: 0 16px;
+    }
+
+    .view-panel { display: none; }
+    .view-panel.active { display: block; }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 960px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 520px) { .kpi-grid { grid-template-columns: 1fr; } }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .kpi-label { font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+    .kpi-value { font-size: 22px; font-weight: 800; color: var(--navy); letter-spacing: -0.4px; }
+    .kpi-foot { font-size: 11.5px; color: var(--emerald); font-weight: 600; margin-top: 4px; }
+
+    /* Two-column main workspace */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.95fr;
+      gap: 18px;
+      align-items: start;
+    }
+    @media (max-width: 1024px) { .workspace-grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 15px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .card-title { font-size: 15px; font-weight: 700; color: var(--navy); }
+    .card-body { padding: 18px; }
+
+    /* Action Tabs inside Dealer View */
+    .service-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+    }
+    .srv-tab {
+      padding: 13px 10px;
+      text-align: center;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--muted);
+      background: none;
+      border: none;
+      border-bottom: 2.5px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .srv-tab:hover { color: var(--navy); background: #f1f5f9; }
+    .srv-tab.active {
+      color: var(--primary-dark);
+      background: var(--surface);
+      border-bottom-color: var(--primary);
+    }
+
+    .srv-pane { display: none; padding: 18px; }
+    .srv-pane.active { display: block; }
+
+    /* Operator Cards */
+    .op-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .op-card {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: #fff;
+    }
+    .op-card:hover { border-color: var(--border-strong); }
+    .op-card.selected {
+      border-color: var(--primary);
+      background: #f0f9ff;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+    }
+    .op-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      margin: 0 auto 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 12px;
+      color: #fff;
+    }
+    .op-tcell { background: #eab308; color: #0f172a; }
+    .op-voda { background: #dc2626; }
+    .op-tt { background: #0284c7; }
+    .op-name { font-size: 13px; font-weight: 700; color: var(--navy); }
+    .op-disc { font-size: 11px; color: var(--emerald); font-weight: 600; }
+
+    /* Form Controls */
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+    .quick-fill {
+      font-size: 11.5px;
+      color: var(--primary);
+      background: none;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .input, .select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: 9px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--navy);
+      background: #fff;
+      transition: border-color 0.15s;
+    }
+    .input:focus, .select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+    }
+
+    /* Package Selection Cards */
+    .pkg-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 520px) { .pkg-grid { grid-template-columns: 1fr; } }
+    .pkg-item {
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+    }
+    .pkg-item.selected {
+      border-color: var(--primary);
+      background: #f0f9ff;
+    }
+    .pkg-title { font-size: 13px; font-weight: 700; color: var(--navy); }
+    .pkg-sub { font-size: 11px; color: var(--muted); }
+    .pkg-price { font-size: 14px; font-weight: 800; color: var(--primary-dark); white-space: nowrap; }
+
+    /* Cost Breakdown Box */
+    .calc-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      font-size: 13px;
+    }
+    .calc-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 3px 0;
+      color: #475569;
+    }
+    .calc-row.total {
+      border-top: 1px dashed var(--border-strong);
+      margin-top: 6px;
+      padding-top: 8px;
+      font-weight: 800;
+      color: var(--navy);
+      font-size: 14px;
+    }
+    .calc-profit { color: var(--emerald); font-weight: 800; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 18px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .btn-full { width: 100%; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-emerald { background: var(--emerald); color: #fff; }
+    .btn-emerald:hover { background: #047857; }
+    .btn-outline { background: #fff; color: var(--navy); border: 1px solid var(--border-strong); }
+    .btn-outline:hover { background: #f8fafc; }
+    .btn-sm { padding: 6px 11px; font-size: 12px; border-radius: 7px; }
+
+    /* Bill Result Card */
+    .bill-result {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 12px;
+      display: none;
+    }
+    .bill-result.visible { display: block; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 11px 13px; text-align: left; border-bottom: 1px solid var(--border); }
+    th {
+      background: #f8fafc;
+      color: var(--muted);
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 700;
+    }
+    .badge-ok { background: var(--emerald-soft); color: var(--emerald); }
+    .badge-wait { background: var(--amber-soft); color: var(--amber); }
+    .badge-info { background: var(--primary-soft); color: var(--primary-dark); }
+
+    /* Utility Category Pills */
+    .cat-pills {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .cat-pill {
+      padding: 7px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: #fff;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+    }
+    .cat-pill.active {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy);
+    }
+
+    /* Admin Grid */
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+    }
+    @media (max-width: 900px) { .admin-grid { grid-template-columns: 1fr; } }
+
+    .switch-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+    .switch-row:last-child { border-bottom: none; }
+    .toggle {
+      position: relative;
+      width: 42px;
+      height: 24px;
+      background: #cbd5e1;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border: none;
+      flex-shrink: 0;
+    }
+    .toggle.on { background: var(--emerald); }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.15s;
+    }
+    .toggle.on::after { transform: translateX(18px); }
+
+    /* Modal Receipt */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.58);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 200;
+    }
+    .modal-backdrop.open { display: flex; }
+    .receipt-modal {
+      background: #fff;
+      width: 100%;
+      max-width: 430px;
+      border-radius: 14px;
+      box-shadow: 0 25px 50px rgba(15, 23, 42, 0.25);
+      overflow: hidden;
+    }
+    .receipt-head {
+      background: var(--navy);
+      color: #fff;
+      padding: 16px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .receipt-body { padding: 18px; font-size: 13px; }
+    .receipt-line {
+      display: flex;
+      justify-content: space-between;
+      padding: 7px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .receipt-stamp {
+      margin-top: 12px;
+      padding: 10px;
+      background: var(--emerald-soft);
+      color: var(--emerald);
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 800;
+      font-size: 12.5px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--navy);
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+      display: none;
+      z-index: 300;
+    }
+    .toast.show { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- TOP DEMO ROLE SWITCHER -->
+  <div class="demo-ribbon">
+    <div class="demo-ribbon-inner">
+      <div class="demo-badge-wrap">
+        <span class="live-dot"></span>
+        <span><strong>CANLI İNTERAKTİF DEMO:</strong> Alt Bayi, Bayi Cari Muhasebe ve Süper Admin ekranlarını canlı test edebilirsiniz</span>
+      </div>
+      <div class="role-switcher">
+        <button class="role-btn active" onclick="switchRole('dealer', this)">1. Bayi İşlem Ekranı (TL &amp; Fatura)</button>
+        <button class="role-btn" onclick="switchRole('subdealers', this)">2. Alt Bayi &amp; Cari Yönetimi</button>
+        <button class="role-btn" onclick="switchRole('admin', this)">3. Süper Admin (POS &amp; API Ayarları)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN HEADER -->
+  <header class="app-header">
+    <div class="app-header-inner">
+      <div class="brand">
+        <div class="brand-logo">FP</div>
+        <div>
+          <div class="brand-title">FaturaPay &amp; KontörMatik Kurumsal</div>
+          <div class="brand-sub">Çoklu Alt Bayi, Fatura Tahsilat &amp; Sanal POS Otomasyon Sistemi</div>
+        </div>
+      </div>
+
+      <div class="wallet-bar">
+        <span class="tier-tag" id="activeDealerBadge">Bayi: Ege İletişim (#BY-1042 • Gold Grup)</span>
+        <div class="wallet-pill">
+          <span>Kullanılabilir Cari Bakiye</span>
+          <strong id="headerBalance">₺14.850,00</strong>
+        </div>
+        <div class="wallet-pill profit">
+          <span>Bugünkü Net Bayi Kârı</span>
+          <strong id="headerProfit">₺642,50</strong>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ==================== VIEW 1: DEALER TRANSACTION TERMINAL ==================== -->
+    <section id="view-dealer" class="view-panel active">
+      <div class="workspace-grid">
+        <!-- LEFT: INTERACTIVE TERMINAL -->
+        <div class="card">
+          <div class="service-tabs">
+            <button class="srv-tab active" onclick="switchService('gsm', this)">📱 GSM TL &amp; Paket</button>
+            <button class="srv-tab" onclick="switchService('bill', this)">🧾 Fatura Sorgu / Öde</button>
+            <button class="srv-tab" onclick="switchService('pos', this)">💳 Sanal POS Bakiye</button>
+          </div>
+
+          <!-- PANE A: GSM TL & PACKAGE -->
+          <div id="pane-gsm" class="srv-pane active">
+            <div class="form-label"><span>1. Operatör Seçimi (Otomatik Numara Taşıma Sorgulu)</span></div>
+            <div class="op-grid">
+              <div class="op-card selected" onclick="selectOperator('Turkcell', 3.5, this)">
+                <div class="op-dot op-tcell">TC</div>
+                <div class="op-name">Turkcell</div>
+                <div class="op-disc">%3,5 Bayi İskontosu</div>
+              </div>
+              <div class="op-card" onclick="selectOperator('Vodafone', 4.0, this)">
+                <div class="op-dot op-voda">VF</div>
+                <div class="op-name">Vodafone</div>
+                <div class="op-disc">%4,0 Bayi İskontosu</div>
+              </div>
+              <div class="op-card" onclick="selectOperator('Türk Telekom', 4.2, this)">
+                <div class="op-dot op-tt">TT</div>
+                <div class="op-name">Türk Telekom</div>
+                <div class="op-disc">%4,2 Bayi İskontosu</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="form-label">
+                <span>2. Abone GSM Numarası</span>
+                <button type="button" class="quick-fill" onclick="document.getElementById('gsmInput').value='0532 418 92 10'">Örnek Numara Doldur</button>
+              </div>
+              <input id="gsmInput" type="tel" class="input" value="0532 418 92 10" placeholder="05XX XXX XX XX" />
+            </div>
+
+            <div class="form-label"><span>3. TL veya Ses/İnternet Paketi Seçin</span></div>
+            <div class="pkg-grid" id="pkgGrid"></div>
+
+            <div class="calc-box">
+              <div class="calc-row">
+                <span>Müşteri Satış Tutarı:</span>
+                <strong id="gsmRetailTxt">₺320,00</strong>
+              </div>
+              <div class="calc-row">
+                <span>Bayi Cari Maliyeti (<span id="gsmDiscRateTxt">%3,5</span> iskonto):</span>
+                <strong id="gsmCostTxt">₺308,80</strong>
+              </div>
+              <div class="calc-row total">
+                <span>Bu İşlemden Anlık Bayi Kârınız:</span>
+                <span class="calc-profit" id="gsmProfitTxt">+₺11,20</span>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-full" id="gsmSubmitBtn" onclick="executeGsmTopup()">
+              ⚡ API Üzerinden Anında Yükle &amp; Dekont Üret
+            </button>
+          </div>
+
+          <!-- PANE B: UTILITY BILL QUERY & PAYMENT -->
+          <div id="pane-bill" class="srv-pane">
+            <div class="cat-pills">
+              <button class="cat-pill active" onclick="selectBillCategory('elektrik', this)">⚡ Elektrik</button>
+              <button class="cat-pill" onclick="selectBillCategory('su', this)">💧 Su / İZSU</button>
+              <button class="cat-pill" onclick="selectBillCategory('gaz', this)">🔥 Doğalgaz</button>
+              <button class="cat-pill" onclick="selectBillCategory('internet', this)">🌐 İnternet / TV</button>
+            </div>
+
+            <div class="form-group">
+              <div class="form-label"><span>Kurum Seçimi</span></div>
+              <select id="institutionSelect" class="select"></select>
+            </div>
+
+            <div class="form-group">
+              <div class="form-label">
+                <span>Abone / Sözleşme Hesap Numarası</span>
+                <button type="button" class="quick-fill" onclick="document.getElementById('subscriberNo').value='1008492031'">Test Abone No</button>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <input id="subscriberNo" type="text" class="input" value="1008492031" placeholder="Abone veya Tesisat No girin" />
+                <button class="btn btn-outline" style="white-space:nowrap;" onclick="queryBillApi()">🔍 Borç Sorgula</button>
+              </div>
+            </div>
+
+            <div id="billQueryBox" class="bill-result visible">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <strong style="color:#166534; font-size:13.5px;" id="billInstTitle">Gediz Elektrik Perakende — Borç Bulundu</strong>
+                <span class="badge badge-ok">Online Tahsilata Açık</span>
+              </div>
+              <div class="calc-row"><span>Abone Ad Soyad (Maskeli):</span><strong id="billOwner">M*** A*** K***</strong></div>
+              <div class="calc-row"><span>Dönem / Son Ödeme:</span><strong id="billDue">2026/10 • 04.11.2026</strong></div>
+              <div class="calc-row"><span>Kurum Fatura Tutarı:</span><strong id="billAmountTxt">₺845,60</strong></div>
+              <div class="calc-row"><span>Hizmet Bedeli (Bayi Komisyonu):</span><strong class="calc-profit" id="billCommTxt">+₺15,00</strong></div>
+              <div class="calc-row total"><span>Müşteriden Tahsil Edilecek Toplam:</span><strong id="billTotalTxt">₺860,60</strong></div>
+              <button class="btn btn-emerald btn-full" style="margin-top:12px;" onclick="payQueriedBill()">
+                ✅ Faturayı Tahsil Et &amp; Resmi Ödeme Makbuzu Bas
+              </button>
+            </div>
+          </div>
+
+          <!-- PANE C: VIRTUAL POS & WIRE TOP-UP -->
+          <div id="pane-pos" class="srv-pane">
+            <div class="calc-box" style="background:#f0f9ff; border-color:#bae6fd;">
+              <strong style="color:#0369a1; display:block; margin-bottom:3px;">🔒 3D Secure Sanal POS &amp; 7/24 FAST Otomatik Bakiye</strong>
+              <span style="font-size:12px; color:#334155;">PayTR, iyzico ve Param Sanal POS HMAC-SHA256 geri bildirim (webhook) doğrulamasıyla ödeme anında bayi cari hesabına otomatik işlenir.</span>
+            </div>
+
+            <div class="form-group">
+              <div class="form-label"><span>Yüklenecek Bakiye Tutarı (TL)</span></div>
+              <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-outline btn-sm" onclick="setPosAmount(1000)">+ ₺1.000</button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="setPosAmount(2500)">+ ₺2.500</button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="setPosAmount(5000)">+ ₺5.000</button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="setPosAmount(10000)">+ ₺10.000</button>
+              </div>
+              <input id="posAmountInput" type="number" class="input" value="2500" min="100" step="50" oninput="updatePosPreview()" />
+            </div>
+
+            <div class="form-group">
+              <div class="form-label"><span>Ödeme Yöntemi</span></div>
+              <select id="posGatewaySelect" class="select" onchange="updatePosPreview()">
+                <option value="paytr">PayTR 3D Secure Sanal POS (Anında Otomatik Onay)</option>
+                <option value="param">Param Kurumsal POS — Tek Çekim / Taksitli</option>
+                <option value="iyzico">iyzico Korumalı 3D Ödeme</option>
+                <option value="havale">Banka Havale / 7-24 FAST Bildirimi (%0 Komisyon)</option>
+              </select>
+            </div>
+
+            <div class="calc-box">
+              <div class="calc-row"><span>Cari Hesaba Geçecek Net Bakiye:</span><strong id="posNetTxt">₺2.500,00</strong></div>
+              <div class="calc-row"><span>POS Hizmet Komisyonu:</span><strong id="posFeeTxt">₺47,50 (%1,90)</strong></div>
+              <div class="calc-row total"><span>Karttan Çekilecek / Gönderilecek:</span><strong id="posGrossTxt">₺2.547,50</strong></div>
+            </div>
+
+            <button class="btn btn-primary btn-full" onclick="simulatePosTopup()">
+              💳 3D Secure Ödemeyi Tamamla / Bildirim Gönder
+            </button>
+          </div>
+        </div>
+
+        <!-- RIGHT: LIVE TRANSACTION LEDGER & RECEIPT -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Son İşlemler &amp; Canlı Dekont Geçmişi</div>
+            <span class="badge badge-info" id="txCountBadge">5 İşlem</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>İşlem / Abone</th>
+                  <th>Tutar</th>
+                  <th>Bayi Kârı</th>
+                  <th>Durum</th>
+                  <th>Makbuz</th>
+                </tr>
+              </thead>
+              <tbody id="dealerTxBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 2: SUB-DEALER & LEDGER MANAGEMENT ==================== -->
+    <section id="view-subdealers" class="view-panel">
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Toplam Aktif Alt Bayi</div>
+          <div class="kpi-value" id="kpiDealerCount">18 Bayi</div>
+          <div class="kpi-foot">3 farklı komisyon grubunda</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Alt Bayiler Toplam Cari Bakiye</div>
+          <div class="kpi-value" id="kpiDealerFloat">₺142.680,00</div>
+          <div class="kpi-foot">Veritabanı kilitli anlık cari</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Bu Ayki Alt Bayi İşlem Hacmi</div>
+          <div class="kpi-value">₺984.350,00</div>
+          <div class="kpi-foot">3.412 başarılı TL &amp; fatura işlemi</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Merkez Net Dağıtıcı Kârı</div>
+          <div class="kpi-value">₺31.490,00</div>
+          <div class="kpi-foot">Otomatik grup marj farkı</div>
+        </div>
+      </div>
+
+      <div class="workspace-grid" style="grid-template-columns: 0.85fr 1.35fr;">
+        <!-- ADD NEW SUB-DEALER FORM -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">➕ Yeni Alt Bayi Hesabı Aç</div>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <div class="form-label"><span>Bayi Ticari Ünvanı / İşletme Adı</span></div>
+              <input id="newDealerName" class="input" placeholder="Örn: Karşıyaka Merkez İletişim" value="Karşıyaka Merkez İletişim" />
+            </div>
+            <div class="form-group">
+              <div class="form-label"><span>Yetkili Ad Soyad &amp; Telefon</span></div>
+              <input id="newDealerPhone" class="input" placeholder="Örn: Ahmet Yılmaz - 0541 000 00 00" value="Ahmet Yılmaz • 0533 610 44 12" />
+            </div>
+            <div class="form-group">
+              <div class="form-label"><span>Bayi Fiyat &amp; İskonto Grubu</span></div>
+              <select id="newDealerTier" class="select">
+                <option value="Gold Bayi (%3.5 İskonto)">Gold Bayi (%3,5 TL İskonto • +15 TL Fatura)</option>
+                <option value="Standart Bayi (%2.5 İskonto)">Standart Bayi (%2,5 TL İskonto • +12 TL Fatura)</option>
+                <option value="Ana Dağıtıcı (%4.2 İskonto)">Ana Dağıtıcı (%4,2 TL İskonto • +18 TL Fatura)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <div class="form-label"><span>Başlangıç Cari Bakiyesi (TL)</span></div>
+              <input id="newDealerBalance" type="number" class="input" value="5000" />
+            </div>
+            <button class="btn btn-emerald btn-full" onclick="createNewSubDealer()">
+              🏪 Alt Bayiyi Oluştur &amp; Giriş Bilgisi Üret
+            </button>
+          </div>
+        </div>
+
+        <!-- SUB-DEALER LIST -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Alt Bayi Cari Listesi &amp; Hızlı Bakiye Müdahalesi</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Bayi Kodu &amp; Ünvan</th>
+                  <th>Yetkili / İletişim</th>
+                  <th>Komisyon Grubu</th>
+                  <th>Cari Bakiye</th>
+                  <th>Durum</th>
+                  <th>Hızlı İşlem</th>
+                </tr>
+              </thead>
+              <tbody id="subDealersBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: SUPER ADMIN, API ROUTING & VIRTUAL POS ==================== -->
+    <section id="view-admin" class="view-panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⏳ Onay Bekleyen Havale / FAST Bakiye Bildirimleri</div>
+          <span class="badge badge-wait" id="pendingWireBadge">1 Bekleyen Bildirim</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Tarih</th>
+                <th>Bayi</th>
+                <th>Banka / Açıklama</th>
+                <th>Tutar</th>
+                <th>Durum</th>
+                <th>Yönetici Onayı</th>
+              </tr>
+            </thead>
+            <tbody id="wireRequestsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="admin-grid">
+        <!-- API PROVIDERS -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🔌 Kontör &amp; Fatura Sağlayıcı API Yönlendirme</div>
+            <span class="badge badge-ok">Çift Yönlü Webhook Aktif</span>
+          </div>
+          <div class="card-body">
+            <div class="switch-row">
+              <div>
+                <strong style="font-size:13.5px;">Ana GSM Kontör/Paket Sağlayıcı REST/SOAP API</strong>
+                <div style="font-size:12px; color:var(--muted);">Turkcell, Vodafone, Türk Telekom otomatik paket &amp; tam TL sorgu/yükleme</div>
+              </div>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+            <div class="switch-row">
+              <div>
+                <strong style="font-size:13.5px;">Merkezi Kurum Fatura Sorgu &amp; Tahsilat API</strong>
+                <div style="font-size:12px; color:var(--muted);">Elektrik, Su, Doğalgaz, Telekom online borç sorgulama ve anlık kapama</div>
+              </div>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+            <div class="switch-row">
+              <div>
+                <strong style="font-size:13.5px;">Yedek Sağlayıcı Otomatik Geçiş (Failover)</strong>
+                <div style="font-size:12px; color:var(--muted);">1. API bakiye yetersiz veya zaman aşımı dönerse 2. API üzerinden tamamlar</div>
+              </div>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+            <div class="switch-row">
+              <div>
+                <strong style="font-size:13.5px;">İptal / Hatalı İşlem Otomatik Cari İade</strong>
+                <div style="font-size:12px; color:var(--muted);">Operatörden red dönen işlemlerde bayi bakiyesi saniyesinde iade edilir</div>
+              </div>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIRTUAL POS & SECURITY -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🛡️ Sanal POS Modülleri &amp; Cari Güvenlik Kilidi</div>
+            <span class="badge badge-info">PHP 8 / MySQL InnoDB Lock</span>
+          </div>
+          <div class="card-body">
+            <div class="switch-row">
+              <div>
+                <strong style="font-size:13.5px;">PayTR 3D Secure Sanal POS Entegrasyonu</strong>
+                <div style="font-size:12px; color:var(--muted);">HMAC-SHA256 callback imza doğrulaması + bayi komisyon yansıtma</div>
+              </div>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+            <div class="switch-row">
+              <div>
+                <strong style="font-size:13.5px;">Param POS &amp; iyzico Kurumsal Tahsilat</strong>
+                <div style="font-size:12px; color:var(--muted);">Tek çekim ve taksitli bayi cari bakiye yükleme altyapısı</div>
+              </div>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+            <div class="switch-row">
+              <div>
+                <strong style="font-size:13.5px;">Mükerrer Çekim Önleyici (Database Row-Lock)</strong>
+                <div style="font-size:12px; color:var(--muted);">Aynı anda çift tıklama veya çift webhook isteğinde mükerrer bakiyeyi %100 engeller</div>
+              </div>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+            <div class="switch-row">
+              <div>
+                <strong style="font-size:13.5px;">Bayi IP Kısıtlama &amp; SMS/2FA Giriş Onayı</strong>
+                <div style="font-size:12px; color:var(--muted);">Yetkisiz cihazlardan bayi kasasına erişimi engeller, tam işlem logu tutar</div>
+              </div>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- RECEIPT MODAL -->
+  <div id="receiptBackdrop" class="modal-backdrop" onclick="if(event.target===this) closeReceipt()">
+    <div class="receipt-modal">
+      <div class="receipt-head">
+        <div>
+          <strong style="font-size:15px;">Resmi İşlem &amp; Tahsilat Makbuzu</strong>
+          <div style="font-size:11.5px; color:#94a3b8;" id="rcpRef">REF: #FP-2026-88412</div>
+        </div>
+        <button class="btn btn-sm btn-outline" onclick="closeReceipt()">Kapat ✕</button>
+      </div>
+      <div class="receipt-body">
+        <div class="receipt-line"><span>İşlem Tipi:</span><strong id="rcpType">-</strong></div>
+        <div class="receipt-line"><span>Kurum / Operatör:</span><strong id="rcpProvider">-</strong></div>
+        <div class="receipt-line"><span>Abone / Tesisat No:</span><strong id="rcpTarget">-</strong></div>
+        <div class="receipt-line"><span>İşlem Tarihi:</span><strong id="rcpDate">-</strong></div>
+        <div class="receipt-line"><span>Tahsil Edilen Tutar:</span><strong id="rcpAmount" style="font-size:15px;">-</strong></div>
+        <div class="receipt-line"><span>İşlemi Yapan Bayi:</span><strong>Ege İletişim (#BY-1042)</strong></div>
+        <div class="receipt-stamp">✓ API ONAYLI • TAHSİLAT BAŞARIYLA TAMAMLANDI</div>
+        <div style="display:flex; gap:8px; margin-top:14px;">
+          <button class="btn btn-primary btn-full" onclick="window.print()">🖨️ Fiş / PDF Yazdır</button>
+          <button class="btn btn-outline btn-full" onclick="closeReceipt()">Tamam</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // State
+    let balance = 14850.00;
+    let dailyProfit = 642.50;
+    let selectedOp = { name: 'Turkcell', discount: 3.5 };
+    let selectedPkgIndex = 1;
+
+    const gsmPackages = [
+      { title: '250 TL Tam Kontör', sub: 'Anında Direkt TL Yükleme', price: 250 },
+      { title: 'Süper 20 GB + 1000 DK', sub: '28 Günlük Her Yöne Paket', price: 320 },
+      { title: 'Mega 35 GB + 1500 DK', sub: 'Sosyal Medya Yönü Ücretsiz', price: 440 },
+      { title: '500 TL Tam Kontör', sub: 'Anında Direkt TL Yükleme', price: 500 }
+    ];
+
+    const billInstitutions = {
+      elektrik: [
+        { name: 'Gediz Elektrik Perakende (İzmir / Manisa)', amount: 845.60, comm: 15.00, owner: 'M*** A*** K***' },
+        { name: 'Enerjisa (Başkent / Ayedaş / Toroslar)', amount: 1120.40, comm: 15.00, owner: 'H*** T***' },
+        { name: 'CK Boğaziçi / Akdeniz Elektrik', amount: 690.00, comm: 15.00, owner: 'S*** D***' }
+      ],
+      su: [
+        { name: 'İZSU — İzmir Su ve Kanalizasyon İdaresi', amount: 412.80, comm: 12.50, owner: 'E*** Y***' },
+        { name: 'İSKİ — İstanbul Su ve Kanalizasyon', amount: 538.20, comm: 12.50, owner: 'K*** B***' },
+        { name: 'ASKİ — Ankara Su ve Kanalizasyon', amount: 389.50, comm: 12.50, owner: 'A*** Ö***' }
+      ],
+      gaz: [
+        { name: 'İzmirgaz Doğalgaz Dağıtım A.Ş.', amount: 1285.00, comm: 15.00, owner: 'C*** Ş***' },
+        { name: 'İGDAŞ İstanbul Doğalgaz', amount: 1490.75, comm: 15.00, owner: 'F*** K***' },
+        { name: 'Başkent Doğalgaz', amount: 1610.20, comm: 15.00, owner: 'N*** A***' }
+      ],
+      internet: [
+        { name: 'Türk Telekom Ev İnterneti (TTNET)', amount: 499.00, comm: 14.00, owner: 'O*** Ç***' },
+        { name: 'Turkcell Superonline Fiber', amount: 540.00, comm: 14.00, owner: 'B*** E***' },
+        { name: 'TurkNet Özgür İletişim', amount: 499.90, comm: 14.00, owner: 'Z*** M***' }
+      ]
+    };
+
+    let currentBillCat = 'elektrik';
+    let queriedBill = { ...billInstitutions.elektrik[0] };
+
+    const transactions = [
+      { ref: 'FP-88419', type: 'Fatura Tahsilat', provider: 'İZSU İzmir Su', target: '40918274', amount: 425.30, profit: 12.50, date: 'Bugün 13:04' },
+      { ref: 'FP-88415', type: 'GSM Paket Yükleme', provider: 'Turkcell Süper 20 GB', target: '0532 714 ** 88', amount: 320.00, profit: 11.20, date: 'Bugün 12:48' },
+      { ref: 'FP-88408', type: 'Fatura Tahsilat', provider: 'Gediz Elektrik', target: '1009482110', amount: 930.00, profit: 15.00, date: 'Bugün 12:21' },
+      { ref: 'FP-88399', type: 'Sanal POS Bakiye', provider: 'PayTR 3D Secure', target: 'Cari Yükleme', amount: 5000.00, profit: 0, date: 'Bugün 11:15' },
+      { ref: 'FP-88392', type: 'GSM Paket Yükleme', provider: 'Vodafone 35 GB', target: '0542 309 ** 19', amount: 440.00, profit: 17.60, date: 'Bugün 10:52' }
+    ];
+
+    const subDealers = [
+      { code: '#BY-1042', name: 'Ege İletişim & Fatura Merkezi', contact: 'Murat Kaya • 0532 411 20 30', tier: 'Gold Bayi (%3.5 İskonto)', balance: 14850.00, active: true },
+      { code: '#BY-1039', name: 'Bornova Dijital Ödeme Noktası', contact: 'Selin Demir • 0544 820 11 94', tier: 'Ana Dağıtıcı (%4.2 İskonto)', balance: 38420.00, active: true },
+      { code: '#BY-1034', name: 'Buca Kontör & Telekom Gişesi', contact: 'Serkan Aydın • 0506 712 88 05', tier: 'Standart Bayi (%2.5 İskonto)', balance: 6290.00, active: true },
+      { code: '#BY-1028', name: 'Konak FaturaMatik Şube-2', contact: 'Kemal Özkan • 0535 991 34 67', tier: 'Gold Bayi (%3.5 İskonto)', balance: 19740.00, active: true }
+    ];
+
+    const wireRequests = [
+      { id: 1, date: 'Bugün 12:55', dealer: 'Buca Kontör & Telekom (#BY-1034)', bank: 'Ziraat Bankası FAST • Dekont #994120', amount: 4000.00, status: 'pending' }
+    ];
+
+    function fmtTL(num) {
+      return '₺' + Number(num).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => el.classList.remove('show'), 3400);
+    }
+
+    function updateHeaderWallet() {
+      document.getElementById('headerBalance').textContent = fmtTL(balance);
+      document.getElementById('headerProfit').textContent = fmtTL(dailyProfit);
+      subDealers[0].balance = balance;
+      renderSubDealers();
+    }
+
+    function switchRole(role, btn) {
+      document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('view-' + role).classList.add('active');
+    }
+
+    function switchService(srv, btn) {
+      document.querySelectorAll('.srv-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.srv-pane').forEach(p => p.classList.remove('active'));
+      document.getElementById('pane-' + srv).classList.add('active');
+    }
+
+    function selectOperator(name, discount, el) {
+      selectedOp = { name, discount };
+      document.querySelectorAll('.op-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      renderPackages();
+    }
+
+    function renderPackages() {
+      const grid = document.getElementById('pkgGrid');
+      grid.innerHTML = gsmPackages.map((p, idx) => `
+        <div class="pkg-item ${idx === selectedPkgIndex ? 'selected' : ''}" onclick="selectPackage(${idx})">
+          <div>
+            <div class="pkg-title">${selectedOp.name} ${p.title}</div>
+            <div class="pkg-sub">${p.sub}</div>
+          </div>
+          <div class="pkg-price">₺${p.price}</div>
+        </div>
+      `).join('');
+
+      const pkg = gsmPackages[selectedPkgIndex];
+      const profit = +(pkg.price * (selectedOp.discount / 100)).toFixed(2);
+      const cost = +(pkg.price - profit).toFixed(2);
+
+      document.getElementById('gsmRetailTxt').textContent = fmtTL(pkg.price);
+      document.getElementById('gsmDiscRateTxt').textContent = '%' + selectedOp.discount.toString().replace('.', ',');
+      document.getElementById('gsmCostTxt').textContent = fmtTL(cost);
+      document.getElementById('gsmProfitTxt').textContent = '+' + fmtTL(profit);
+    }
+
+    function selectPackage(idx) {
+      selectedPkgIndex = idx;
+      renderPackages();
+    }
+
+    function executeGsmTopup() {
+      const gsm = document.getElementById('gsmInput').value.trim() || '0532 418 92 10';
+      const pkg = gsmPackages[selectedPkgIndex];
+      const profit = +(pkg.price * (selectedOp.discount / 100)).toFixed(2);
+      const cost = +(pkg.price - profit).toFixed(2);
+
+      if (balance < cost) {
+        showToast('Yetersiz cari bakiye! Lütfen Sanal POS sekmesinden bakiye yükleyin.');
+        return;
+      }
+
+      const btn = document.getElementById('gsmSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Operatör API Sorgulanıyor ve Yükleniyor...';
+
+      setTimeout(() => {
+        balance = +(balance - cost).toFixed(2);
+        dailyProfit = +(dailyProfit + profit).toFixed(2);
+        const ref = 'FP-' + Math.floor(88420 + Math.random() * 900);
+        const tx = {
+          ref,
+          type: 'GSM TL/Paket',
+          provider: selectedOp.name + ' ' + pkg.title,
+          target: gsm,
+          amount: pkg.price,
+          profit,
+          date: 'Şimdi'
+        };
+        transactions.unshift(tx);
+        updateHeaderWallet();
+        renderTransactions();
+        btn.disabled = false;
+        btn.textContent = '⚡ API Üzerinden Anında Yükle & Dekont Üret';
+        openReceipt(tx);
+        showToast('✓ ' + gsm + ' numarasına ' + selectedOp.name + ' yüklemesi tamamlandı!');
+      }, 650);
+    }
+
+    function selectBillCategory(cat, btn) {
+      currentBillCat = cat;
+      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      const sel = document.getElementById('institutionSelect');
+      sel.innerHTML = billInstitutions[cat].map((inst, i) => `<option value="${i}">${inst.name}</option>`).join('');
+      queryBillApi();
+    }
+
+    function queryBillApi() {
+      const idx = Number(document.getElementById('institutionSelect').value || 0);
+      const base = billInstitutions[currentBillCat][idx];
+      queriedBill = { ...base };
+      document.getElementById('billInstTitle').textContent = base.name + ' — Güncel Fatura Bulundu';
+      document.getElementById('billOwner').textContent = base.owner;
+      document.getElementById('billAmountTxt').textContent = fmtTL(base.amount);
+      document.getElementById('billCommTxt').textContent = '+' + fmtTL(base.comm);
+      document.getElementById('billTotalTxt').textContent = fmtTL(base.amount + base.comm);
+      document.getElementById('billQueryBox').classList.add('visible');
+    }
+
+    function payQueriedBill() {
+      const subNo = document.getElementById('subscriberNo').value.trim() || '1008492031';
+      if (balance < queriedBill.amount) {
+        showToast('Yetersiz bayi cari bakiyesi!');
+        return;
+      }
+      balance = +(balance - queriedBill.amount).toFixed(2);
+      dailyProfit = +(dailyProfit + queriedBill.comm).toFixed(2);
+      const ref = 'FP-' + Math.floor(89400 + Math.random() * 900);
+      const tx = {
+        ref,
+        type: 'Fatura Tahsilat',
+        provider: queriedBill.name.split('—')[0].trim(),
+        target: 'Abone: ' + subNo,
+        amount: +(queriedBill.amount + queriedBill.comm).toFixed(2),
+        profit: queriedBill.comm,
+        date: 'Şimdi'
+      };
+      transactions.unshift(tx);
+      updateHeaderWallet();
+      renderTransactions();
+      openReceipt(tx);
+      showToast('✓ Fatura tahsil edildi ve kurum API kapaması yapıldı!');
+    }
+
+    function setPosAmount(val) {
+      document.getElementById('posAmountInput').value = val;
+      updatePosPreview();
+    }
+
+    function updatePosPreview() {
+      const amt = Math.max(0, Number(document.getElementById('posAmountInput').value || 0));
+      const gw = document.getElementById('posGatewaySelect').value;
+      const rate = gw === 'havale' ? 0 : 0.019;
+      const fee = +(amt * rate).toFixed(2);
+      document.getElementById('posNetTxt').textContent = fmtTL(amt);
+      document.getElementById('posFeeTxt').textContent = gw === 'havale' ? '₺0,00 (%0 Havale/FAST)' : `${fmtTL(fee)} (%1,90)`;
+      document.getElementById('posGrossTxt').textContent = fmtTL(amt + fee);
+    }
+
+    function simulatePosTopup() {
+      const amt = Math.max(100, Number(document.getElementById('posAmountInput').value || 1000));
+      const gw = document.getElementById('posGatewaySelect').value;
+
+      if (gw === 'havale') {
+        wireRequests.unshift({
+          id: Date.now(),
+          date: 'Şimdi',
+          dealer: 'Ege İletişim (#BY-1042)',
+          bank: 'Garanti BBVA FAST Bildirimi',
+          amount: amt,
+          status: 'pending'
+        });
+        renderWireRequests();
+        showToast('✓ Havale bildirimi oluşturuldu! "3. Süper Admin" sekmesinden onaylayabilirsiniz.');
+        return;
+      }
+
+      balance = +(balance + amt).toFixed(2);
+      const gwLabel = gw === 'paytr' ? 'PayTR 3D POS' : (gw === 'param' ? 'Param POS' : 'iyzico 3D POS');
+      const tx = {
+        ref: 'POS-' + Math.floor(40000 + Math.random() * 9000),
+        type: 'Sanal POS Bakiye',
+        provider: gwLabel,
+        target: 'Cari Hesap Yükleme',
+        amount: amt,
+        profit: 0,
+        date: 'Şimdi'
+      };
+      transactions.unshift(tx);
+      updateHeaderWallet();
+      renderTransactions();
+      showToast('✓ 3D Secure ödeme onaylandı! ' + fmtTL(amt) + ' cari bakiyenize eklendi.');
+    }
+
+    function renderTransactions() {
+      document.getElementById('txCountBadge').textContent = transactions.length + ' İşlem';
+      const tbody = document.getElementById('dealerTxBody');
+      tbody.innerHTML = transactions.slice(0, 8).map((t, idx) => `
+        <tr>
+          <td>
+            <strong style="color:var(--navy); display:block;">${t.provider}</strong>
+            <span style="font-size:11.5px; color:var(--muted);">${t.target} • ${t.date}</span>
+          </td>
+          <td><strong>${fmtTL(t.amount)}</strong></td>
+          <td style="color:var(--emerald); font-weight:700;">${t.profit > 0 ? '+' + fmtTL(t.profit) : '—'}</td>
+          <td><span class="badge badge-ok">Onaylandı</span></td>
+          <td><button class="btn btn-outline btn-sm" onclick="openReceiptByIndex(${idx})">Dekont</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function openReceiptByIndex(idx) {
+      openReceipt(transactions[idx]);
+    }
+
+    function openReceipt(tx) {
+      document.getElementById('rcpRef').textContent = 'REF: #' + tx.ref;
+      document.getElementById('rcpType').textContent = tx.type;
+      document.getElementById('rcpProvider').textContent = tx.provider;
+      document.getElementById('rcpTarget').textContent = tx.target;
+      document.getElementById('rcpDate').textContent = new Date().toLocaleString('tr-TR');
+      document.getElementById('rcpAmount').textContent = fmtTL(tx.amount);
+      document.getElementById('receiptBackdrop').classList.add('open');
+    }
+
+    function closeReceipt() {
+      document.getElementById('receiptBackdrop').classList.remove('open');
+    }
+
+    function renderSubDealers() {
+      const totalFloat = subDealers.reduce((acc, d) => acc + d.balance, 0);
+      document.getElementById('kpiDealerCount').textContent = (14 + subDealers.length) + ' Bayi';
+      document.getElementById('kpiDealerFloat').textContent = fmtTL(58230 + totalFloat);
+
+      const tbody = document.getElementById('subDealersBody');
+      tbody.innerHTML = subDealers.map((d, idx) => `
+        <tr>
+          <td>
+            <strong>${d.name}</strong>
+            <div style="font-size:11.5px; color:var(--muted);">${d.code}</div>
+          </td>
+          <td>${d.contact}</td>
+          <td><span class="badge badge-info">${d.tier}</span></td>
+          <td><strong>${fmtTL(d.balance)}</strong></td>
+          <td><span class="badge ${d.active ? 'badge-ok' : 'badge-wait'}">${d.active ? 'Aktif' : 'Askıda'}</span></td>
+          <td>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-outline btn-sm" onclick="adjustDealerBalance(${idx}, 1000)">+₺1.000 Ekle</button>
+              <button class="btn btn-outline btn-sm" onclick="toggleDealerStatus(${idx})">${d.active ? 'Durdur' : 'Aç'}</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function createNewSubDealer() {
+      const name = document.getElementById('newDealerName').value.trim();
+      const contact = document.getElementById('newDealerPhone').value.trim();
+      const tier = document.getElementById('newDealerTier').value;
+      const bal = Math.max(0, Number(document.getElementById('newDealerBalance').value || 0));
+      if (!name) {
+        showToast('Lütfen bayi ünvanı girin.');
+        return;
+      }
+      const code = '#BY-' + Math.floor(1045 + Math.random() * 800);
+      subDealers.unshift({ code, name, contact: contact || 'Yetkili Tanımlı', tier, balance: bal, active: true });
+      renderSubDealers();
+      document.getElementById('newDealerName').value = '';
+      showToast('✓ ' + name + ' (' + code + ') alt bayi hesabı açıldı!');
+    }
+
+    function adjustDealerBalance(idx, delta) {
+      subDealers[idx].balance = +(subDealers[idx].balance + delta).toFixed(2);
+      if (idx === 0) balance = subDealers[0].balance;
+      updateHeaderWallet();
+      showToast('✓ ' + subDealers[idx].name + ' cari bakiyesine +₺1.000 eklendi.');
+    }
+
+    function toggleDealerStatus(idx) {
+      subDealers[idx].active = !subDealers[idx].active;
+      renderSubDealers();
+    }
+
+    function renderWireRequests() {
+      const pendingCount = wireRequests.filter(w => w.status === 'pending').length;
+      document.getElementById('pendingWireBadge').textContent = pendingCount + ' Bekleyen Bildirim';
+      const tbody = document.getElementById('wireRequestsBody');
+      tbody.innerHTML = wireRequests.map((w, i) => `
+        <tr>
+          <td>${w.date}</td>
+          <td><strong>${w.dealer}</strong></td>
+          <td>${w.bank}</td>
+          <td><strong>${fmtTL(w.amount)}</strong></td>
+          <td>
+            <span class="badge ${w.status === 'pending' ? 'badge-wait' : 'badge-ok'}">
+              ${w.status === 'pending' ? 'Onay Bekliyor' : 'Cariye İşlendi'}
+            </span>
+          </td>
+          <td>
+            ${w.status === 'pending'
+              ? `<button class="btn btn-emerald btn-sm" onclick="approveWire(${i})">✓ Onayla &amp; Bakiyeye İşle</button>`
+              : `<span style="font-size:12px; color:var(--muted);">Tamamlandı</span>`
+            }
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function approveWire(idx) {
+      const w = wireRequests[idx];
+      if (!w || w.status !== 'pending') return;
+      w.status = 'approved';
+      balance = +(balance + w.amount).toFixed(2);
+      updateHeaderWallet();
+      renderWireRequests();
+      showToast('✓ Havale onaylandı ve ' + fmtTL(w.amount) + ' bayi bakiyesine işlendi!');
+    }
+
+    // Init
+    renderPackages();
+    selectBillCategory('elektrik', document.querySelector('.cat-pill'));
+    renderTransactions();
+    renderSubDealers();
+    renderWireRequests();
+    updatePosPreview();
+  </script>
+</body>
+</html>
