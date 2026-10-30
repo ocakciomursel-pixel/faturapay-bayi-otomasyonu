@@ -1,1188 +1,1262 @@
 <!DOCTYPE html>
-<html lang="tr" data-theme="light" data-sidebar="dark" data-layout="sidebar" data-density="comfortable" data-shadow="soft">
+<html lang="tr" data-world-theme="framed-sheet" data-shell="framed-sheet" data-density="comfortable">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FaturaPay Enterprise v5.5 — Özelleştirilebilir TL Yükleme, Fatura Tahsilat & Alt Bayi Otomasyonu</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <title>FaturaPay · TL Yükleme, Fatura Tahsilat ve Alt Bayi Otomasyonu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <!-- ==================== TOP 3-WORLD SWITCHER & THEME STUDIO RIBBON ==================== -->
-  <div class="world-bar">
-    <div class="world-bar-inner">
-      <div class="world-left">
-        <span class="pulse-dot"></span>
-        <span><strong style="color:#fff;">CANLI KURUMSAL SÜRÜM (v5.5):</strong> Müşteri Vitrini, Alt Bayi Gişesi ve Süper Admin ERP ekranlarını canlı test edin</span>
-      </div>
-      <div class="world-tabs">
-        <button class="world-tab" onclick="switchWorld('storefront', this)">🌐 1. Müşteri &amp; Bayilik Vitrin Sitesi</button>
-        <button class="world-tab active" onclick="switchWorld('portal', this)">⚡ 2. Alt Bayi Gişe &amp; İşlem Paneli</button>
-        <button class="world-tab" onclick="switchWorld('adminworld', this)">🛡️ 3. Merkez Süper Admin ERP</button>
-        <button class="world-studio-btn" onclick="openStudio(true)">🎨 8 Hazır Tema &amp; Tasarım Özelleştir</button>
+  <!-- ==================== 48PX CHROME TOP BAR ==================== -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button type="button" class="btn sm menu-toggle" onclick="toggleMobileNav(true)" aria-label="Menüyü aç">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round"/></svg>
+      </button>
+      <a href="#overview" class="brand-lockup" onclick="openAppView('overview'); return false;">
+        <span class="brand-symbol js-brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 7h14M5 12h10M5 17h6"/><path d="m15 15 4 2-4 2"/>
+          </svg>
+        </span>
+        <span class="js-brand-name">FaturaPay</span>
+      </a>
+    </div>
+
+    <div class="topbar-center">
+      <button type="button" class="cmd-trigger" onclick="openCommandModal(true)" aria-label="Hızlı işlem ve kurum arama">
+        <span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg>
+          Kurum, abone no veya işlem ara...
+        </span>
+        <kbd class="cmd-kbd">Ctrl K</kbd>
+      </button>
+
+      <div class="segmented" role="group" aria-label="Çalışma yüzeyi seçimi">
+        <button type="button" id="surf-portal" aria-pressed="true" onclick="switchSurface('portal')">Gişe ERP</button>
+        <button type="button" id="surf-admin" aria-pressed="false" onclick="switchSurface('admin')">Dağıtıcı Admin</button>
+        <button type="button" id="surf-storefront" aria-pressed="false" onclick="switchSurface('storefront')">Müşteri Vitrini</button>
       </div>
     </div>
-  </div>
 
-  <!-- ==================================================================================
-       WORLD 1: PUBLIC CUSTOMER STOREFRONT & DEALER APPLICATION WEBSITE (B2C + B2B LANDING)
-       ================================================================================== -->
-  <div id="world-storefront" class="storefront-wrap">
-    <header class="sf-nav">
-      <div class="sf-nav-inner">
-        <div style="display:flex; align-items:center; gap:11px;">
-          <div class="brand-mark js-brand-mark">FP</div>
-          <div>
-            <div style="font-weight:900; font-size:16px;" class="js-brand-name">FaturaPay Kurumsal</div>
-            <div style="font-size:11.5px; color:var(--muted);" class="js-brand-sub">TL Yükleme • Fatura &amp; Bayi ERP</div>
-          </div>
-        </div>
-        <div class="sf-links">
-          <a href="#sf-paketler">Bayilik Paketleri &amp; Kâr Oranları</a>
-          <a href="#sf-basvuru">Online Bayilik Başvurusu</a>
-          <span style="font-size:12.5px; font-weight:700; color:var(--primary);">📞 <span class="js-brand-phone">0850 308 00 00</span></span>
-          <button class="btn btn-primary btn-xs" onclick="switchWorld('portal', document.querySelectorAll('.world-tab')[1])">🔐 Bayi Girişi Yap</button>
-        </div>
+    <div class="topbar-right">
+      <div class="balance-chip" title="Kullanılabilir net cari kasa">
+        <span class="lbl">Cari kasa:</span>
+        <strong id="topBalTxt" class="num">₺24.850,00</strong>
       </div>
-    </header>
+      <button type="button" class="btn sm studio-top-btn" onclick="openStudio(true)" aria-label="Tema ve marka stüdyosu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M2 14h4M10 8h4M18 16h4" stroke-linecap="round"/></svg>
+        <span class="studio-btn-lbl">Tema Stüdyosu</span>
+      </button>
+    </div>
+  </header>
 
-    <section class="sf-hero">
-      <div>
-        <div class="sf-pill">⚡ Türkiye Geneli 200+ Fatura Kurumu • 6 GSM Operatörü • 3D Sanal POS</div>
-        <h1>Tek Panelden <span>TL Yükleme, Fatura Tahsilat</span> ve Kademeli Alt Bayi Ağı</h1>
-        <p>Hem bireysel müşterilerinize web sitenizden 3D Secure kartla online TL ve fatura ödeme imkânı sunun, hem de kendi alt bayilerinizi açarak her işlemden otomatik komisyon kazanın.</p>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <a href="#sf-basvuru" class="btn btn-primary" style="text-decoration:none;">🏪 Ücretsiz Bayilik Başvurusu</a>
-          <button class="btn btn-outline" onclick="switchWorld('portal', document.querySelectorAll('.world-tab')[1])">⚡ Canlı Bayi Gişesini Dene →</button>
-          <button class="btn btn-outline" onclick="openStudio(true)">🎨 Site Temasını Değiştir</button>
-        </div>
+  <!-- ==================== SHELL BODY: SIDEBAR + INSET WHITE SHEET ==================== -->
+  <div class="shell-body">
 
-        <div class="sf-trust-row">
-          <div class="sf-stat-box"><strong>200+ Kurum</strong><span>Elektrik, Su, Gaz, Telekom</span></div>
-          <div class="sf-stat-box"><strong>1.1 Saniye</strong><span>Ort. Operatör API Onayı</span></div>
-          <div class="sf-stat-box"><strong>7/24 Otomatik</strong><span>3D Sanal POS &amp; FAST Cari</span></div>
+    <!-- LEFT NAVIGATION SIDEBAR -->
+    <aside class="sidebar" id="appSidebar" aria-label="Ana menü">
+      <div class="mobile-close-row">
+        <strong class="js-brand-name">FaturaPay</strong>
+        <button type="button" class="btn sm" onclick="toggleMobileNav(false)">Kapat</button>
+      </div>
+
+      <div class="sidebar-scope">
+        <span class="branch-name" id="activeBranchName">Ege Merkez Gişe · BY-1042</span>
+        <div class="branch-meta">
+          <span id="topTierBadge">Gold grubu · %3,6</span>
+          <span id="topProfitTxt" class="pos-num num">+₺1.184,50</span>
         </div>
       </div>
 
-      <!-- B2C DIRECT ONLINE TOP-UP / BILL PAYMENT WIDGET -->
-      <div class="b2c-widget">
-        <div class="b2c-tabs">
-          <button class="b2c-tab active" onclick="switchB2cTab('tl', this)">📱 Bireysel Hızlı TL / Paket</button>
-          <button class="b2c-tab" onclick="switchB2cTab('bill', this)">🧾 Online Fatura Sorgula &amp; Öde</button>
-        </div>
-        <div id="b2c-tl" style="padding:20px;">
-          <div class="field">
-            <div class="lbl"><span>Cep Telefonu Numaranız</span><span>Tüm Operatörler</span></div>
-            <input class="input" value="0532 418 92 10" placeholder="05XX XXX XX XX" />
+      <div class="group-label">Gişe operasyonları</div>
+      <button type="button" class="nav-item" data-view="overview" aria-current="page" onclick="openAppView('overview')">
+        <span class="nav-lbl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          <span>Genel bakış</span>
+        </span>
+      </button>
+
+      <button type="button" class="nav-item" data-view="terminal" onclick="openAppView('terminal')">
+        <span class="nav-lbl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h3M13 11h3M8 15h3M13 15h3" stroke-linecap="round"/></svg>
+          <span>Gişe terminali</span>
+        </span>
+      </button>
+
+      <button type="button" class="nav-item" data-view="ledger" onclick="openAppView('ledger')">
+        <span class="nav-lbl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M8 8h8M8 12h8M8 16h5" stroke-linecap="round"/></svg>
+          <span>Cari ekstre ve Z-raporu</span>
+        </span>
+      </button>
+
+      <button type="button" class="nav-item js-mod-cashier" data-view="cashiers" onclick="openAppView('cashiers')">
+        <span class="nav-lbl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="8" r="3.5"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 19c.3-1.9 1.8-3.5 4-3.5"/></svg>
+          <span>Kasiyer ve personel</span>
+        </span>
+      </button>
+
+      <button type="button" class="nav-item" data-view="support" onclick="openAppView('support')">
+        <span class="nav-lbl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a8 8 0 0 1-8 8H5l-2 2v-8a8 8 0 1 1 18-2Z"/><path d="M9 11h6M9 14h4" stroke-linecap="round"/></svg>
+          <span>Destek ve iade</span>
+        </span>
+      </button>
+
+      <div class="group-label">Dağıtıcı ve merkez</div>
+      <button type="button" class="nav-item js-mod-dealers" data-view="dealers" onclick="openAppView('dealers')">
+        <span class="nav-lbl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9.5 12 4l9 5.5"/><path d="M5 10.5V19h14v-8.5"/><path d="M9 19v-5h6v5"/></svg>
+          <span>Alt bayiler</span>
+        </span>
+      </button>
+
+      <button type="button" class="nav-item js-mod-dealers" data-view="tiers" onclick="openAppView('tiers')">
+        <span class="nav-lbl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round"/><circle cx="9" cy="7" r="2" fill="var(--surface)"/><circle cx="15" cy="12" r="2" fill="var(--surface)"/><circle cx="11" cy="17" r="2" fill="var(--surface)"/></svg>
+          <span>Fiyat grupları ve marjlar</span>
+        </span>
+      </button>
+
+      <button type="button" class="nav-item" data-view="admin" onclick="openAppView('admin')">
+        <span class="nav-lbl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3 4 7v5c0 5 3.5 8.5 8 9.8 4.5-1.3 8-4.8 8-9.8V7l-8-4Z"/><path d="m9 12 2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Onay bekleyenler</span>
+        </span>
+        <span class="nav-count" id="navAdminBadge">3</span>
+      </button>
+
+      <button type="button" class="nav-item" data-view="storefront" onclick="switchSurface('storefront')">
+        <span class="nav-lbl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 5.6 4 9s-1.5 6.5-4 9c-2.5-2.5-4-5.6-4-9s1.5-6.5 4-9Z"/></svg>
+          <span>Müşteri ve bayilik vitrini</span>
+        </span>
+      </button>
+
+      <div class="bottom">
+        <div class="api-health-box">
+          <div class="api-health-head">
+            <span class="status-dot"></span>
+            <span>API omurgası aktif</span>
           </div>
-          <div class="field">
-            <div class="lbl"><span>Yüklenecek Paket veya TL</span></div>
-            <select class="select">
-              <option>Turkcell Süper 20 GB + 1000 DK — ₺320,00</option>
-              <option>Vodafone Red 30 GB + 1500 DK — ₺410,00</option>
-              <option>Türk Telekom 250 TL Tam Kontör — ₺250,00</option>
-            </select>
-          </div>
-          <button class="btn btn-primary btn-full" onclick="submitB2cDemoOrder('TL')">💳 3D Secure Kartla Anında Yükle</button>
-        </div>
-        <div id="b2c-bill" style="padding:20px; display:none;">
-          <div class="field">
-            <div class="lbl"><span>Fatura Kurumu Seçin</span></div>
-            <select class="select">
-              <option>Gediz Elektrik Perakende</option>
-              <option>İZSU İzmir Su ve Kanalizasyon</option>
-              <option>İzmirgaz Doğalgaz Dağıtım</option>
-              <option>Türk Telekom Ev İnterneti</option>
-            </select>
-          </div>
-          <div class="field">
-            <div class="lbl"><span>Abone / Tesisat Numarası</span></div>
-            <input class="input" value="1008492031" />
-          </div>
-          <button class="btn btn-emerald btn-full" onclick="submitB2cDemoOrder('FATURA')">🔍 Borç Sorgula &amp; Online Öde</button>
+          <div class="api-health-row"><span>Turkcell / VF XML</span><span>14 ms</span></div>
+          <div class="api-health-row"><span>200+ Kurum Fatura</span><span>21 ms</span></div>
+          <div class="api-health-row"><span>PayTR / Param 3D</span><span>Açık</span></div>
         </div>
       </div>
-    </section>
+    </aside>
 
-    <!-- DEALER TIERS -->
-    <section id="sf-paketler" class="sf-section">
-      <div class="sf-sec-head">
-        <h2>Kademeli Bayilik &amp; Fiyat Grupları</h2>
-        <p>İletişim bayileri, fatura ödeme merkezleri, marketler ve bölge dağıtıcıları için yüksek kâr marjlı şeffaf gruplar.</p>
-      </div>
-      <div class="tier-cards">
-        <div class="tier-card">
-          <h3>Bronz / Standart Gişe</h3>
-          <p style="font-size:12.5px; color:var(--muted); margin-top:4px;">Yeni başlayan ödeme noktaları ve büfeler için</p>
-          <ul class="tier-list">
-            <li><span>GSM TL / Paket İskontosu</span><strong>%2,4 - %3,0</strong></li>
-            <li><span>Fatura Tahsilat Hakedişi</span><strong>+₺10,00 / Fatura</strong></li>
-            <li><span>Dijital Kod &amp; E-Pin Kârı</span><strong>%3,0 İskonto</strong></li>
-            <li><span>3D Sanal POS Bakiye Yükleme</span><strong>7/24 Aktif</strong></li>
-          </ul>
-          <a href="#sf-basvuru" class="btn btn-outline btn-full" style="text-decoration:none;">Hemen Başvur</a>
+    <!-- ==================== INSET WHITE WORKSPACE SHEET ==================== -->
+    <main class="sheet" id="mainSheet">
+
+      <!-- SINGLE CANONICAL SCREEN HEADER (Always visible h1 on first screen) -->
+      <div class="title-row" id="erpTitleRow">
+        <div>
+          <h1 id="screenTitle">Gişe özeti ve günlük nakit akışı</h1>
+          <p class="sub" id="screenSub">Bugün 68 işlemde ₺1.184,50 net bayi hakedişi üretildi; 1 Vodafone yüklemesi operatör yanıtı bekliyor.</p>
         </div>
-
-        <div class="tier-card featured">
-          <span class="tier-ribbon">EN ÇOK TERCİH EDİLEN</span>
-          <h3>Gold Kurumsal Bayi</h3>
-          <p style="font-size:12.5px; color:var(--muted); margin-top:4px;">Telefoncular ve fatura tahsilat gişeleri için</p>
-          <ul class="tier-list">
-            <li><span>GSM TL / Paket İskontosu</span><strong>%3,6 - %4,2</strong></li>
-            <li><span>Fatura Tahsilat Hakedişi</span><strong>+₺15,00 / Fatura</strong></li>
-            <li><span>Kasiyer Alt-Kullanıcı Tanımlama</span><strong>Sınırsız Personel</strong></li>
-            <li><span>80mm Termal Fiş &amp; Barkod Okuma</span><strong>Tam Entegre</strong></li>
-          </ul>
-          <a href="#sf-basvuru" class="btn btn-primary btn-full" style="text-decoration:none;">Gold Bayilik Başvurusu</a>
-        </div>
-
-        <div class="tier-card">
-          <h3>VIP Bölge Dağıtıcısı</h3>
-          <p style="font-size:12.5px; color:var(--muted); margin-top:4px;">Kendi alt bayilerini kurmak isteyen toptancılar için</p>
-          <ul class="tier-list">
-            <li><span>GSM TL / Paket İskontosu</span><strong>%4,4 - %5,3</strong></li>
-            <li><span>Kendi Alt Bayilerini Açabilme</span><strong>B2B2C Kademeli</strong></li>
-            <li><span>Alt Bayi Satışlarından Marj Farkı</span><strong>Otomatik Hakediş</strong></li>
-            <li><span>XML / REST Dış API Çıkışı</span><strong>Ücretsiz API</strong></li>
-          </ul>
-          <a href="#sf-basvuru" class="btn btn-outline btn-full" style="text-decoration:none;">Dağıtıcı Başvurusu</a>
+        <div class="title-actions" id="screenActions">
+          <button type="button" class="btn" onclick="openZReportModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 8V4h10v4M6 17H4a1 1 0 0 1-1-1v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a1 1 0 0 1-1 1h-2"/><rect x="7" y="14" width="10" height="7" rx="1"/></svg>
+            <span>Gün sonu Z-raporu</span>
+          </button>
+          <button type="button" class="btn primary" onclick="openAppView('terminal')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+            <span>Yeni tahsilat başlat</span>
+          </button>
         </div>
       </div>
-    </section>
 
-    <!-- LIVE DEALER APPLICATION FORM (GOES DIRECTLY TO ADMIN APPROVAL QUEUE!) -->
-    <section id="sf-basvuru" class="sf-section">
-      <div class="card" style="max-width:780px; margin:0 auto;">
-        <div class="card-head">
-          <div class="card-title">📝 Online Bayilik Başvuru Formu (Canlı Test — Direkt Süper Admin Ekranına Düşer!)</div>
-          <span class="badge b-ok">Ücretsiz Başvuru</span>
+      <!-- ==================== VIEW 1: OVERVIEW (Framed-Sheet Blueprint) ==================== -->
+      <section class="app-view active" id="view-overview" aria-label="Genel bakış">
+
+        <!-- Divided KPI Strip (Pure type, tabular figures, zero icons/sparklines) -->
+        <div class="kpis">
+          <div class="kpi">
+            <div class="kpi-label">Kullanılabilir cari bakiye</div>
+            <div class="kpi-value num" id="kpiBal">₺24.850,00</div>
+            <div class="delta">Açık kredi limiti: +₺5.000,00</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Kredi dahil işlem kapasitesi</div>
+            <div class="kpi-value num" id="topLimitTxt">₺29.850,00</div>
+            <div class="delta" id="kpiTierNote">Gold bayi grubu · %3,6 baz marj</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Bugünkü net bayi hakedişi</div>
+            <div class="kpi-value num" id="kpiProfit">₺1.184,50</div>
+            <div class="delta"><span class="up">+%18,4</span> geçen Çarşamba gününe göre</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Tamamlanan günlük işlem</div>
+            <div class="kpi-value num" id="kpiTxCount">68 <small>adet</small></div>
+            <div class="delta">Ortalama onay süresi 1,8 sn</div>
+          </div>
         </div>
-        <div class="card-body">
-          <div class="two-col">
-            <div class="field">
-              <div class="lbl"><span>İşletme / Tabela Ünvanı</span></div>
-              <input id="appCompany" class="input" value="Güzelyalı İletişim & Fatura Merkezi" />
+
+        <!-- Main Chart Card with KPIs acting as Series Tabs (framed-sheet overview pattern) -->
+        <div class="panel panel-FlushKpis">
+          <div class="kpis cols-3" role="tablist" aria-label="Tahsilat serisi seçimi">
+            <button type="button" class="kpi" role="tab" id="ctab-total" aria-selected="true" onclick="switchOverviewSeries('total')">
+              <div class="kpi-label">Toplam gişe hacmi (7 gün)</div>
+              <div class="kpi-value num">₺284.620,00</div>
+              <div class="delta"><span class="up">+₺41.200,00</span> önceki 7 güne göre</div>
+            </button>
+            <button type="button" class="kpi" role="tab" id="ctab-gsm" aria-selected="false" onclick="switchOverviewSeries('gsm')">
+              <div class="kpi-label">GSM TL ve paket satışı</div>
+              <div class="kpi-value num">₺138.450,00</div>
+              <div class="delta">Toplam cironun %48,6 payı</div>
+            </button>
+            <button type="button" class="kpi" role="tab" id="ctab-bill" aria-selected="false" onclick="switchOverviewSeries('bill')">
+              <div class="kpi-label">200+ kurum fatura tahsilatı</div>
+              <div class="kpi-value num">₺114.920,00</div>
+              <div class="delta">Toplam cironun %40,4 payı</div>
+            </button>
+          </div>
+          <div class="chart-body">
+            <div class="panel-head" style="margin-bottom:8px;">
+              <h2 id="overviewChartTitle">Günlük tahsilat seyri (24 Ekim - 30 Ekim)</h2>
+              <span class="meta">Birim: Türk Lirası (₺) · Canlı mutabakat</span>
+            </div>
+            <div id="overviewLineChart" class="chart-stage"></div>
+          </div>
+        </div>
+
+        <!-- Balanced 2-Column Row: Recent Transactions (7 cols) + Channel Share BarList (5 cols) -->
+        <div class="grid">
+          <div class="panel col-7">
+            <div class="panel-head">
+              <h2>Son gişe hareketleri</h2>
+              <button type="button" class="card-link" onclick="openAppView('ledger')">Tüm cari ekstre</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Kurum veya paket</th>
+                    <th>Durum</th>
+                    <th class="n">Tutar</th>
+                    <th class="n">Net kâr</th>
+                    <th class="n">Belge</th>
+                  </tr>
+                </thead>
+                <tbody id="ovMiniTxBody"></tbody>
+              </table>
+            </div>
+            <div class="panel-foot">
+              <span class="meta">Satır kilitli cari muhasebe motoru aktif</span>
+              <button type="button" class="card-link" onclick="jumpTerminalService('gsm')">Hızlı TL yükle</button>
+            </div>
+          </div>
+
+          <div class="panel col-5">
+            <div class="panel-head">
+              <h2>Hizmet kanalı ciro dağılımı</h2>
+              <span class="meta">Son 7 gün</span>
+            </div>
+            <div id="overviewBarList" style="min-height:220px;"></div>
+            <div class="panel-foot">
+              <span class="meta">Alt bayi ağı: 5 aktif gişe</span>
+              <button type="button" class="card-link" onclick="openAppView('dealers')">Alt bayileri yönet</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 2: COUNTER TERMINAL (4 Services) ==================== -->
+      <section class="app-view" id="view-terminal" aria-label="Gişe terminali">
+
+        <div class="tabs" role="tablist" aria-label="Tahsilat servisi seçimi">
+          <button type="button" class="tab-btn" role="tab" data-srv="gsm" aria-selected="true" onclick="switchServiceTab('gsm', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2" stroke-linecap="round"/></svg>
+            <span>GSM TL ve paket</span>
+          </button>
+          <button type="button" class="tab-btn" role="tab" data-srv="bill" aria-selected="false" onclick="switchServiceTab('bill', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6" stroke-linecap="round"/></svg>
+            <span>200+ kurum fatura</span>
+          </button>
+          <button type="button" class="tab-btn js-mod-epin" role="tab" data-srv="epin" aria-selected="false" onclick="switchServiceTab('epin', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 12h4M9 10v4M15 11h.01M17 13h.01" stroke-linecap="round"/></svg>
+            <span>Dijital kod ve E-Pin</span>
+          </button>
+          <button type="button" class="tab-btn" role="tab" data-srv="pos" aria-selected="false" onclick="switchServiceTab('pos', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4" stroke-linecap="round"/></svg>
+            <span>3D Sanal POS ve FAST</span>
+          </button>
+        </div>
+
+        <!-- PANE 2A: GSM TL & PACKAGE + BULK UPLOAD -->
+        <div class="srv-pane active" id="spane-gsm">
+          <div class="grid">
+            <div class="panel col-7">
+              <div class="panel-head">
+                <h2>Operatör, abone sorgu ve paket seçimi</h2>
+                <span class="meta">BTK MNP şebeke yönlendirme</span>
+              </div>
+
+              <div class="op-grid" id="opGrid"></div>
+
+              <div class="field" style="margin-top:16px;">
+                <label for="gsmNumberInput">Abone GSM numarası (başında 0 ile veya 10 hane)</label>
+                <div class="joined-row">
+                  <input type="tel" id="gsmNumberInput" class="input num" value="0532 418 92 10" placeholder="05XX XXX XX XX" />
+                  <button type="button" class="btn" onclick="checkMnpAndHistory()">MNP ve geçmiş sorgula</button>
+                </div>
+              </div>
+
+              <div id="numHistoryBox" class="kv-well" style="display:none; margin-top:12px;"></div>
+
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin:16px 0 10px;">
+                <span style="font-size:13px; font-weight:500;">Yüklenecek paket listesi</span>
+                <div class="segmented" role="group" aria-label="Paket tipi filtresi">
+                  <button type="button" aria-pressed="true" onclick="setPkgFilter('all', this)">Tümü</button>
+                  <button type="button" aria-pressed="false" onclick="setPkgFilter('paket', this)">Ses ve internet</button>
+                  <button type="button" aria-pressed="false" onclick="setPkgFilter('tl', this)">Tam TL</button>
+                  <button type="button" aria-pressed="false" onclick="setPkgFilter('yurtdisi', this)">Yurt dışı</button>
+                </div>
+              </div>
+
+              <div class="pkg-grid" id="gsmPkgList"></div>
+            </div>
+
+            <div class="col-5" style="display:flex; flex-direction:column; gap:var(--gap);">
+              <div class="panel">
+                <div class="panel-head">
+                  <h2>4 kademeli marj ve işlem onayı</h2>
+                  <span class="meta">Anlık cari düşüm</span>
+                </div>
+                <div class="kv-well">
+                  <div class="kv-row"><span>Ana sağlayıcı API gelişi</span><strong id="gsmApiRawOut">₺305,92</strong></div>
+                  <div class="kv-row"><span>Bayi iskonto oranı</span><strong id="gsmDiscOut">%3,6</strong></div>
+                  <div class="kv-row"><span>Cari kasadan düşecek maliyet</span><strong id="gsmCostOut">₺308,48</strong></div>
+                  <div class="kv-row"><span>Bu işlemden net bayi kârı</span><strong id="gsmProfitOut" class="pos-num">+₺11,52</strong></div>
+                  <div class="kv-row total"><span>Müşteri gişe satış tutarı</span><strong id="gsmRetailOut">₺320,00</strong></div>
+                </div>
+                <button type="button" class="btn primary full" style="margin-top:14px;" onclick="executeGsmSingle()">
+                  TL / paket yüklemesini onayla
+                </button>
+              </div>
+
+              <div class="panel">
+                <div class="panel-head">
+                  <h2>Toplu çoklu numara TL gönderimi</h2>
+                  <span class="meta">Kurumsal liste yükleme</span>
+                </div>
+                <div class="field">
+                  <label for="bulkPhonesInput">Her satıra bir GSM numarası (250 TL standart yükleme)</label>
+                  <textarea id="bulkPhonesInput" class="input num" rows="3">0532 418 92 10
+0542 881 19 04
+0505 612 44 18</textarea>
+                </div>
+                <button type="button" class="btn full" style="margin-top:12px;" onclick="executeBulkGsm()">
+                  Listedeki hatlara toplu yükle
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE 2B: 200+ INSTITUTION BILLS, BARCODE & MULTI-CART -->
+        <div class="srv-pane" id="spane-bill">
+          <div class="grid">
+            <div class="panel col-7">
+              <div class="panel-head">
+                <h2>Kurum borç sorgulama ve barkod okuyucu</h2>
+                <span class="meta">Online anlık kurum kapama</span>
+              </div>
+
+              <div class="segmented" role="group" aria-label="Fatura kurumu kategorisi" style="margin-bottom:14px; flex-wrap:wrap;">
+                <button type="button" aria-pressed="true" onclick="selectBillCategory('elektrik', this)">Elektrik</button>
+                <button type="button" aria-pressed="false" onclick="selectBillCategory('su', this)">Su idareleri</button>
+                <button type="button" aria-pressed="false" onclick="selectBillCategory('gaz', this)">Doğalgaz</button>
+                <button type="button" aria-pressed="false" onclick="selectBillCategory('internet', this)">İnternet ve TV</button>
+                <button type="button" aria-pressed="false" onclick="selectBillCategory('kamu', this)">MTV, SGK ve HGS</button>
+              </div>
+
+              <div class="grid" style="gap:12px;">
+                <div class="field col-7">
+                  <label for="instSelect">Anlaşmalı kurum</label>
+                  <select id="instSelect" class="input" onchange="querySubscriberInvoices()"></select>
+                </div>
+                <div class="field col-5">
+                  <label for="billServiceFee">Gişe hizmet komisyonu (₺)</label>
+                  <input type="number" id="billServiceFee" class="input num" value="15" step="1" onchange="querySubscriberInvoices()" />
+                </div>
+              </div>
+
+              <div class="field" style="margin-top:12px;">
+                <label for="billSubNo">Abone, tesisat veya sözleşme numarası</label>
+                <div class="joined-row">
+                  <input type="text" id="billSubNo" class="input num" value="1008492031" />
+                  <button type="button" class="btn" onclick="simulateBarcodeScan()">Barkod okut</button>
+                  <button type="button" class="btn primary" onclick="querySubscriberInvoices()">Borç sorgula</button>
+                </div>
+              </div>
+
+              <div style="margin-top:16px;">
+                <div style="font-size:13px; font-weight:500; margin-bottom:8px;">Aboneye ait açık fatura dönemleri</div>
+                <div id="queriedInvoicesList"></div>
+              </div>
+            </div>
+
+            <div class="col-5" style="display:flex; flex-direction:column; gap:var(--gap);">
+              <div class="panel">
+                <div class="panel-head">
+                  <h2>Tahsilat özeti</h2>
+                  <span class="meta">Anında makbuz üretilir</span>
+                </div>
+                <div class="kv-well">
+                  <div class="kv-row"><span>Kurum anapara + gecikme</span><strong id="qBaseSum">₺845,60</strong></div>
+                  <div class="kv-row"><span>Bayi net hizmet geliri</span><strong id="qFeeSum" class="pos-num">+₺15,00</strong></div>
+                  <div class="kv-row total"><span>Müşteriden tahsil edilecek</span><strong id="qTotalSum">₺860,60</strong></div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px;">
+                  <button type="button" class="btn" onclick="pushSelectedToBillCart()">Sepete ekle</button>
+                  <button type="button" class="btn primary" onclick="paySelectedBillsDirect()">Hemen tahsil et</button>
+                </div>
+              </div>
+
+              <div class="panel" id="multiCartWrap">
+                <div class="panel-head">
+                  <h2>Çoklu müşteri tahsilat sepeti (<span id="multiCartCount">0</span>)</h2>
+                  <button type="button" class="card-link" onclick="clearMultiBillCart()">Temizle</button>
+                </div>
+                <div id="multiCartRows" style="font-size:13px; color:var(--muted);">
+                  Farklı kurumlara ait faturaları sepete ekleyip tek fişle kapatabilirsiniz.
+                </div>
+                <div class="panel-foot" style="margin-top:12px;">
+                  <span>Sepet toplamı: <strong id="multiCartTotal" class="num">₺0,00</strong></span>
+                  <button type="button" class="btn primary sm" onclick="checkoutMultiBillCart()">Sepeti kapat</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE 2C: DIGITAL E-PIN & SMS DELIVERY -->
+        <div class="srv-pane" id="spane-epin">
+          <div class="grid">
+            <div class="panel col-8">
+              <div class="panel-head">
+                <h2>Dijital mağaza ve oyun kodları</h2>
+                <span class="meta">7/24 stoktan otomatik PIN üretimi</span>
+              </div>
+              <div class="pkg-grid" id="epinCatalogGrid" style="max-height:none;"></div>
+            </div>
+            <div class="panel col-4">
+              <div class="panel-head">
+                <h2>Müşteri SMS teslimatı</h2>
+                <span class="meta">Netgsm başlık entegreli</span>
+              </div>
+              <div class="field">
+                <label for="epinSmsPhone">PIN kodunun gönderileceği cep telefonu</label>
+                <input type="tel" id="epinSmsPhone" class="input num" value="0541 191 86 11" />
+                <span class="hint">Kod hem 80mm termal fişe basılır hem de müşteriye SMS iletilir.</span>
+              </div>
+              <button type="button" class="btn primary full" style="margin-top:16px;" onclick="buyEpinNow()">
+                PIN üret ve SMS gönder
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE 2D: 3D SECURE VIRTUAL POS & 7/24 FAST IBAN -->
+        <div class="srv-pane" id="spane-pos">
+          <div class="grid">
+            <div class="panel col-7">
+              <div class="panel-head">
+                <h2>3D Secure sanal POS ile anında cari yükleme</h2>
+                <span class="meta">HMAC webhook ile 0 sn bakiye</span>
+              </div>
+
+              <div class="grid" style="gap:12px;">
+                <div class="field col-6">
+                  <label for="posGateway">Sanal POS altyapısı</label>
+                  <select id="posGateway" class="input" onchange="detectBinAndRenderInstallments()">
+                    <option value="PayTR 3D POS">PayTR Ticari 3D POS</option>
+                    <option value="ParamPOS Kurumsal">ParamPOS B2B Tahsilat</option>
+                    <option value="İyzico Korumalı">İyzico 3D Korumalı POS</option>
+                    <option value="Sipay Kurumsal">Sipay Çoklu Banka POS</option>
+                  </select>
+                </div>
+                <div class="field col-6">
+                  <label for="posTopupAmt">Net eklenecek bakiye (₺)</label>
+                  <input type="number" id="posTopupAmt" class="input num" value="5000" step="500" oninput="detectBinAndRenderInstallments()" />
+                </div>
+              </div>
+
+              <div class="field" style="margin-top:12px;">
+                <label for="ccNumInput">Kart numarası (BIN ailesi otomatik algılanır)</label>
+                <input type="text" id="ccNumInput" class="input num" value="4543 6012 8840 8821" oninput="detectBinAndRenderInstallments()" />
+                <span class="hint" id="ccVisualBank">Algılanan kart: PayTR 3D POS · Garanti Bonus Ticari Kart (<code id="ccVisualNum">4543 •••• •••• 8821</code>)</span>
+              </div>
+
+              <div class="table-wrap" style="margin-top:14px;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Taksit seçeneği</th>
+                      <th class="n">Komisyon</th>
+                      <th class="n">Aylık ödeme</th>
+                      <th class="n">Karttan çekilecek</th>
+                    </tr>
+                  </thead>
+                  <tbody id="installmentBody"></tbody>
+                </table>
+              </div>
+
+              <button type="button" class="btn primary full" style="margin-top:14px;" onclick="trigger3dSecureModal()">
+                3D Secure banka SMS doğrulamasına geç
+              </button>
+            </div>
+
+            <div class="panel col-5">
+              <div class="panel-head">
+                <h2>7/24 banka FAST ve havale bildirimi</h2>
+                <span class="meta">%0 komisyonlu bakiye</span>
+              </div>
+              <div id="ibanListWrap"></div>
+
+              <div class="field" style="margin-top:12px;">
+                <label for="wireBankSelect">Gönderim yapılan banka ve tutar (₺)</label>
+                <div class="joined-row">
+                  <select id="wireBankSelect" class="input">
+                    <option>Ziraat Bankası FAST</option>
+                    <option>Garanti BBVA Havale</option>
+                    <option>Türkiye İş Bankası FAST</option>
+                    <option>Yapı Kredi Kurumsal</option>
+                  </select>
+                  <input type="number" id="wireAmtInput" class="input num" value="7500" style="max-width:130px;" />
+                </div>
+              </div>
+              <div class="field" style="margin-top:10px;">
+                <label for="wireDecontInput">FAST sorgu veya dekont açıklaması</label>
+                <input type="text" id="wireDecontInput" class="input" placeholder="Örn: BY-1042 cari yükleme" />
+              </div>
+              <button type="button" class="btn full" style="margin-top:12px;" onclick="sendWireNotification()">
+                Ödeme bildirimi gönder
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 3: LEDGER & Z-REPORT (Framed-Sheet List Blueprint) ==================== -->
+      <section class="app-view" id="view-ledger" aria-label="Cari ekstre ve Z-raporu">
+
+        <!-- Count Cards That Filter (framed-sheet list blueprint) -->
+        <div class="filter-cards" role="group" aria-label="Hareket tipi filtresi">
+          <button type="button" class="filter-card" id="lf-all" aria-pressed="true" onclick="setLedgerFilter('all')">
+            <span class="fc-lbl">Tüm cari hareketler</span>
+            <span class="fc-val" id="lfCountAll">6</span>
+          </button>
+          <button type="button" class="filter-card" id="lf-ok" aria-pressed="false" onclick="setLedgerFilter('ok')">
+            <span class="fc-lbl">Onaylanan tahsilatlar</span>
+            <span class="fc-val" id="lfCountOk">5</span>
+          </button>
+          <button type="button" class="filter-card" id="lf-pending" aria-pressed="false" onclick="setLedgerFilter('pending')">
+            <span class="fc-lbl">Operatör kuyruğunda</span>
+            <span class="fc-val" id="lfCountPending">1</span>
+          </button>
+          <button type="button" class="filter-card" id="lf-today" aria-pressed="false" onclick="setLedgerFilter('today')">
+            <span class="fc-lbl">Sadece bugünkü işlemler</span>
+            <span class="fc-val" id="lfCountToday">5</span>
+          </button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Satır kilitli cari hesap ekstresi</h2>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button type="button" class="btn sm" onclick="downloadLedgerCsv()">CSV muhasebe indir</button>
+              <button type="button" class="btn sm primary" onclick="openZReportModal()">Gün sonu Z-raporu</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Referans</th>
+                  <th>İşlem türü</th>
+                  <th>Kurum ve abone bilgisi</th>
+                  <th class="n">Önceki bakiye</th>
+                  <th class="n">İşlem tutarı</th>
+                  <th class="n">Net kâr</th>
+                  <th class="n">Sonraki bakiye</th>
+                  <th>Durum</th>
+                  <th class="n">Makbuz</th>
+                </tr>
+              </thead>
+              <tbody id="ledgerFullBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 4: SUB-DEALERS (B2B2C Hierarchy + Impersonation) ==================== -->
+      <section class="app-view" id="view-dealers" aria-label="Alt bayiler">
+        <div class="grid">
+          <div class="panel col-8">
+            <div class="panel-head">
+              <h2>Kademeli alt bayi ağı</h2>
+              <input type="search" id="subDealerSearch" class="input" style="max-width:240px; height:32px;" placeholder="Bayi ünvanı veya şehir ara..." oninput="renderSubDealers()" />
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Bayi ünvanı ve üst birim</th>
+                    <th>Yetkili ve IP kuralı</th>
+                    <th>Fiyat grubu</th>
+                    <th class="n">Cari bakiye</th>
+                    <th>Durum</th>
+                    <th class="n">İşlem</th>
+                  </tr>
+                </thead>
+                <tbody id="subDealersTable"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel col-4">
+            <div class="panel-head">
+              <h2>Yeni alt bayi tanımla</h2>
+              <span class="meta">Anında SMS aktivasyonu</span>
             </div>
             <div class="field">
-              <div class="lbl"><span>Yetkili Ad Soyad</span></div>
-              <input id="appOwner" class="input" value="Mehmet Aksoy" />
+              <label for="admDealerName">İşletme veya gişe ünvanı</label>
+              <input type="text" id="admDealerName" class="input" placeholder="Örn: Karabağlar Telekom Gişesi" />
+            </div>
+            <div class="grid" style="gap:10px; margin-top:12px;">
+              <div class="field col-6">
+                <label for="admDealerCity">İl ve ilçe</label>
+                <input type="text" id="admDealerCity" class="input" value="İzmir / Konak" />
+              </div>
+              <div class="field col-6">
+                <label for="admDealerTier">Fiyat grubu</label>
+                <select id="admDealerTier" class="input">
+                  <option value="bronz">Bronz Gişe</option>
+                  <option value="gumus">Gümüş Bayi</option>
+                  <option value="gold" selected>Gold Bayi</option>
+                  <option value="vip">VIP Dağıtıcı</option>
+                </select>
+              </div>
+            </div>
+            <div class="field" style="margin-top:12px;">
+              <label for="admDealerPhone">Yetkili cep telefonu</label>
+              <input type="tel" id="admDealerPhone" class="input num" placeholder="05XX XXX XX XX" />
+            </div>
+            <div class="grid" style="gap:10px; margin-top:12px;">
+              <div class="field col-6">
+                <label for="admDealerBal">Açılış bakiyesi (₺)</label>
+                <input type="number" id="admDealerBal" class="input num" value="5000" />
+              </div>
+              <div class="field col-6">
+                <label for="admDealerLim">Açık kredi limiti (₺)</label>
+                <input type="number" id="admDealerLim" class="input num" value="2500" />
+              </div>
+            </div>
+            <button type="button" class="btn primary full" style="margin-top:16px;" onclick="createSubDealerAdmin()">
+              Alt bayiliği aç ve yetkilendir
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 5: LIVE PRICE GROUPS & MARGIN ENGINE ==================== -->
+      <section class="app-view" id="view-tiers" aria-label="Fiyat grupları ve marjlar">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Canlı bayi komisyon ve iskonto matrisi</h2>
+            <span class="meta">Tablodaki her değişiklik gişe terminalindeki maliyet ve kâr hesabını anında günceller</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Bayi grubu tanımı</th>
+                  <th class="n">GSM TL / paket iskonto (%)</th>
+                  <th class="n">Fatura hizmet geliri (₺)</th>
+                  <th class="n">Dijital E-Pin marjı (%)</th>
+                  <th class="n">Sanal POS komisyonu (%)</th>
+                  <th class="n">Simülasyon</th>
+                </tr>
+              </thead>
+              <tbody id="tierMatrixBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 6: CASHIERS & QUOTAS ==================== -->
+      <section class="app-view" id="view-cashiers" aria-label="Kasiyer ve personel">
+        <div class="grid">
+          <div class="panel col-8">
+            <div class="panel-head">
+              <h2>Gişe kasiyerleri ve günlük işlem kotaları</h2>
+              <span class="meta">Vardiya bazlı yetki kontrolü</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Personel ve kullanıcı kodu</th>
+                    <th>Görev tanımı</th>
+                    <th>Günlük kota kullanımı</th>
+                    <th>İptal yetkisi</th>
+                    <th class="n">Durum</th>
+                  </tr>
+                </thead>
+                <tbody id="cashiersBody"></tbody>
+              </table>
             </div>
           </div>
-          <div class="three-col">
-            <div class="field">
-              <div class="lbl"><span>Cep Telefonu (SMS Şifre İçin)</span></div>
-              <input id="appPhone" class="input" value="0541 191 86 11" />
+
+          <div class="panel col-4">
+            <div class="panel-head">
+              <h2>Yeni kasiyer hesabı ekle</h2>
+              <span class="meta">Ana kasayı görmeden satış yapar</span>
             </div>
             <div class="field">
-              <div class="lbl"><span>İl / İlçe</span></div>
-              <input id="appCity" class="input" value="İzmir / Konak" />
+              <label for="newCashierName">Personel adı ve gişe no</label>
+              <input type="text" id="newCashierName" class="input" placeholder="Örn: Zeynep Kaya (Gişe-3)" />
             </div>
             <div class="field">
-              <div class="lbl"><span>Talep Edilen Bayi Grubu</span></div>
-              <select id="appTier" class="select">
-                <option value="gold">Gold Kurumsal Bayi</option>
-                <option value="vip">VIP Bölge Dağıtıcısı</option>
-                <option value="gumus">Gümüş Bayi</option>
+              <label for="newCashierLimit">Günlük maksimum satış kotası (₺)</label>
+              <input type="number" id="newCashierLimit" class="input num" value="15000" step="1000" />
+            </div>
+            <button type="button" class="btn primary full" style="margin-top:16px;" onclick="addCashierUser()">
+              Kasiyer hesabını tanımla
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 7: SUPPORT & REFUND TICKETS ==================== -->
+      <section class="app-view" id="view-support" aria-label="Destek ve iade">
+        <div class="grid">
+          <div class="panel col-8">
+            <div class="panel-head">
+              <h2>İşlem sorgu ve iptal talepleri</h2>
+              <span class="meta">Operatör mutabakat kayıtları</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Talep kodu</th>
+                    <th>Konu ve merkez yanıtı</th>
+                    <th>Kategori</th>
+                    <th>Durum</th>
+                  </tr>
+                </thead>
+                <tbody id="ticketsBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel col-4">
+            <div class="panel-head">
+              <h2>Yeni destek veya iptal kaydı</h2>
+              <span class="meta">Netgsm SMS bildirimli</span>
+            </div>
+            <div class="field">
+              <label for="ticketCat">Talep kategorisi</label>
+              <select id="ticketCat" class="input">
+                <option>Askıda kalan TL / paket sorgusu</option>
+                <option>Hatalı abone fatura iptal talebi</option>
+                <option>Sanal POS / FAST bakiye mutabakatı</option>
               </select>
             </div>
+            <div class="field">
+              <label for="ticketSubject">İşlem referans no ve açıklama</label>
+              <textarea id="ticketSubject" class="input" rows="3" placeholder="Örn: FP-90411 nolu Vodafone yüklemesinin operatör sorgusu..."></textarea>
+            </div>
+            <button type="button" class="btn primary full" style="margin-top:16px;" onclick="createSupportTicket()">
+              Talebi merkeze ilet
+            </button>
           </div>
-          <button class="btn btn-emerald btn-full" onclick="submitPublicDealerApplication()">
-            🚀 Başvuruyu Gönder ve Süper Admin Onay Kuyruğunda Gör
-          </button>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <footer class="sf-footer">
-      <div class="sf-footer-inner">
-        <div><strong style="color:#fff;" class="js-brand-name">FaturaPay Kurumsal</strong> — %100 Açık Kaynak Kurumsal TL, Fatura &amp; Bayi Otomasyonu</div>
-        <div>256-Bit SSL • 3D Secure Sanal POS • Müşteri Destek: <span class="js-brand-phone">0850 308 00 00</span></div>
-      </div>
-    </footer>
-  </div>
+      <!-- ==================== VIEW 8: SUPER ADMIN (Queues, API Failover, Cron, IP Logs) ==================== -->
+      <section class="app-view" id="view-admin" aria-label="Merkez süper admin">
+        <div class="grid">
+          <div class="panel col-7">
+            <div class="panel-head">
+              <h2>Bekleyen FAST ve havale bildirimleri</h2>
+              <span class="meta">Onaylandığında bayi carisine anında işlenir</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Zaman</th>
+                    <th>Gönderen bayi</th>
+                    <th>Banka ve dekont</th>
+                    <th class="n">Tutar</th>
+                    <th>Durum</th>
+                    <th class="n">İşlem</th>
+                  </tr>
+                </thead>
+                <tbody id="admWireBody"></tbody>
+              </table>
+            </div>
+          </div>
 
-  <!-- ==================================================================================
-       WORLD 2 & 3: DEALER COUNTER ERP & SUPER ADMIN PORTAL
-       ================================================================================== -->
-  <div id="world-portal" class="portal-wrap active">
-    <div class="app-shell">
+          <div class="panel col-5">
+            <div class="panel-head">
+              <h2>API yedekleme (failover) ve Cron kontrolü</h2>
+              <button type="button" class="btn sm primary" onclick="runCronPendingSync()">Cron sorgu çalıştır</button>
+            </div>
+            <div class="kv-well">
+              <div class="kv-row"><span>GSM birincil hat</span><strong>Turkcell / VF Direkt XML (14 ms)</strong></div>
+              <div class="kv-row"><span>GSM yedek (failover)</span><strong>Znet / Kontör Merkezi REST</strong></div>
+              <div class="kv-row"><span>Fatura tahsilat omurgası</span><strong>Paycell Kurum Geçidi (21 ms)</strong></div>
+              <div class="kv-row"><span>Sanal POS webhook</span><strong>PayTR + ParamPOS HMAC Aktif</strong></div>
+            </div>
+          </div>
+        </div>
 
-      <!-- SIDEBAR / TOPNAV -->
-      <aside class="sidebar">
-        <div class="brand-box">
-          <div class="brand-mark js-brand-mark">FP</div>
+        <div class="grid">
+          <div class="panel col-6">
+            <div class="panel-head">
+              <h2>Vitrin online bayilik başvuruları</h2>
+              <span class="meta">Tek tıkla alt bayi hesabı açılır</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tarih</th>
+                    <th>İşletme ve şehir</th>
+                    <th>Yetkili</th>
+                    <th>Grup</th>
+                    <th class="n">Onay</th>
+                  </tr>
+                </thead>
+                <tbody id="admAppsBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel col-6">
+            <div class="panel-head">
+              <h2>Statik IP ve 2FA güvenlik kayıtları</h2>
+              <span class="meta">Yetkisiz erişim koruması</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Saat</th>
+                    <th>Oturum</th>
+                    <th>IP adresi</th>
+                    <th>Güvenlik olayı</th>
+                  </tr>
+                </thead>
+                <tbody id="ipLogsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 9: PUBLIC STOREFRONT & DEALER PORTAL ==================== -->
+      <section class="app-view" id="view-storefront" aria-label="Müşteri ve bayilik vitrini">
+
+        <div class="sf-hero">
           <div>
-            <div class="brand-name js-brand-name">FaturaPay Kurumsal</div>
-            <div class="brand-sub js-brand-sub">TL Yükleme • Fatura &amp; Bayi ERP</div>
-          </div>
-        </div>
-
-        <div class="nav-group-title">Bayi Gişe Operasyonları</div>
-        <nav class="nav-menu">
-          <button class="nav-item active" data-view="overview" onclick="openPortalView('overview', this)">
-            <span>📊 Genel Bakış &amp; BI Analitik</span>
-          </button>
-          <button class="nav-item" data-view="terminal" onclick="openPortalView('terminal', this)">
-            <span>⚡ Hızlı Gişe Terminali</span>
-            <span class="nav-badge">5 Servis</span>
-          </button>
-          <button class="nav-item" data-view="ledger" onclick="openPortalView('ledger', this)">
-            <span>📑 Cari Ekstre &amp; Z-Raporu</span>
-          </button>
-          <button class="nav-item" data-view="cashiers" onclick="openPortalView('cashiers', this)">
-            <span>👥 Kasiyer &amp; Alt Personel</span>
-          </button>
-          <button class="nav-item" data-view="tickets" onclick="openPortalView('tickets', this)">
-            <span>🎧 Destek &amp; İptal/İade</span>
-          </button>
-
-          <div class="nav-group-title">Merkez Dağıtıcı &amp; Admin</div>
-          <button class="nav-item" data-view="dealers" onclick="openPortalView('dealers', this)">
-            <span>🏪 Kademeli Alt Bayiler</span>
-            <span class="nav-badge" id="navDealerBadge">19</span>
-          </button>
-          <button class="nav-item" data-view="tiers" onclick="openPortalView('tiers', this)">
-            <span>💰 Fiyat Grupları &amp; Marjlar</span>
-          </button>
-          <button class="nav-item" data-view="admin" onclick="openPortalView('admin', this)">
-            <span>🛡️ Süper Admin (API &amp; POS)</span>
-            <span class="nav-badge" id="navAdminBadge">3</span>
-          </button>
-        </nav>
-
-        <div class="sidebar-foot js-mod-apihealth">
-          <div class="latency-box">
-            <div style="font-weight:800; color:var(--sidebar-ink);">🟢 Merkez API Omurgası Aktif</div>
-            <div class="lat-row"><span>Turkcell / VF / TT XML</span><strong style="color:#34d399;">14 ms</strong></div>
-            <div class="lat-row"><span>200+ Kurum Fatura API</span><strong style="color:#34d399;">21 ms</strong></div>
-            <div class="lat-row"><span>PayTR / Param 3D POS</span><strong style="color:#34d399;">Aktif</strong></div>
-          </div>
-        </div>
-      </aside>
-
-      <!-- MAIN COLUMN -->
-      <div class="main-col">
-        <!-- TOPBAR -->
-        <header class="topbar">
-          <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
-            <div class="branch-pill">
-              <span>🏢 Gişe: <strong id="activeBranchName">Ege Merkez İletişim &amp; Fatura (#BY-1042)</strong></span>
-              <span class="badge b-pri" id="topTierBadge">GOLD BAYİ • %3,6</span>
+            <h2>Fatura tahsilatı ve TL yükleme tek gişede.</h2>
+            <p class="sf-lead">
+              6 GSM operatörü, 200'den fazla elektrik, su, doğalgaz ve telekom kurumu, kademeli alt bayilik mimarisi ve 3D Secure sanal POS tahsilatı tek merkezde birleşir.
+            </p>
+            <div class="sf-cta-row">
+              <button type="button" class="btn primary" onclick="switchSurface('portal')">Canlı bayi gişesini incele</button>
+              <button type="button" class="btn" onclick="document.getElementById('sfApplySection').scrollIntoView({behavior:'smooth'})">Bayilik başvurusu yap</button>
             </div>
-          </div>
-
-          <div class="wallet-strip">
-            <div class="w-box">
-              <small>Net Cari Kasa</small>
-              <strong id="topBalTxt">₺24.850,00</strong>
-            </div>
-            <div class="w-box credit">
-              <small>Kredi Dahil Limit</small>
-              <strong id="topLimitTxt">₺29.850,00</strong>
-            </div>
-            <div class="w-box profit">
-              <small>Bugünkü Net Kâr</small>
-              <strong id="topProfitTxt">₺1.184,50</strong>
-            </div>
-            <button class="btn btn-primary btn-xs" onclick="openStudio(true)">🎨 Tema &amp; Marka Stüdyosu</button>
-          </div>
-        </header>
-
-        <div class="portal-content">
-
-          <!-- ==================== PVIEW 1: EXECUTIVE BI OVERVIEW ==================== -->
-          <section id="pview-overview" class="p-view active">
-            <div class="p-head">
+            <div class="sf-facts">
               <div>
-                <h1>İş Zekası (BI) Finansal Özet &amp; Canlı Gişe Kontrolü</h1>
-                <p>Duyuru: Turkcell &amp; Vodafone yeni dönem paket API fiyatları otomatik senkronize edildi • 200+ Fatura kurumu kesintisiz açık.</p>
+                <div class="sf-fact-val">200+ kurum</div>
+                <div class="sf-fact-lbl">Anlık online borç kapama</div>
               </div>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <button class="btn btn-outline btn-xs" onclick="openZReportModal()">🖨️ Gün Sonu Z-Raporu Al</button>
-                <button class="btn btn-primary btn-xs" onclick="jumpTerminalService('gsm')">⚡ Hızlı Gişe İşlemi Başlat</button>
-              </div>
-            </div>
-
-            <div class="kpi-grid">
-              <div class="kpi">
-                <div class="kpi-top"><span class="kpi-lbl">Net Cari Bakiye</span><span class="kpi-ico">₺</span></div>
-                <div class="kpi-num" id="kpiBal">₺24.850,00</div>
-                <div class="kpi-foot"><span class="badge b-ok">+₺5.000 Kredi</span><span>InnoDB Satır Kilitli</span></div>
-              </div>
-              <div class="kpi">
-                <div class="kpi-top"><span class="kpi-lbl">Bugünkü Bayi Hakedişi</span><span class="kpi-ico">↗</span></div>
-                <div class="kpi-num" id="kpiProfit">₺1.184,50</div>
-                <div class="kpi-foot"><span class="badge b-ok">+%22,4</span><span>Düne göre net kâr artışı</span></div>
-              </div>
-              <div class="kpi">
-                <div class="kpi-top"><span class="kpi-lbl">Günlük Başarılı İşlem</span><span class="kpi-ico">✓</span></div>
-                <div class="kpi-num" id="kpiTxCount">68 İşlem</div>
-                <div class="kpi-foot"><span class="badge b-pri">%99,6 Onay</span><span>Askıda kalan otomatik iade</span></div>
-              </div>
-              <div class="kpi">
-                <div class="kpi-top"><span class="kpi-lbl">Alt Bayi Ağı Toplam Ciro</span><span class="kpi-ico">🏪</span></div>
-                <div class="kpi-num">₺1.248.900</div>
-                <div class="kpi-foot"><span class="badge b-ok">Kademeli Marj</span><span>Aylık konsolide hacim</span></div>
-              </div>
-            </div>
-
-            <div class="split-grid">
-              <div class="card">
-                <div class="card-head">
-                  <div class="card-title">📈 Haftalık Ciro, Tahsilat &amp; Operatör Dağılım Analizi</div>
-                  <div style="display:flex; gap:6px;">
-                    <button class="btn btn-outline btn-xs" onclick="jumpTerminalService('gsm')">📱 TL Yükle</button>
-                    <button class="btn btn-outline btn-xs" onclick="jumpTerminalService('bill')">🧾 Fatura Öde</button>
-                    <button class="btn btn-outline btn-xs" onclick="jumpTerminalService('pos')">💳 POS Bakiye</button>
-                  </div>
-                </div>
-                <div class="card-body">
-                  <svg viewBox="0 0 640 195" style="width:100%; height:auto; display:block; margin-bottom:14px;">
-                    <line x1="42" y1="20" x2="620" y2="20" stroke="var(--border)" stroke-dasharray="4 4"/>
-                    <line x1="42" y1="70" x2="620" y2="70" stroke="var(--border)" stroke-dasharray="4 4"/>
-                    <line x1="42" y1="120" x2="620" y2="120" stroke="var(--border)" stroke-dasharray="4 4"/>
-                    <line x1="42" y1="165" x2="620" y2="165" stroke="var(--border)"/>
-                    <text x="4" y="25" fill="var(--muted)" font-size="10">₺60B</text>
-                    <text x="4" y="75" fill="var(--muted)" font-size="10">₺40B</text>
-                    <text x="4" y="125" fill="var(--muted)" font-size="10">₺20B</text>
-                    <text x="14" y="168" fill="var(--muted)" font-size="10">₺0</text>
-
-                    <rect x="64" y="88" width="46" height="77" rx="6" fill="var(--primary)" opacity="0.55"/>
-                    <rect x="144" y="72" width="46" height="93" rx="6" fill="var(--primary)" opacity="0.65"/>
-                    <rect x="224" y="79" width="46" height="86" rx="6" fill="var(--primary)" opacity="0.65"/>
-                    <rect x="304" y="54" width="46" height="111" rx="6" fill="var(--primary)" opacity="0.78"/>
-                    <rect x="384" y="42" width="46" height="123" rx="6" fill="var(--primary)" opacity="0.88"/>
-                    <rect x="464" y="58" width="46" height="107" rx="6" fill="var(--primary)" opacity="0.76"/>
-                    <rect x="544" y="26" width="46" height="139" rx="6" fill="var(--primary)"/>
-
-                    <text x="87" y="185" text-anchor="middle" fill="var(--muted)" font-size="11">Pzt</text>
-                    <text x="167" y="185" text-anchor="middle" fill="var(--muted)" font-size="11">Sal</text>
-                    <text x="247" y="185" text-anchor="middle" fill="var(--muted)" font-size="11">Çar</text>
-                    <text x="327" y="185" text-anchor="middle" fill="var(--muted)" font-size="11">Per</text>
-                    <text x="407" y="185" text-anchor="middle" fill="var(--muted)" font-size="11">Cum</text>
-                    <text x="487" y="185" text-anchor="middle" fill="var(--muted)" font-size="11">Cmt</text>
-                    <text x="567" y="185" text-anchor="middle" fill="var(--ink)" font-weight="800" font-size="11">Bugün</text>
-                  </svg>
-
-                  <div class="three-col">
-                    <div class="calc-panel" style="margin:0;">
-                      <small style="color:var(--muted); font-weight:700;">GSM TL &amp; PAKET PAYI</small>
-                      <strong style="display:block; font-size:16px; margin-top:2px;">%48,2 Ciro</strong>
-                    </div>
-                    <div class="calc-panel" style="margin:0;">
-                      <small style="color:var(--muted); font-weight:700;">KURUM FATURA TAHSİLAT</small>
-                      <strong style="display:block; font-size:16px; margin-top:2px;">%39,5 Ciro</strong>
-                    </div>
-                    <div class="calc-panel" style="margin:0;">
-                      <small style="color:var(--muted); font-weight:700;">E-PİN &amp; DİJİTAL KOD</small>
-                      <strong style="display:block; font-size:16px; margin-top:2px;">%12,3 Ciro</strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="card">
-                <div class="card-head">
-                  <div class="card-title">🕒 Son Gişe Hareketleri</div>
-                  <button class="link-action" onclick="openPortalView('ledger')">Tam Cari Ekstre →</button>
-                </div>
-                <div class="tbl-wrap">
-                  <table>
-                    <thead><tr><th>Kurum / Abone</th><th>Tutar</th><th>Kâr</th><th>Fiş</th></tr></thead>
-                    <tbody id="ovMiniTxBody"></tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- ==================== PVIEW 2: 5-IN-1 COUNTER TRANSACTION TERMINAL ==================== -->
-          <section id="pview-terminal" class="p-view">
-            <div class="p-head">
               <div>
-                <h1>⚡ Hızlı Gişe İşlem Terminali (5 Servis Tek Ekranda)</h1>
-                <p>MNP &amp; numara geçmişi sorgulu TL yükleme, toplu numara gönderimi, barkodlu çoklu fatura sepeti, SMS teslimli E-Pin ve 3D OTP Sanal POS.</p>
+                <div class="sf-fact-val">1,8 saniye</div>
+                <div class="sf-fact-lbl">Ortalama XML/REST onay süresi</div>
               </div>
-            </div>
-
-            <div class="split-grid">
-              <div class="card">
-                <div class="srv-tabs">
-                  <button class="srv-tab active" data-srv="gsm" onclick="switchServiceTab('gsm', this)">📱 GSM TL / Paket</button>
-                  <button class="srv-tab" data-srv="bulk" onclick="switchServiceTab('bulk', this)">📋 Toplu TL Yükle</button>
-                  <button class="srv-tab" data-srv="bill" onclick="switchServiceTab('bill', this)">🧾 Fatura &amp; Barkod</button>
-                  <button class="srv-tab js-mod-epin" data-srv="epin" onclick="switchServiceTab('epin', this)">🎮 E-Pin &amp; Kod</button>
-                  <button class="srv-tab" data-srv="pos" onclick="switchServiceTab('pos', this)">💳 3D POS &amp; IBAN</button>
-                </div>
-
-                <!-- SPANE 1: SINGLE GSM + MNP + NUMBER HISTORY -->
-                <div id="spane-gsm" class="srv-pane active">
-                  <div class="lbl"><span>1. GSM Operatörü (Fiyat Grubunuza Göre Canlı İskonto)</span></div>
-                  <div class="op-grid" id="opGrid"></div>
-
-                  <div class="field">
-                    <div class="lbl">
-                      <span>2. Abone GSM Numarası</span>
-                      <button class="link-action" onclick="checkMnpAndHistory()">📡 BTK MNP &amp; Numara Yükleme Geçmişi Sorgula</button>
-                    </div>
-                    <input id="gsmNumberInput" class="input" value="0532 418 92 10" placeholder="05XX XXX XX XX" />
-                  </div>
-
-                  <div id="numHistoryBox" class="calc-panel" style="display:none; border-color:var(--primary); background:var(--primary-soft);"></div>
-
-                  <div class="chips">
-                    <button class="chip active" onclick="setPkgFilter('all', this)">Tüm Paketler (10)</button>
-                    <button class="chip" onclick="setPkgFilter('paket', this)">Ses + İnternet Paketleri</button>
-                    <button class="chip" onclick="setPkgFilter('tl', this)">Tam TL Kontör</button>
-                    <button class="chip js-mod-intl" onclick="setPkgFilter('yurtdisi', this)">Kıbrıs &amp; Yurt Dışı</button>
-                  </div>
-
-                  <div class="pkg-list" id="gsmPkgList"></div>
-
-                  <div class="calc-panel">
-                    <div class="c-row"><span>Merkez Ana Sağlayıcı API Maliyeti:</span><span id="gsmApiRawOut">₺305,90</span></div>
-                    <div class="c-row"><span>Sizin Bayi İskontolu Maliyetiniz (<span id="gsmDiscOut">%3,6</span>):</span><strong id="gsmCostOut">₺308,48</strong></div>
-                    <div class="c-row"><span>Müşteri Gişe Satış Fiyatı:</span><strong id="gsmRetailOut">₺320,00</strong></div>
-                    <div class="c-row tot"><span>Bu İşlemden Anlık Net Bayi Kârınız:</span><span class="txt-profit" id="gsmProfitOut">+₺11,52</span></div>
-                  </div>
-
-                  <button class="btn btn-primary btn-full" onclick="executeGsmSingle()">
-                    ⚡ Operatör API Üzerinden Anında Yükle &amp; Fiş Üret
-                  </button>
-                </div>
-
-                <!-- SPANE 2: BULK MULTI-NUMBER GSM TOP-UP -->
-                <div id="spane-bulk" class="srv-pane">
-                  <div class="calc-panel" style="background:var(--primary-soft); border-color:var(--primary-border);">
-                    <strong>📋 Kurumsal Toplu Numara TL / Paket Gönderimi</strong>
-                    <div style="font-size:11.5px; color:var(--ink-2); margin-top:3px;">Excel'den veya listeden alt alta yapıştırdığınız tüm numaralara seçili operatör üzerinden tek seferde API yüklemesi yapılır.</div>
-                  </div>
-                  <div class="field">
-                    <div class="lbl"><span>Her Satıra 1 Cep Numarası Yazın</span><span>Varsayılan Paket: 250 TL Tam Kontör</span></div>
-                    <textarea id="bulkPhonesInput" class="textarea" rows="5">0532 418 92 10
-0533 610 44 12
-0535 991 34 67</textarea>
-                  </div>
-                  <button class="btn btn-primary btn-full" onclick="executeBulkGsm()">
-                    🚀 Listedeki Tüm Numaralara Toplu Yükleme Başlat
-                  </button>
-                </div>
-
-                <!-- SPANE 3: 200+ INSTITUTION BILLS, BARCODE READER & MULTI-PERIOD CART -->
-                <div id="spane-bill" class="srv-pane">
-                  <div class="chips">
-                    <button class="chip active" onclick="selectBillCategory('elektrik', this)">⚡ Elektrik (7+)</button>
-                    <button class="chip" onclick="selectBillCategory('su', this)">💧 Su / İZSU (7+)</button>
-                    <button class="chip" onclick="selectBillCategory('gaz', this)">🔥 Doğalgaz (6+)</button>
-                    <button class="chip" onclick="selectBillCategory('internet', this)">🌐 İnternet / TV (7+)</button>
-                    <button class="chip" onclick="selectBillCategory('kamu', this)">🏛️ MTV / Trafik / SGK / HGS</button>
-                  </div>
-
-                  <div class="two-col" style="gap:10px;">
-                    <div class="field">
-                      <div class="lbl"><span>Kurum Seçimi (200+ Entegre Kurum)</span></div>
-                      <select id="instSelect" class="select" onchange="querySubscriberInvoices()"></select>
-                    </div>
-                    <div class="field">
-                      <div class="lbl"><span>Gişe Hizmet Bedeli (Kârınız)</span></div>
-                      <select id="billServiceFee" class="select" onchange="querySubscriberInvoices()">
-                        <option value="10">+₺10,00 Servis Ücreti</option>
-                        <option value="15" selected>+₺15,00 Servis Ücreti (Grup Varsayılan)</option>
-                        <option value="20">+₺20,00 Servis Ücreti</option>
-                        <option value="25">+₺25,00 Servis Ücreti</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="field">
-                    <div class="lbl">
-                      <span>Abone / Tesisat No veya El Terminali Barkod Okutma</span>
-                      <button class="link-action" onclick="simulateBarcodeScan()">📷 Fatura Barkodu / Karekod Okut</button>
-                    </div>
-                    <div style="display:flex; gap:8px;">
-                      <input id="billSubNo" class="input" value="1008492031" placeholder="Abone veya Tesisat No" />
-                      <button class="btn btn-outline" onclick="querySubscriberInvoices()">🔍 Borç Sorgula</button>
-                    </div>
-                  </div>
-
-                  <div class="lbl"><span>Aboneye Ait Açık Faturalar (Tek veya Çoklu Dönem Seçebilirsiniz)</span></div>
-                  <div id="queriedInvoicesList"></div>
-
-                  <div class="calc-panel">
-                    <div class="c-row"><span>Seçili Fatura Ana Borç + Gecikme:</span><strong id="qBaseSum">₺845,60</strong></div>
-                    <div class="c-row"><span>Bayi Hizmet Komisyonu (Net Kâr):</span><strong class="txt-profit" id="qFeeSum">+₺15,00</strong></div>
-                    <div class="c-row tot"><span>Müşteriden Tahsil Edilecek Toplam:</span><strong id="qTotalSum">₺860,60</strong></div>
-                  </div>
-
-                  <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <button class="btn btn-emerald" style="flex:1;" onclick="paySelectedBillsDirect()">✅ Seçili Faturayı Hemen Tahsil Et</button>
-                    <button class="btn btn-outline" style="flex:1;" onclick="pushSelectedToBillCart()">➕ Çoklu Müşteri Sepetine Ekle</button>
-                  </div>
-
-                  <div id="multiCartWrap" class="calc-panel" style="display:none; margin-top:12px; border-color:var(--primary);">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                      <strong>🧺 Çoklu Fatura Sepeti (<span id="multiCartCount">0</span> Adet)</strong>
-                      <button class="link-action" onclick="clearMultiBillCart()">Temizle</button>
-                    </div>
-                    <div id="multiCartRows"></div>
-                    <div class="c-row tot"><span>Sepet Genel Toplamı:</span><strong id="multiCartTotal">₺0,00</strong></div>
-                    <button class="btn btn-primary btn-full" style="margin-top:9px;" onclick="checkoutMultiBillCart()">
-                      🧾 Sepetteki Tüm Faturaları Tek Makbuzda Kapat
-                    </button>
-                  </div>
-                </div>
-
-                <!-- SPANE 4: E-PIN & SMS DELIVERY -->
-                <div id="spane-epin" class="srv-pane">
-                  <div class="lbl"><span>Anında PIN Üretimi + Netgsm Müşteri SMS Gönderimi</span></div>
-                  <div class="pkg-list" id="epinCatalogGrid"></div>
-                  <div class="field">
-                    <div class="lbl"><span>Müşteri Cep Numarası (Kod SMS Olarak İletilir)</span></div>
-                    <input id="epinSmsPhone" class="input" value="0541 191 86 11" />
-                  </div>
-                  <button class="btn btn-primary btn-full" onclick="buyEpinNow()">
-                    🔑 Dijital Kodu Üret, Müşteriye SMS Gönder &amp; Fiş Bas
-                  </button>
-                </div>
-
-                <!-- SPANE 5: 3D VIRTUAL POS (BIN + OTP MODAL) & IBAN FAST -->
-                <div id="spane-pos" class="srv-pane">
-                  <div class="cc-visual">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                      <div class="cc-chip"></div>
-                      <span style="font-size:11.5px; font-weight:800; background:rgba(255,255,255,0.18); padding:3px 10px; border-radius:999px;" id="ccVisualBank">PayTR 3D POS • Garanti Bonus</span>
-                    </div>
-                    <div class="cc-num" id="ccVisualNum">4543 6012 8840 8821</div>
-                    <div style="display:flex; justify-content:space-between; font-size:11.5px; opacity:0.9;">
-                      <span id="ccVisualHolder">EGE MERKEZ İLETİŞİM</span>
-                      <span>SKT: 10/29 • 3D SECURE</span>
-                    </div>
-                  </div>
-
-                  <div class="two-col" style="gap:10px;">
-                    <div class="field">
-                      <div class="lbl"><span>Sanal POS Entegrasyonu</span></div>
-                      <select id="posGateway" class="select" onchange="detectBinAndRenderInstallments()">
-                        <option value="PayTR 3D POS">PayTR iFrame / Direct 3D POS</option>
-                        <option value="Param Kurumsal POS">Param Kurumsal Sanal POS</option>
-                        <option value="iyzico Korumalı POS">iyzico 3D Secure POS</option>
-                        <option value="Moka / Sipay POS">Moka &amp; Sipay Ticari POS</option>
-                      </select>
-                    </div>
-                    <div class="field">
-                      <div class="lbl"><span>Yüklenecek Net Cari Tutar (TL)</span></div>
-                      <input id="posTopupAmt" type="number" class="input" value="5000" step="500" oninput="detectBinAndRenderInstallments()" />
-                    </div>
-                  </div>
-
-                  <div class="two-col" style="gap:10px;">
-                    <div class="field">
-                      <div class="lbl"><span>Kart Numarası (BIN Otomatik Algılar: 4543 / 5400 / 5549)</span></div>
-                      <input id="ccNumInput" class="input" value="4543 6012 8840 8821" oninput="detectBinAndRenderInstallments()" />
-                    </div>
-                    <div class="field">
-                      <div class="lbl"><span>Kart Üzerindeki İsim</span></div>
-                      <input class="input" value="EGE MERKEZ İLETİŞİM" oninput="document.getElementById('ccVisualHolder').textContent=this.value||'BAYİ YETKİLİSİ'" />
-                    </div>
-                  </div>
-
-                  <div class="tbl-wrap js-mod-posmatrix" style="margin-bottom:12px;">
-                    <table>
-                      <thead><tr><th>Taksit Seçeneği</th><th>Komisyon</th><th>Aylık Ödeme</th><th>Karttan Çekilecek</th></tr></thead>
-                      <tbody id="installmentBody"></tbody>
-                    </table>
-                  </div>
-
-                  <button class="btn btn-primary btn-full" style="margin-bottom:18px;" onclick="trigger3dSecureModal()">
-                    🔒 3D Secure SMS Onayı İle Anında Bakiye Yükle
-                  </button>
-
-                  <div style="border-top:1px solid var(--border); padding-top:14px;">
-                    <div class="lbl"><span>🏦 %0 Komisyonlu 7/24 FAST &amp; Banka Havale Hesaplarımız</span></div>
-                    <div id="ibanListWrap"></div>
-                    <div class="three-col" style="margin-top:10px;">
-                      <select id="wireBankSelect" class="select">
-                        <option>Ziraat Bankası FAST</option>
-                        <option>Garanti BBVA Havale</option>
-                        <option>İş Bankası FAST</option>
-                      </select>
-                      <input id="wireAmtInput" type="number" class="input" value="7500" placeholder="Tutar (TL)" />
-                      <input id="wireDecontInput" class="input" placeholder="Dekont / İsim Notu" value="Ege Merkez FAST" />
-                    </div>
-                    <button class="btn btn-outline btn-full" style="margin-top:8px;" onclick="sendWireNotification()">
-                      📨 Havale / FAST Ödeme Bildirimi Gönder
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- RIGHT SIDE LIVE STREAM -->
-              <div class="card">
-                <div class="card-head">
-                  <div class="card-title">🧾 Canlı İşlem &amp; Fiş Geçmişi</div>
-                  <button class="btn btn-outline btn-xs" onclick="openZReportModal()">Z-Raporu</button>
-                </div>
-                <div class="tbl-wrap">
-                  <table>
-                    <thead><tr><th>İşlem / Abone</th><th>Tutar</th><th>Kâr</th><th>Fiş</th></tr></thead>
-                    <tbody id="termMiniTxBody"></tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- ==================== PVIEW 3: FULL ACCOUNTING LEDGER & Z-REPORT ==================== -->
-          <section id="pview-ledger" class="p-view">
-            <div class="p-head">
               <div>
-                <h1>📑 Cari Hesap Ekstresi (Önceki / Sonraki Bakiye Kilitli Muhasebe)</h1>
-                <p>Tüm işlemler veritabanı transaction kilidiyle kayıt altına alınır; durum filtresi, "Bugün" filtresi ve Excel dışa aktarım desteklidir.</p>
+                <div class="sf-fact-val">7/24 POS ve FAST</div>
+                <div class="sf-fact-lbl">Kesintisiz otomatik cari bakiye</div>
               </div>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <button class="btn btn-outline btn-xs" onclick="renderLedgerTables(true); toast('📅 Sadece bugünkü cari hareketler filtrelendi.')">📅 Sadece Bugün</button>
-                <button class="btn btn-outline btn-xs" onclick="renderLedgerTables(false)">Tüm Tarihler</button>
-                <select id="ledgerStatusFilter" class="select" style="width:auto; padding:5px 10px; font-size:12px;" onchange="renderLedgerTables(false)">
-                  <option value="all">Tüm Durumlar</option>
-                  <option value="ok">Onaylananlar</option>
-                  <option value="pending">Operatörde Bekleyen</option>
+            </div>
+          </div>
+
+          <!-- Live B2C Quick Payment Widget (Real working product fragment) -->
+          <div class="panel" data-ui>
+            <div class="panel-head">
+              <h2>Bireysel hızlı işlem noktası</h2>
+              <div class="segmented" role="group" aria-label="Bireysel işlem türü">
+                <button type="button" id="b2cTabTl" aria-pressed="true" onclick="switchB2cTab('tl')">TL ve paket</button>
+                <button type="button" id="b2cTabBill" aria-pressed="false" onclick="switchB2cTab('bill')">Fatura öde</button>
+              </div>
+            </div>
+
+            <div id="b2c-tl">
+              <div class="field">
+                <label for="b2cPhone">Yüklenecek cep telefonu</label>
+                <input type="tel" id="b2cPhone" class="input num" value="0532 418 92 10" />
+              </div>
+              <div class="field">
+                <label for="b2cPkg">Operatör ve paket</label>
+                <select id="b2cPkg" class="input">
+                  <option>Turkcell Süper 20 GB + 1000 DK · ₺320,00</option>
+                  <option>Vodafone Red 30 GB Paketi · ₺390,00</option>
+                  <option>Türk Telekom 250 TL Tam Kontör · ₺250,00</option>
                 </select>
-                <button class="btn btn-amber btn-xs" onclick="openZReportModal()">🖨️ Gün Sonu Z-Raporu</button>
-                <button class="btn btn-emerald btn-xs" onclick="downloadLedgerCsv()">📥 Excel / CSV İndir</button>
               </div>
+              <button type="button" class="btn primary full" style="margin-top:16px;" onclick="submitB2cDemoOrder('TL')">
+                3D Secure ile yüklemeye geç
+              </button>
             </div>
 
-            <div class="card">
-              <div class="tbl-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Ref &amp; Zaman</th>
-                      <th>Kategori</th>
-                      <th>Kurum / Abone</th>
-                      <th>Önceki Bakiye</th>
-                      <th>İşlem Tutarı</th>
-                      <th>Net Kâr</th>
-                      <th>Sonraki Bakiye</th>
-                      <th>Durum</th>
-                      <th>Dekont</th>
-                    </tr>
-                  </thead>
-                  <tbody id="ledgerFullBody"></tbody>
-                </table>
+            <div id="b2c-bill" style="display:none;">
+              <div class="field">
+                <label for="b2cInst">Fatura kurumu</label>
+                <select id="b2cInst" class="input">
+                  <option>Gediz Elektrik Perakende (İzmir / Manisa)</option>
+                  <option>İZSU İzmir Su ve Kanalizasyon</option>
+                  <option>İzmirgaz Doğalgaz Dağıtım</option>
+                  <option>Türk Telekom Ev İnterneti</option>
+                </select>
               </div>
+              <div class="field">
+                <label for="b2cSub">Abone veya tesisat numarası</label>
+                <input type="text" id="b2cSub" class="input num" value="1008492031" />
+              </div>
+              <button type="button" class="btn primary full" style="margin-top:16px;" onclick="submitB2cDemoOrder('Fatura')">
+                Borç sorgula ve 3D kartla öde
+              </button>
             </div>
-          </section>
-
-          <!-- ==================== PVIEW 4: SUB-DEALER CASHIER SUB-USERS ==================== -->
-          <section id="pview-cashiers" class="p-view">
-            <div class="p-head">
-              <div>
-                <h1>👥 Alt Bayi Kasiyer &amp; Vardiya Personeli Yetkilendirme</h1>
-                <p>Bayiler kendi şubelerindeki kasiyerlere günlük işlem limiti koyabilir ve iptal/kasa görme yetkilerini kısıtlayabilir.</p>
-              </div>
-            </div>
-            <div class="split-grid" style="grid-template-columns: 0.8fr 1.2fr;">
-              <div class="card">
-                <div class="card-head"><div class="card-title">➕ Yeni Kasiyer / Gişe Personeli Aç</div></div>
-                <div class="card-body">
-                  <div class="field">
-                    <div class="lbl"><span>Personel Ad Soyad &amp; Gişe No</span></div>
-                    <input id="newCashierName" class="input" value="Zeynep Karaca (Gişe-3)" />
-                  </div>
-                  <div class="field">
-                    <div class="lbl"><span>Günlük Maksimum İşlem Tutar Limiti (TL)</span></div>
-                    <input id="newCashierLimit" type="number" class="input" value="12000" />
-                  </div>
-                  <button class="btn btn-primary btn-full" onclick="addCashierUser()">👤 Kasiyer Hesabını Tanımla</button>
-                </div>
-              </div>
-              <div class="card">
-                <div class="card-head"><div class="card-title">Aktif Kasiyerler &amp; Günlük Limit Kullanımı</div></div>
-                <div class="tbl-wrap">
-                  <table>
-                    <thead><tr><th>Personel</th><th>Rol</th><th>Günlük Kota</th><th>İptal Yetkisi</th><th>Durum</th></tr></thead>
-                    <tbody id="cashiersBody"></tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- ==================== PVIEW 5: SUPPORT TICKETS & CANCELLATION ==================== -->
-          <section id="pview-tickets" class="p-view">
-            <div class="p-head">
-              <div>
-                <h1>🎧 Destek, Fatura İptal &amp; Bakiye İade Talepleri</h1>
-                <p>Hatalı abone numarası veya askıda kalan işlemler için merkez operasyon birimine anlık bilet açabilirsiniz.</p>
-              </div>
-            </div>
-            <div class="split-grid" style="grid-template-columns: 0.8fr 1.2fr;">
-              <div class="card">
-                <div class="card-head"><div class="card-title">✉️ Yeni Destek / İptal Talebi Aç</div></div>
-                <div class="card-body">
-                  <div class="field">
-                    <div class="lbl"><span>Talep Kategorisi</span></div>
-                    <select id="ticketCat" class="select">
-                      <option>Fatura İptal / İade Talebi</option>
-                      <option>GSM Paket / Numara Kontrolü</option>
-                      <option>Sanal POS / Havale Bakiye Destek</option>
-                    </select>
-                  </div>
-                  <div class="field">
-                    <div class="lbl"><span>İşlem Ref No ve Açıklama</span></div>
-                    <input id="ticketSubject" class="input" placeholder="Örn: #FT-92104 sehven yanlış abone ödendi, iptal rica ederim" />
-                  </div>
-                  <button class="btn btn-primary btn-full" onclick="createSupportTicket()">📨 Destek Talebini Gönder</button>
-                </div>
-              </div>
-              <div class="card">
-                <div class="card-head"><div class="card-title">Açık &amp; Yanıtlanan Talepleriniz</div></div>
-                <div class="tbl-wrap">
-                  <table>
-                    <thead><tr><th>Talep No</th><th>Konu &amp; Merkez Yanıtı</th><th>Kategori</th><th>Durum</th></tr></thead>
-                    <tbody id="ticketsBody"></tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- ==================== PVIEW 6: MULTI-LEVEL SUB-DEALERS (B2B2C) ==================== -->
-          <section id="pview-dealers" class="p-view">
-            <div class="p-head">
-              <div>
-                <h1>🏪 Kademeli Alt Bayi Ağacı (Ana Bayi → Bölge Bayi → Alt Gişe)</h1>
-                <p>Herhangi bir alt bayinin yanındaki <strong>"Gişeye Geç"</strong> butonuyla tek tıkla o bayinin gözünden ve komisyon oranlarıyla test yapabilirsiniz.</p>
-              </div>
-            </div>
-
-            <div class="split-grid" style="grid-template-columns: 0.78fr 1.22fr;">
-              <div class="card">
-                <div class="card-head"><div class="card-title">➕ Yeni Alt Bayi / Dağıtıcı Hesabı Aç</div></div>
-                <div class="card-body">
-                  <div class="field">
-                    <div class="lbl"><span>Bayi Ticari Ünvanı</span></div>
-                    <input id="admDealerName" class="input" value="Çiğli Merkez Fatura &amp; Kontör" />
-                  </div>
-                  <div class="two-col" style="gap:8px;">
-                    <div class="field">
-                      <div class="lbl"><span>İl / İlçe</span></div>
-                      <input id="admDealerCity" class="input" value="İzmir / Çiğli" />
-                    </div>
-                    <div class="field">
-                      <div class="lbl"><span>Yetkili &amp; Tel</span></div>
-                      <input id="admDealerPhone" class="input" value="Caner Ak • 0532 504 11 22" />
-                    </div>
-                  </div>
-                  <div class="three-col" style="gap:8px;">
-                    <div class="field">
-                      <div class="lbl"><span>Fiyat Grubu</span></div>
-                      <select id="admDealerTier" class="select">
-                        <option value="gold">Gold Bayi</option>
-                        <option value="vip">VIP Dağıtıcı</option>
-                        <option value="gumus">Gümüş Bayi</option>
-                        <option value="bronz">Bronz Gişe</option>
-                      </select>
-                    </div>
-                    <div class="field">
-                      <div class="lbl"><span>Açılış Cari (TL)</span></div>
-                      <input id="admDealerBal" type="number" class="input" value="5000" />
-                    </div>
-                    <div class="field">
-                      <div class="lbl"><span>Kredi Limit (TL)</span></div>
-                      <input id="admDealerLim" type="number" class="input" value="2000" />
-                    </div>
-                  </div>
-                  <button class="btn btn-emerald btn-full" onclick="createSubDealerAdmin()">🏪 Alt Bayiyi Oluştur &amp; SMS Gönder</button>
-                </div>
-              </div>
-
-              <div class="card">
-                <div class="card-head">
-                  <div class="card-title">Alt Bayi Cari Listesi &amp; Kademeli Hiyerarşi</div>
-                  <input id="subDealerSearch" class="input" style="max-width:210px; padding:6px 10px;" placeholder="Bayi, kod veya ilçe ara..." oninput="renderSubDealers()" />
-                </div>
-                <div class="tbl-wrap">
-                  <table>
-                    <thead><tr><th>Bayi &amp; Üst Hiyerarşi</th><th>İletişim &amp; IP</th><th>Fiyat Grubu</th><th>Cari &amp; Kredi</th><th>Durum</th><th>Yönetim</th></tr></thead>
-                    <tbody id="subDealersTable"></tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- ==================== PVIEW 7: DYNAMIC PRICE GROUPS & COMMISSION FORMULA ENGINE ==================== -->
-          <section id="pview-tiers" class="p-view">
-            <div class="p-head">
-              <div>
-                <h1>💰 Canlı Fiyat Grupları &amp; Kademeli Kâr Marjı Motoru</h1>
-                <p>Aşağıdaki oranları değiştirdiğiniz anda tüm gişe terminalindeki GSM maliyetleri, fatura hakedişleri, E-Pin kârları ve Sanal POS komisyonları canlı hesaplanır!</p>
-              </div>
-            </div>
-            <div class="card">
-              <div class="tbl-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Fiyat Grubu Adı</th>
-                      <th>GSM TL/Paket İskontosu (%)</th>
-                      <th>Varsayılan Fatura Komisyonu (₺)</th>
-                      <th>E-Pin / Kod İskontosu (%)</th>
-                      <th>Sanal POS Kesinti Oranı (%)</th>
-                      <th>Canlı Simülasyon</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tierMatrixBody"></tbody>
-                </table>
-              </div>
-            </div>
-          </section>
-
-          <!-- ==================== PVIEW 8: SUPER ADMIN BACK-OFFICE (QUEUES, API, CRON, IP LOGS) ==================== -->
-          <section id="pview-admin" class="p-view">
-            <div class="p-head">
-              <div>
-                <h1>🛡️ Merkez Süper Admin — Onay Kuyrukları, Sağlayıcı API, Cron &amp; Güvenlik</h1>
-                <p>FAST bakiye bildirimleri, vitrin bayilik başvuruları, XML/SOAP sağlayıcı yönlendirme ve şüpheli IP giriş denetimi.</p>
-              </div>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <button class="btn btn-amber btn-xs" onclick="runCronPendingSync()">🔄 Cron Çalıştır: Askıdaki İşlemleri Sorgula</button>
-                <button class="btn btn-primary btn-xs" onclick="openStudio(true)">🎨 Site Tasarımını Özelleştir</button>
-              </div>
-            </div>
-
-            <div class="two-col" style="margin-bottom:16px;">
-              <div class="card">
-                <div class="card-head"><div class="card-title">⏳ Bekleyen Havale / FAST Bakiye Talepleri</div></div>
-                <div class="tbl-wrap">
-                  <table>
-                    <thead><tr><th>Zaman</th><th>Bayi</th><th>Banka / Dekont</th><th>Tutar</th><th>Durum</th><th>Onay</th></tr></thead>
-                    <tbody id="admWireBody"></tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div class="card">
-                <div class="card-head"><div class="card-title">🆕 Vitrinden Gelen Bayilik Başvuruları</div></div>
-                <div class="tbl-wrap">
-                  <table>
-                    <thead><tr><th>Zaman</th><th>İşletme</th><th>Yetkili</th><th>Grup</th><th>Onay</th></tr></thead>
-                    <tbody id="admAppsBody"></tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            <div class="two-col" style="margin-bottom:16px;">
-              <div class="card">
-                <div class="card-head"><div class="card-title">🔌 Kontör, Fatura &amp; SMS Sağlayıcı API Köprüleri</div></div>
-                <div class="card-body">
-                  <div class="sw-row">
-                    <div><strong>Ana Kontör / Paket Tedarikçi XML &amp; REST API</strong><div style="font-size:11.5px; color:var(--muted);">Operatör fiyat değişimlerini fiyat gruplarına otomatik yansıtır</div></div>
-                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-                  </div>
-                  <div class="sw-row">
-                    <div><strong>Akıllı Yedek API Geçişi (Multi-Provider Failover)</strong><div style="font-size:11.5px; color:var(--muted);">1. tedarikçi zaman aşımı verirse işlemi otomatik 2. API'den tamamlar</div></div>
-                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-                  </div>
-                  <div class="sw-row">
-                    <div><strong>Merkezi Fatura Tahsilat &amp; Barkod Sorgu API</strong><div style="font-size:11.5px; color:var(--muted);">200+ Elektrik, Su, Doğalgaz, Telekom gerçek zamanlı borç kapama</div></div>
-                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-                  </div>
-                  <div class="sw-row">
-                    <div><strong>Netgsm Başlıklı SMS &amp; Kritik Bakiye Uyarı Servisi</strong><div style="font-size:11.5px; color:var(--muted);">2FA giriş, E-Pin kod teslimi ve bakiye azaldı SMS bildirimleri</div></div>
-                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="card">
-                <div class="card-head"><div class="card-title">🛡️ Güvenlik, Sesli Uyarı &amp; Sanal POS Koruması</div></div>
-                <div class="card-body">
-                  <div class="sw-row">
-                    <div><strong>PayTR, Param, iyzico &amp; Moka 3D Webhook Otomasyonu</strong><div style="font-size:11.5px; color:var(--muted);">3D ödeme onaylandığı saniye manuel onaysız cari kasaya yükler</div></div>
-                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-                  </div>
-                  <div class="sw-row">
-                    <div><strong>MySQL InnoDB Satır Kilidi (Mükerrer Çekim Önleyici)</strong><div style="font-size:11.5px; color:var(--muted);">Aynı anda çift tıklama veya çift callback isteğinde bakiye kaybını %100 engeller</div></div>
-                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-                  </div>
-                  <div class="sw-row">
-                    <div><strong>Farklı IP Girişinde Otomatik SMS Doğrulama Zorunluluğu</strong><div style="font-size:11.5px; color:var(--muted);">Bayi hesabına kayıtlı IP dışından girildiğinde yöneticiyi uyarır</div></div>
-                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-                  </div>
-                  <div class="sw-row">
-                    <div><strong>Canlı Sesli Bildirim Sesi (Yeni İşlem &amp; Bakiye Talebi)</strong><div style="font-size:11.5px; color:var(--muted);">Yeni bildirim düştüğünde gişe/yönetici sesli uyarı verir</div></div>
-                    <button class="toggle on" onclick="STATE.soundEnabled=!STATE.soundEnabled; this.classList.toggle('on');"></button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="card">
-              <div class="card-head"><div class="card-title">🕵️‍♂️ Son Yönetici &amp; Bayi IP Güvenlik Denetim Kayıtları (Audit Log)</div></div>
-              <div class="tbl-wrap">
-                <table>
-                  <thead><tr><th>Tarih / Saat</th><th>Kullanıcı / Bayi</th><th>IP Adresi &amp; Konum</th><th>Güvenlik Olayı</th></tr></thead>
-                  <tbody id="ipLogsBody"></tbody>
-                </table>
-              </div>
-            </div>
-          </section>
-
+          </div>
         </div>
+
+        <!-- Transparent B2B Commission Comparison Table -->
+        <div class="sf-section">
+          <div class="sf-sec-head">
+            <h2>Şeffaf bayi fiyat grupları ve komisyon oranları</h2>
+            <p>İletişim merkezleri, fatura ödeme noktaları ve bölge dağıtıcıları için işlem hacmine göre otomatik yükselen marj yapısı.</p>
+          </div>
+          <div class="panel" style="padding:12px 20px;">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Bayilik kademesi</th>
+                    <th>Hedef işletme profili</th>
+                    <th class="n">GSM paket iskontosu</th>
+                    <th class="n">Fatura gişe kârı</th>
+                    <th class="n">3D POS komisyonu</th>
+                    <th>Alt bayilik açma</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="cell-title">Bronz Gişe</span></td>
+                    <td>Yeni açılan büfe ve market ödeme noktaları</td>
+                    <td class="n">%2,4</td>
+                    <td class="n">₺10,00 / adet</td>
+                    <td class="n">%2,35</td>
+                    <td>Standart tek gişe</td>
+                  </tr>
+                  <tr>
+                    <td><span class="cell-title">Gümüş Bayi</span></td>
+                    <td>Günlük 30+ işlem yapan telefon ve aksesuar mağazaları</td>
+                    <td class="n">%3,0</td>
+                    <td class="n">₺12,50 / adet</td>
+                    <td class="n">%2,10</td>
+                    <td>3 kasiyer hesabı</td>
+                  </tr>
+                  <tr>
+                    <td><span class="cell-title">Gold Bayi</span></td>
+                    <td>Yüksek hacimli fatura ödeme ve iletişim merkezleri</td>
+                    <td class="n pos-num">%3,6</td>
+                    <td class="n pos-num">₺15,00 / adet</td>
+                    <td class="n">%1,85</td>
+                    <td>Alt gişe tanımlama aktif</td>
+                  </tr>
+                  <tr>
+                    <td><span class="cell-title">VIP Bölge Dağıtıcı</span></td>
+                    <td>İl/ilçe bazında kendi alt bayi ağını yöneten dağıtıcılar</td>
+                    <td class="n pos-num">%4,4</td>
+                    <td class="n pos-num">₺18,00 / adet</td>
+                    <td class="n pos-num">%1,49</td>
+                    <td>Sınırsız alt bayi + özel marj</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Dealer Application Form (Feeds straight into Super Admin Queue) -->
+        <div class="sf-section" id="sfApplySection">
+          <div class="grid">
+            <div class="col-5">
+              <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.015em;">Online yetkili bayilik başvurusu</h2>
+              <p style="color:var(--muted); margin-top:10px; line-height:1.55;">
+                Formu gönderdiğinizde başvurunuz doğrudan Merkez Süper Admin onay kuyruğuna düşer. Onay anında cari kasa, statik IP koruması ve 80mm termal yazıcı desteği aktif olur.
+              </p>
+              <div class="kv-well" style="margin-top:18px;">
+                <div class="kv-row"><span>Kurumsal destek hattı</span><strong class="js-brand-phone">0850 308 00 00</strong></div>
+                <div class="kv-row"><span>Aktivasyon süresi</span><strong>Aynı gün SMS ile açılış</strong></div>
+                <div class="kv-row"><span>Kurulum veya aidat</span><strong>₺0,00 ücretsiz geçiş</strong></div>
+              </div>
+            </div>
+
+            <div class="panel col-7">
+              <div class="grid" style="gap:12px;">
+                <div class="field col-6">
+                  <label for="appCompany">İşletme veya mağaza ünvanı</label>
+                  <input type="text" id="appCompany" class="input" placeholder="Örn: Konak İletişim ve Fatura Merkezi" />
+                </div>
+                <div class="field col-6">
+                  <label for="appOwner">Yetkili ad soyad</label>
+                  <input type="text" id="appOwner" class="input" placeholder="Ad Soyad" />
+                </div>
+                <div class="field col-6">
+                  <label for="appPhone">Cep telefonu (SMS aktivasyon için)</label>
+                  <input type="tel" id="appPhone" class="input num" placeholder="05XX XXX XX XX" />
+                </div>
+                <div class="field col-6">
+                  <label for="appCity">İl ve ilçe</label>
+                  <input type="text" id="appCity" class="input" placeholder="Örn: İzmir / Konak" />
+                </div>
+                <div class="field col-12">
+                  <label for="appTier">Talep edilen başlangıç grubu</label>
+                  <select id="appTier" class="input">
+                    <option value="gold">Gold Bayi (Fatura Ödeme ve İletişim Merkezi)</option>
+                    <option value="vip">VIP Bölge Dağıtıcı (Alt Bayi Ağı Kuracak)</option>
+                    <option value="gumus">Gümüş Bayi (Perakende Satış Noktası)</option>
+                  </select>
+                </div>
+              </div>
+              <button type="button" class="btn primary full" style="margin-top:16px;" onclick="submitPublicDealerApplication()">
+                Bayilik başvurusunu merkeze gönder
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==================== MODAL 1: COMMAND PALETTE (Ctrl+K) ==================== -->
+  <div class="backdrop" id="cmdBackdrop" onclick="if(event.target===this)openCommandModal(false)">
+    <div class="dialog-card" role="dialog" aria-modal="true" aria-labelledby="cmdDialogTitle">
+      <div class="dialog-head">
+        <h2 id="cmdDialogTitle">Hızlı işlem ve ekran geçişi</h2>
+        <button type="button" class="btn sm" onclick="openCommandModal(false)">Kapat</button>
+      </div>
+      <input type="search" id="cmdSearchInput" class="input" placeholder="Örn: İZSU, Turkcell, Z-raporu, Alt bayi, POS..." oninput="renderCommandList()" />
+      <div id="cmdResultsList" style="margin-top:12px; display:grid; gap:6px; max-height:280px; overflow-y:auto;"></div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: 3D SECURE BANK SMS OTP ==================== -->
+  <div class="backdrop" id="modal3dBackdrop" onclick="if(event.target===this)this.classList.remove('open')">
+    <div class="dialog-card" role="dialog" aria-modal="true" aria-labelledby="otpDialogTitle">
+      <div class="dialog-head">
+        <h2 id="otpDialogTitle">3D Secure banka doğrulaması</h2>
+        <span class="pill pos">256-bit SSL</span>
+      </div>
+      <div class="kv-well">
+        <div class="kv-row"><span>Ödeme kuruluşu</span><strong id="otp3dGatewayTxt">PayTR 3D POS</strong></div>
+        <div class="kv-row"><span>İşyeri</span><strong class="js-brand-name">FaturaPay</strong></div>
+        <div class="kv-row total"><span>Onaylanacak tutar</span><strong id="otp3dAmountTxt">₺5.000,00</strong></div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label for="otpSmsInput">Bankanızdan telefonunuza gönderilen 6 haneli SMS şifresi</label>
+        <input type="text" id="otpSmsInput" class="input num" value="482910" maxlength="6" />
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px;">
+        <button type="button" class="btn" onclick="document.getElementById('modal3dBackdrop').classList.remove('open')">Vazgeç</button>
+        <button type="button" class="btn primary" onclick="confirm3dOtpPayment()">Doğrula ve cariye yükle</button>
       </div>
     </div>
   </div>
 
-  <!-- ==================================================================================
-       MODAL 1: REALISTIC BANK 3D SECURE SMS OTP VERIFICATION
-       ================================================================================== -->
-  <div id="modal3dBackdrop" class="backdrop" onclick="if(event.target===this) this.classList.remove('open')">
-    <div class="modal-box" style="max-width:400px;">
-      <div class="m-head" style="background:#0f172a;">
+  <!-- ==================== MODAL 3: RECEIPT (A4 CORPORATE & 80MM THERMAL POS) ==================== -->
+  <div class="backdrop" id="receiptBackdrop" onclick="if(event.target===this)this.classList.remove('open')">
+    <div class="dialog-card" id="rcpModalCard" role="dialog" aria-modal="true" aria-labelledby="rcpBrandTitle">
+      <div class="dialog-head">
         <div>
-          <strong>🔒 3D Secure Banka SMS Doğrulaması</strong>
-          <div style="font-size:11px; opacity:0.8;" id="otp3dGatewayTxt">PayTR 3D POS</div>
+          <h2 id="rcpBrandTitle" class="js-brand-name">FaturaPay</h2>
+          <code id="rcpRefCode">REF: #FP-90421</code>
         </div>
-        <button class="btn btn-outline btn-xs" onclick="document.getElementById('modal3dBackdrop').classList.remove('open')">✕</button>
+        <button type="button" class="btn sm" onclick="toggleReceiptModeLive()" id="rcpToggleBtn">80mm termal görünüm</button>
       </div>
-      <div class="m-body">
-        <div class="calc-panel">
-          <div class="c-row"><span>İşyeri:</span><strong class="js-brand-name">FaturaPay Kurumsal</strong></div>
-          <div class="c-row"><span>Yüklenecek Net Cari:</span><strong id="otp3dAmountTxt">₺5.000,00</strong></div>
-          <div class="c-row"><span>Kayıtlı Cep Tel:</span><strong>0541 *** ** 11</strong></div>
+
+      <div class="kv-well">
+        <div class="kv-row"><span>Yetkili gişe</span><strong id="rcpBranch">Ege Merkez Gişe · BY-1042</strong></div>
+        <div class="kv-row"><span>İşlem türü</span><strong id="rcpType">Fatura Tahsilat</strong></div>
+        <div class="kv-row"><span>Kurum / paket</span><strong id="rcpProv">İZSU İzmir Su</strong></div>
+        <div class="kv-row"><span>Abone / hedef</span><strong id="rcpTarg">Abone: 40918274</strong></div>
+        <div class="kv-row"><span>İşlem zamanı</span><strong id="rcpTime" class="num">30.10.2026 14:40</strong></div>
+        <div class="kv-row total"><span>Tahsil edilen toplam</span><strong id="rcpAmt">₺427,80</strong></div>
+      </div>
+
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:14px; padding:10px; border:1px dashed var(--control); border-radius:6px;">
+        <div style="font-size:12px; color:var(--muted);">
+          <strong style="color:var(--text); display:block;">Dijital doğrulama karekodu</strong>
+          Kurum online mutabakat sisteminde anlık kapatılmıştır.
         </div>
-        <div class="field">
-          <div class="lbl"><span>6 Haneli Tek Kullanımlık Banka SMS Şifresi</span></div>
-          <input class="input" style="text-align:center; font-family:var(--font-mono); font-size:18px; font-weight:800; letter-spacing:5px;" value="482910" maxlength="6" />
-        </div>
-        <button class="btn btn-emerald btn-full" onclick="confirm3dOtpPayment()">✓ SMS Şifresini Doğrula ve Bakiyeyi Yükle</button>
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+          <path d="M14 14h3v3h-3zM18 18h3v3h-3zM18 14h3M14 18v3"/>
+        </svg>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:16px;">
+        <button type="button" class="btn" onclick="window.print()">Yazdır</button>
+        <button type="button" class="btn" onclick="shareReceiptWhatsapp()">WhatsApp ilet</button>
+        <button type="button" class="btn primary" onclick="document.getElementById('receiptBackdrop').classList.remove('open')">Tamam</button>
       </div>
     </div>
   </div>
 
-  <!-- ==================================================================================
-       MODAL 2: 80MM THERMAL POS RECEIPT (QR + BARCODE) & A4 CORPORATE STAMPED RECEIPT
-       ================================================================================== -->
-  <div id="receiptBackdrop" class="backdrop" onclick="if(event.target===this) this.classList.remove('open')">
-    <div id="rcpModalCard" class="modal-box">
-      <div class="m-head">
+  <!-- ==================== MODAL 4: END-OF-DAY Z-REPORT ==================== -->
+  <div class="backdrop" id="zReportBackdrop" onclick="if(event.target===this)this.classList.remove('open')">
+    <div class="dialog-card" role="dialog" aria-modal="true" aria-labelledby="zRepTitle">
+      <div class="dialog-head">
+        <h2 id="zRepTitle">Gün sonu gişe Z-raporu</h2>
+        <span class="pill pos">Mutabakat hazır</span>
+      </div>
+      <div class="kv-well">
+        <div class="kv-row"><span>Onaylanan günlük işlem</span><strong id="zRepCount">5 işlem</strong></div>
+        <div class="kv-row"><span>Günlük brüt tahsilat cirosu</span><strong id="zRepTurnover">₺13.158,40</strong></div>
+        <div class="kv-row"><span>Günlük net bayi hakedişi</span><strong id="zRepProfit" class="pos-num">+₺1.184,50</strong></div>
+        <div class="kv-row total"><span>Kapanış net cari bakiye</span><strong id="zRepClosing">₺24.850,00</strong></div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px;">
+        <button type="button" class="btn" onclick="window.print()">Z-raporunu yazdır</button>
+        <button type="button" class="btn primary" onclick="document.getElementById('zReportBackdrop').classList.remove('open')">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== WHITE-LABEL THEME & DESIGN SYSTEM STUDIO DRAWER ==================== -->
+  <div class="drawer-backdrop" id="studioDrawerWrap" onclick="if(event.target===this)openStudio(false)">
+    <aside class="drawer-panel" aria-label="Tema ve marka özelleştirme stüdyosu">
+      <div class="dialog-head" style="margin-bottom:0;">
         <div>
-          <strong style="font-size:14.5px;" id="rcpBrandTitle">FaturaPay Kurumsal</strong>
-          <div style="font-size:11px; opacity:0.88;" id="rcpRefCode">İŞLEM REF: #FP-90421</div>
+          <h2>Tema ve marka stüdyosu</h2>
+          <span style="font-size:12px; color:var(--muted);">8 hazır DESIGN.md sistemi ve kurumsal kimlik ayarları</span>
         </div>
-        <button class="btn btn-outline btn-xs" style="background:#fff; color:#0f172a;" onclick="document.getElementById('receiptBackdrop').classList.remove('open')">✕</button>
+        <button type="button" class="btn sm" onclick="openStudio(false)">Kapat</button>
       </div>
-      <div class="m-body">
-        <div class="m-line"><span>İşlem Kategorisi:</span><strong id="rcpType">-</strong></div>
-        <div class="m-line"><span>Kurum / Operatör:</span><strong id="rcpProv">-</strong></div>
-        <div class="m-line"><span>Abone / Detay:</span><strong id="rcpTarg">-</strong></div>
-        <div class="m-line"><span>İşlem Zamanı:</span><strong id="rcpTime">-</strong></div>
-        <div class="m-line"><span>Tahsilat Tutarı:</span><strong id="rcpAmt" style="font-size:15px;">-</strong></div>
-        <div class="m-line"><span>Tahsilat Noktası:</span><strong id="rcpBranch">-</strong></div>
 
-        <div style="margin-top:12px; padding:8px; border-radius:8px; background:#dcfce7; color:#166534; text-align:center; font-weight:800; font-size:11.5px;">
-          ✓ MERKEZ API ONAYLI • RESMİ TAHSİLAT BELGESİDİR
-        </div>
+      <div>
+        <div style="font-size:13px; font-weight:600; margin-bottom:8px;">Hazır tasarım sistemleri</div>
+        <div class="theme-grid" id="themePresetGrid"></div>
+      </div>
 
-        <!-- SVG QR + BARCODE -->
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; padding-top:10px; border-top:1px dashed #cbd5e1;">
-          <svg width="54" height="54" viewBox="0 0 54 54">
-            <rect width="54" height="54" fill="#f8fafc" rx="4"/>
-            <rect x="6" y="6" width="14" height="14" fill="#0f172a"/><rect x="9" y="9" width="8" height="8" fill="#fff"/><rect x="11" y="11" width="4" height="4" fill="#0f172a"/>
-            <rect x="34" y="6" width="14" height="14" fill="#0f172a"/><rect x="37" y="9" width="8" height="8" fill="#fff"/><rect x="39" y="11" width="4" height="4" fill="#0f172a"/>
-            <rect x="6" y="34" width="14" height="14" fill="#0f172a"/><rect x="9" y="37" width="8" height="8" fill="#fff"/><rect x="11" y="39" width="4" height="4" fill="#0f172a"/>
-            <rect x="24" y="24" width="6" height="6" fill="#0f172a"/><rect x="34" y="34" width="12" height="5" fill="#0f172a"/><rect x="24" y="39" width="18" height="7" fill="#0f172a"/>
-          </svg>
-          <div style="flex:1; text-align:right; font-size:10.5px; color:#475569;">
-            <div style="font-family:var(--font-mono); letter-spacing:2px; font-weight:800; color:#0f172a;">|| ||| | |||| || ||| | ||||</div>
-            <div>Karekod Doğrulamalı E-Makbuz</div>
+      <div style="border-top:1px solid var(--border); padding-top:14px;">
+        <div style="font-size:13px; font-weight:600; margin-bottom:10px;">White-label marka kimliği</div>
+        <div class="grid" style="gap:10px;">
+          <div class="field col-8">
+            <label for="stBrandName">Marka veya firma adı</label>
+            <input type="text" id="stBrandName" class="input" value="FaturaPay" oninput="updateLiveBrandIdentity()" />
+          </div>
+          <div class="field col-4">
+            <label for="stBrandShort">Kısa kod</label>
+            <input type="text" id="stBrandShort" class="input" value="FP" maxlength="3" oninput="updateLiveBrandIdentity()" />
+          </div>
+          <div class="field col-12">
+            <label for="stBrandPhone">Müşteri destek telefonu</label>
+            <input type="text" id="stBrandPhone" class="input num" value="0850 308 00 00" oninput="updateLiveBrandIdentity()" />
+          </div>
+          <div class="field col-12">
+            <label for="stLogoUrl">Özel logo görsel bağlantısı (isteğe bağlı SVG / PNG)</label>
+            <input type="url" id="stLogoUrl" class="input" placeholder="https://ornek.com/logo.svg" oninput="updateLiveBrandIdentity()" />
           </div>
         </div>
-
-        <div style="display:flex; gap:7px; margin-top:14px; flex-wrap:wrap;">
-          <button class="btn btn-primary" style="flex:1;" onclick="window.print()">🖨️ Yazdır / PDF</button>
-          <button class="btn btn-outline" style="flex:1;" onclick="toggleReceiptModeLive()">🔄 80mm Termal / A4</button>
-          <button class="btn btn-emerald btn-full" onclick="toast('📲 Tahsilat dekontu müşterinin WhatsApp hattına iletildi!')">📲 Müşteriye WhatsApp Dekont Gönder</button>
-        </div>
       </div>
-    </div>
-  </div>
 
-  <!-- ==================================================================================
-       MODAL 3: END-OF-DAY Z-REPORT (KASA MUTABAKATI)
-       ================================================================================== -->
-  <div id="zReportBackdrop" class="backdrop" onclick="if(event.target===this) this.classList.remove('open')">
-    <div class="modal-box" style="max-width:420px;">
-      <div class="m-head">
-        <strong>📊 Gün Sonu Z-Raporu &amp; Gişe Mutabakatı</strong>
-        <button class="btn btn-outline btn-xs" style="background:#fff; color:#0f172a;" onclick="document.getElementById('zReportBackdrop').classList.remove('open')">✕</button>
-      </div>
-      <div class="m-body">
-        <div class="m-line"><span>Rapor Tarihi:</span><strong>30.10.2026 (Bugün)</strong></div>
-        <div class="m-line"><span>Şube / Gişe:</span><strong>Ege Merkez (#BY-1042)</strong></div>
-        <div class="m-line"><span>Onaylı İşlem Adedi:</span><strong id="zRepCount">-</strong></div>
-        <div class="m-line"><span>Toplam Gişe Tahsilat Cirosu:</span><strong id="zRepTurnover">-</strong></div>
-        <div class="m-line"><span>Bugünkü Net Bayi Komisyon Kârı:</span><strong id="zRepProfit" style="color:#059669;">-</strong></div>
-        <div class="m-line"><span>Kapanış Net Cari Kasa Bakiyesi:</span><strong id="zRepClosing">-</strong></div>
-        <div style="display:flex; gap:8px; margin-top:14px;">
-          <button class="btn btn-primary btn-full" onclick="window.print()">🖨️ Z-Raporunu Yazdır</button>
-          <button class="btn btn-outline btn-full" onclick="document.getElementById('zReportBackdrop').classList.remove('open')">Kapat</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================================================================================
-       SLIDE-OVER STUDIO: 8 DESIGN THEMES + FULL WHITE-LABEL & MODULE CUSTOMIZER
-       ================================================================================== -->
-  <div id="studioDrawerWrap" class="drawer-wrap" onclick="if(event.target===this) openStudio(false)">
-    <aside class="studio-drawer">
-      <div class="st-head">
+      <div style="border-top:1px solid var(--border); padding-top:14px; display:grid; gap:12px;">
         <div>
-          <strong style="font-size:14.5px;">🎨 Kurumsal Tema &amp; Marka Stüdyosu</strong>
-          <div style="font-size:11px; color:var(--muted);">8 hazır tasarım teması + kodsuz tam özelleştirme</div>
+          <div style="font-size:13px; font-weight:500; margin-bottom:6px;">Kabuk ve menü yerleşimi</div>
+          <div class="segmented" style="width:100%; display:flex;">
+            <button type="button" style="flex:1;" id="sh-framed-sheet" aria-pressed="true" onclick="setStudioShell('framed-sheet')">Çerçeveli</button>
+            <button type="button" style="flex:1;" id="sh-open-plane" aria-pressed="false" onclick="setStudioShell('open-plane')">Tam düzlem</button>
+            <button type="button" style="flex:1;" id="sh-topnav" aria-pressed="false" onclick="setStudioShell('topnav')">Üst menü</button>
+          </div>
         </div>
-        <button class="btn btn-outline btn-xs" onclick="openStudio(false)">Kapat ✕</button>
+
+        <div class="grid" style="gap:10px;">
+          <div class="col-6">
+            <div style="font-size:13px; font-weight:500; margin-bottom:6px;">Veri yoğunluğu</div>
+            <div class="segmented" style="width:100%; display:flex;">
+              <button type="button" style="flex:1;" id="dn-comfortable" aria-pressed="true" onclick="setStudioDensity('comfortable')">Standart</button>
+              <button type="button" style="flex:1;" id="dn-compact" aria-pressed="false" onclick="setStudioDensity('compact')">Yoğun</button>
+            </div>
+          </div>
+          <div class="col-6">
+            <div style="font-size:13px; font-weight:500; margin-bottom:6px;">Köşe yapısı</div>
+            <div class="segmented" style="width:100%; display:flex;">
+              <button type="button" style="flex:1;" id="rd-0" aria-pressed="false" onclick="setStudioRadiusMode(0)">0px</button>
+              <button type="button" style="flex:1;" id="rd-8" aria-pressed="true" onclick="setStudioRadiusMode(8)">8px</button>
+              <button type="button" style="flex:1;" id="rd-16" aria-pressed="false" onclick="setStudioRadiusMode(16)">16px</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:13px; font-weight:500; margin-bottom:6px;">Varsayılan makbuz formatı</div>
+          <div class="segmented" style="width:100%; display:flex;">
+            <button type="button" style="flex:1;" id="rcp-corporate" aria-pressed="true" onclick="setStudioReceipt('corporate')">A4 kurumsal</button>
+            <button type="button" style="flex:1;" id="rcp-thermal" aria-pressed="false" onclick="setStudioReceipt('thermal')">80mm termal fiş</button>
+          </div>
+        </div>
       </div>
 
-      <div class="st-body">
-        <!-- 1. 8 ONE-CLICK DESIGN THEMES -->
-        <div class="st-sec">
-          <div class="st-sec-title">1. Hazır Kurumsal Tasarım Temaları (8 Seçkin Stil)</div>
-          <div class="preset-grid">
-            <button class="preset-card active" onclick="applyPresetTheme('stripe', this)"><span class="p-dot" style="background:#4f46e5;"></span>Stripe Finans İndigo</button>
-            <button class="preset-card" onclick="applyPresetTheme('paytr', this)"><span class="p-dot" style="background:#0284c7;"></span>PayTR Kurumsal Mavi</button>
-            <button class="preset-card" onclick="applyPresetTheme('zumrut', this)"><span class="p-dot" style="background:#059669;"></span>FaturaMatik Zümrüt</button>
-            <button class="preset-card" onclick="applyPresetTheme('oled', this)"><span class="p-dot" style="background:#111827; border:2px solid #22d3ee;"></span>Linear OLED Gece</button>
-            <button class="preset-card" onclick="applyPresetTheme('telekom', this)"><span class="p-dot" style="background:#ea580c;"></span>Telekom Enerji</button>
-            <button class="preset-card" onclick="applyPresetTheme('royal', this)"><span class="p-dot" style="background:#7c3aed;"></span>Kraliyet Fintech Mor</button>
-            <button class="preset-card" onclick="applyPresetTheme('vipgold', this)"><span class="p-dot" style="background:#d97706;"></span>VIP Altın &amp; Obsidyen</button>
-            <button class="preset-card" onclick="applyPresetTheme('kamu', this)"><span class="p-dot" style="background:#1e3a8a;"></span>Merkez Banka Klasik</button>
-          </div>
+      <div style="border-top:1px solid var(--border); padding-top:14px;">
+        <div style="font-size:13px; font-weight:600; margin-bottom:6px;">Modül görünürlüğü</div>
+        <div class="switch-row">
+          <span style="font-size:13px;">Dijital E-Pin ve oyun kodu modülü</span>
+          <input type="checkbox" class="switch" checked onchange="toggleModuleVisibility('.js-mod-epin', this.checked)" aria-label="Dijital E-Pin modülü" />
         </div>
-
-        <!-- 2. WHITE-LABEL BRANDING -->
-        <div class="st-sec">
-          <div class="st-sec-title">2. Marka Kimliği, Logo &amp; İletişim (White-Label)</div>
-          <div class="two-col" style="gap:8px;">
-            <div class="field">
-              <div class="lbl"><span>Platform / Site Adı</span></div>
-              <input id="stBrandName" class="input" value="FaturaPay Kurumsal" oninput="updateLiveBrandIdentity()" />
-            </div>
-            <div class="field">
-              <div class="lbl"><span>Logo Harf (2-3 Harf)</span></div>
-              <input id="stBrandShort" class="input" maxlength="3" value="FP" oninput="updateLiveBrandIdentity()" />
-            </div>
-          </div>
-          <div class="two-col" style="gap:8px;">
-            <div class="field">
-              <div class="lbl"><span>Alt Slogan</span></div>
-              <input id="stBrandSub" class="input" value="TL Yükleme • Fatura & Bayi ERP" oninput="updateLiveBrandIdentity()" />
-            </div>
-            <div class="field">
-              <div class="lbl"><span>Müşteri Destek Hattı</span></div>
-              <input id="stBrandPhone" class="input" value="0850 308 00 00" oninput="updateLiveBrandIdentity()" />
-            </div>
-          </div>
-          <div class="field" style="margin-bottom:0;">
-            <div class="lbl"><span>Özel Logo Görsel URL (Opsiyonel PNG/SVG)</span></div>
-            <input id="stLogoUrl" class="input" placeholder="https://siteniz.com/logo.png" oninput="updateLiveBrandIdentity()" />
-          </div>
+        <div class="switch-row">
+          <span style="font-size:13px;">Alt bayilik ve fiyat grubu yönetimi</span>
+          <input type="checkbox" class="switch" checked onchange="toggleModuleVisibility('.js-mod-dealers', this.checked)" aria-label="Alt bayilik modülü" />
         </div>
-
-        <!-- 3. CUSTOM COLORS & SURFACE -->
-        <div class="st-sec">
-          <div class="st-sec-title">3. Özel Renk Seçici, Zemin &amp; Menü Rengi</div>
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; font-size:12px;">
-            <label style="display:flex; align-items:center; gap:6px;">Ana Renk: <input id="stPrimaryHex" type="color" value="#4f46e5" oninput="applyBrandColors(this.value, this.value, null)" /></label>
-            <label style="display:flex; align-items:center; gap:6px;">Vurgu Rengi: <input id="stAccentHex" type="color" value="#0ea5e9" oninput="applyBrandColors(document.getElementById('stPrimaryHex').value, null, this.value)" /></label>
-          </div>
-          <div class="seg-row" style="margin-bottom:8px;">
-            <button class="seg active" id="seg-th-light" onclick="setStudioSurface('light')">☀️ Açık Mod</button>
-            <button class="seg" id="seg-th-dark" onclick="setStudioSurface('dark')">🌙 Gece OLED</button>
-            <button class="seg" id="seg-th-banking" onclick="setStudioSurface('banking')">🏛️ Banka Gri</button>
-          </div>
-          <div class="seg-row">
-            <button class="seg active" id="seg-sb-dark" onclick="setStudioSidebar('dark')">Koyu Menü</button>
-            <button class="seg" id="seg-sb-light" onclick="setStudioSidebar('light')">Beyaz Menü</button>
-            <button class="seg" id="seg-sb-brand" onclick="setStudioSidebar('brand')">Marka Rengi Menü</button>
-          </div>
+        <div class="switch-row">
+          <span style="font-size:13px;">Kasiyer vardiya ve kota yönetimi</span>
+          <input type="checkbox" class="switch" checked onchange="toggleModuleVisibility('.js-mod-cashier', this.checked)" aria-label="Kasiyer modülü" />
         </div>
+      </div>
 
-        <!-- 4. LAYOUT, TYPOGRAPHY, RADIUS SLIDER & SHADOW -->
-        <div class="st-sec">
-          <div class="st-sec-title">4. Menü Yeri, Yazı Tipi &amp; Köşe Yuvarlaklığı (<span id="stRadiusValTxt">14px</span>)</div>
-          <div class="seg-row two" style="margin-bottom:8px;">
-            <button class="seg active" id="seg-ly-sidebar" onclick="setStudioLayout('sidebar')">◧ Sol Kurumsal Menü</button>
-            <button class="seg" id="seg-ly-topnav" onclick="setStudioLayout('topnav')">⊤ Üst Gişe / Kiosk Modu</button>
-          </div>
-          <div class="seg-row" style="margin-bottom:8px;">
-            <button class="seg active" onclick="setStudioFont('inter', this)">Inter Fintech</button>
-            <button class="seg" onclick="setStudioFont('jakarta', this)">Plus Jakarta</button>
-            <button class="seg" onclick="setStudioFont('mono', this)">Gişe Mono</button>
-          </div>
-          <div class="seg-row" style="margin-bottom:8px;">
-            <button class="seg" onclick="setStudioFontSize(13, this)">Küçük (13px)</button>
-            <button class="seg active" onclick="setStudioFontSize(14, this)">Standart (14px)</button>
-            <button class="seg" onclick="setStudioFontSize(15, this)">Büyük Gişe (15px)</button>
-          </div>
-          <input id="stRadiusRange" type="range" min="0" max="22" value="14" style="width:100%; margin:6px 0;" oninput="setStudioRadius(this.value)" />
-          <div class="seg-row" style="margin-top:6px;">
-            <button class="seg" onclick="setStudioShadow('flat', this)">Düz Çizgi</button>
-            <button class="seg active" onclick="setStudioShadow('soft', this)">Yumuşak Gölge</button>
-            <button class="seg" onclick="setStudioShadow('deep', this)">Derin Kart</button>
-          </div>
-        </div>
-
-        <!-- 5. DENSITY, RECEIPT & MODULE VISIBILITY TOGGLES -->
-        <div class="st-sec">
-          <div class="st-sec-title">5. Fiş Formatı &amp; Modül Aç / Kapat Kontrolü</div>
-          <div class="seg-row two" style="margin-bottom:8px;">
-            <button class="seg active" id="seg-dn-comfortable" onclick="setStudioDensity('comfortable')">Ferah Panel</button>
-            <button class="seg" id="seg-dn-compact" onclick="setStudioDensity('compact')">Kompakt Gişe</button>
-          </div>
-          <div class="seg-row two" style="margin-bottom:10px;">
-            <button class="seg active" id="seg-rcp-corporate" onclick="setStudioReceipt('corporate')">📄 A4 Karekod Makbuz</button>
-            <button class="seg" id="seg-rcp-thermal" onclick="setStudioReceipt('thermal')">🧾 80mm Termal POS Fişi</button>
-          </div>
-
-          <div class="sw-row">
-            <span style="font-size:12px; font-weight:700;">🎮 E-Pin &amp; Oyun Kodu Modülü</span>
-            <button class="toggle on" onclick="this.classList.toggle('on'); toggleModuleVisibility('.js-mod-epin', this.classList.contains('on'));"></button>
-          </div>
-          <div class="sw-row">
-            <span style="font-size:12px; font-weight:700;">🌍 Kıbrıs &amp; Yurt Dışı Paketler</span>
-            <button class="toggle on" onclick="this.classList.toggle('on'); toggleModuleVisibility('.js-mod-intl', this.classList.contains('on'));"></button>
-          </div>
-          <div class="sw-row">
-            <span style="font-size:12px; font-weight:700;">💳 Sanal POS Taksit Tablosu</span>
-            <button class="toggle on" onclick="this.classList.toggle('on'); toggleModuleVisibility('.js-mod-posmatrix', this.classList.contains('on'));"></button>
-          </div>
-          <div class="sw-row">
-            <span style="font-size:12px; font-weight:700;">💬 Canlı WhatsApp Destek Balonu</span>
-            <button class="toggle on" onclick="this.classList.toggle('on'); toggleModuleVisibility('.js-mod-wa', this.classList.contains('on'));"></button>
-          </div>
-        </div>
-
-        <div style="display:flex; gap:8px;">
-          <button class="btn btn-primary" style="flex:1;" onclick="exportThemeJson()">💾 Kaydet &amp; JSON İndir</button>
-          <button class="btn btn-outline" onclick="resetStudioAll()">Sıfırla</button>
-        </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:auto; padding-top:12px; border-top:1px solid var(--border);">
+        <button type="button" class="btn" onclick="resetStudioAll()">Varsayılana dön</button>
+        <button type="button" class="btn primary" onclick="exportThemeJson()">Ayarları JSON indir</button>
       </div>
     </aside>
   </div>
 
-  <!-- FLOATING WHATSAPP SUPPORT BUBBLE (TOGGLEABLE IN STUDIO) -->
-  <button class="wa-float js-mod-wa" onclick="toast('💬 Canlı WhatsApp Bayi Destek Hattı: ' + document.getElementById('stBrandPhone').value)">
-    💬 Bayi Canlı Destek
-  </button>
+  <!-- TOAST FEEDBACK -->
+  <div id="toastBox" class="toast" role="status" aria-live="polite"></div>
 
-  <div id="toastBox" class="toast"></div>
-
-  <script src="./app.js"></script>
+  <script src="charts.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
