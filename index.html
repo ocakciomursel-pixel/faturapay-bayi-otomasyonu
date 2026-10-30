@@ -1,2536 +1,1188 @@
 <!DOCTYPE html>
-<html lang="tr" data-theme="light" data-layout="sidebar" data-density="comfortable">
+<html lang="tr" data-theme="light" data-sidebar="dark" data-layout="sidebar" data-density="comfortable" data-shadow="soft">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FaturaPay Enterprise v4.0 — Özelleştirilebilir TL Yükleme, Fatura Tahsilat & Alt Bayi Otomasyonu</title>
-  <style>
-    :root {
-      --primary: #4f46e5;
-      --primary-dark: #4338ca;
-      --primary-soft: rgba(79, 70, 229, 0.11);
-      --primary-border: rgba(79, 70, 229, 0.28);
-
-      --bg: #f4f7fb;
-      --surface: #ffffff;
-      --surface-2: #f8fafc;
-      --surface-3: #eef2f7;
-      --sidebar-bg: #0b1324;
-      --sidebar-surface: rgba(255, 255, 255, 0.055);
-      --sidebar-text: #cbd5e1;
-      --sidebar-ink: #ffffff;
-      --sidebar-border: rgba(255, 255, 255, 0.09);
-
-      --ink: #0f172a;
-      --ink-2: #334155;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --border-strong: #cbd5e1;
-
-      --emerald: #059669;
-      --emerald-soft: rgba(5, 150, 105, 0.12);
-      --amber: #d97706;
-      --amber-soft: rgba(217, 119, 6, 0.13);
-      --danger: #dc2626;
-      --danger-soft: rgba(220, 38, 38, 0.12);
-
-      --radius: 14px;
-      --radius-sm: 9px;
-      --cell-pad: 12px 14px;
-      --card-pad: 20px;
-      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
-      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.04);
-      --shadow-lg: 0 20px 45px rgba(15, 23, 42, 0.18);
-    }
-
-    /* DARK FINTECH THEME */
-    html[data-theme="dark"] {
-      --bg: #070b14;
-      --surface: #0f172a;
-      --surface-2: #131d33;
-      --surface-3: #1e293b;
-      --sidebar-bg: #050811;
-      --ink: #f8fafc;
-      --ink-2: #cbd5e1;
-      --muted: #94a3b8;
-      --border: #1e293b;
-      --border-strong: #334155;
-      --shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-    }
-
-    /* CLASSIC BANKING NAVY THEME */
-    html[data-theme="banking"] {
-      --bg: #edf1f7;
-      --surface: #ffffff;
-      --surface-2: #f4f7fb;
-      --surface-3: #e5ebf3;
-      --sidebar-bg: #08203e;
-      --ink: #0a1f38;
-      --ink-2: #243b55;
-      --muted: #5c728a;
-      --border: #d6e0ec;
-      --border-strong: #b8c7da;
-    }
-
-    /* COMPACT KIOSK DENSITY */
-    html[data-density="compact"] {
-      --cell-pad: 8px 11px;
-      --card-pad: 14px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--ink);
-      line-height: 1.5;
-      font-variant-numeric: tabular-nums;
-      -webkit-font-smoothing: antialiased;
-      transition: background 0.2s ease, color 0.2s ease;
-    }
-
-    /* APP SHELL: SIDEBAR vs TOPNAV */
-    .app-shell {
-      display: grid;
-      grid-template-columns: 268px minmax(0, 1fr);
-      min-height: 100vh;
-    }
-    html[data-layout="topnav"] .app-shell {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    /* SIDEBAR */
-    .sidebar {
-      background: var(--sidebar-bg);
-      color: var(--sidebar-text);
-      border-right: 1px solid var(--sidebar-border);
-      display: flex;
-      flex-direction: column;
-      padding: 18px 14px;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow-y: auto;
-      z-index: 60;
-    }
-    html[data-layout="topnav"] .sidebar {
-      position: sticky;
-      top: 0;
-      height: auto;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 20px;
-      gap: 16px;
-      flex-wrap: wrap;
-      border-right: none;
-      border-bottom: 1px solid var(--sidebar-border);
-    }
-
-    .brand-box {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      padding: 6px 8px 16px;
-      border-bottom: 1px solid var(--sidebar-border);
-      margin-bottom: 14px;
-    }
-    html[data-layout="topnav"] .brand-box {
-      padding: 0;
-      border-bottom: none;
-      margin-bottom: 0;
-    }
-    .brand-mark {
-      width: 40px;
-      height: 40px;
-      border-radius: 11px;
-      background: linear-gradient(135deg, var(--primary), #0ea5e9);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 15px;
-      letter-spacing: -0.5px;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-      flex-shrink: 0;
-    }
-    .brand-name {
-      color: var(--sidebar-ink);
-      font-weight: 800;
-      font-size: 15.5px;
-      letter-spacing: -0.3px;
-      line-height: 1.2;
-    }
-    .brand-tagline {
-      font-size: 11.5px;
-      color: #94a3b8;
-      margin-top: 2px;
-    }
-
-    .nav-section-label {
-      font-size: 10.5px;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: #64748b;
-      font-weight: 700;
-      padding: 6px 10px;
-    }
-    html[data-layout="topnav"] .nav-section-label,
-    html[data-layout="topnav"] .sidebar-footer {
-      display: none;
-    }
-
-    .nav-list {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      flex: 1;
-    }
-    html[data-layout="topnav"] .nav-list {
-      flex-direction: row;
-      flex-wrap: wrap;
-      flex: initial;
-      gap: 6px;
-    }
-
-    .nav-btn {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: var(--radius-sm);
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--sidebar-text);
-      font-size: 13.5px;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: left;
-      font-family: inherit;
-      transition: all 0.15s ease;
-    }
-    html[data-layout="topnav"] .nav-btn {
-      width: auto;
-      padding: 8px 12px;
-      font-size: 12.5px;
-    }
-    .nav-btn:hover {
-      background: var(--sidebar-surface);
-      color: #fff;
-    }
-    .nav-btn.active {
-      background: var(--primary);
-      color: #fff;
-      font-weight: 700;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
-    }
-    .nav-btn-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .nav-pill {
-      font-size: 10.5px;
-      padding: 2px 7px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.14);
-      color: #fff;
-      font-weight: 700;
-    }
-
-    .sidebar-footer {
-      margin-top: auto;
-      padding-top: 14px;
-      border-top: 1px solid var(--sidebar-border);
-    }
-    .api-health-box {
-      background: var(--sidebar-surface);
-      border: 1px solid var(--sidebar-border);
-      border-radius: var(--radius-sm);
-      padding: 11px 12px;
-      font-size: 12px;
-    }
-    .health-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 6px;
-      color: #94a3b8;
-      font-size: 11.5px;
-    }
-    .dot-online {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #10b981;
-      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-      margin-right: 6px;
-    }
-
-    /* MAIN AREA */
-    .main-area {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    /* TOPBAR */
-    .topbar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 22px;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-    .topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .dealer-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 12.5px;
-      font-weight: 600;
-      color: var(--ink-2);
-    }
-    .tier-badge {
-      background: var(--primary-soft);
-      color: var(--primary);
-      border: 1px solid var(--primary-border);
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .wallet-stat {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 6px 13px;
-      display: flex;
-      flex-direction: column;
-    }
-    .wallet-stat small {
-      font-size: 10.5px;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      color: var(--muted);
-      font-weight: 700;
-    }
-    .wallet-stat strong {
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--ink);
-    }
-    .wallet-stat.profit strong { color: var(--emerald); }
-
-    .customize-trigger {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #fff;
-      border: none;
-      padding: 9px 15px;
-      border-radius: var(--radius-sm);
-      font-size: 12.5px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      box-shadow: 0 4px 12px var(--primary-soft);
-      font-family: inherit;
-    }
-    .customize-trigger:hover { opacity: 0.94; }
-
-    /* CONTENT WRAPPER */
-    .content-wrap {
-      padding: 22px;
-      max-width: 1440px;
-      width: 100%;
-      margin: 0 auto 48px;
-    }
-    .view-section { display: none; }
-    .view-section.active { display: block; }
-
-    .page-head {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-    .page-head h1 {
-      font-size: 21px;
-      font-weight: 800;
-      letter-spacing: -0.4px;
-      color: var(--ink);
-    }
-    .page-head p {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    /* KPI CARDS */
-    .kpi-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-      margin-bottom: 18px;
-    }
-    @media (max-width: 1080px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 560px) { .kpi-row { grid-template-columns: 1fr; } }
-
-    .kpi-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: var(--card-pad);
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-    }
-    .kpi-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    .kpi-label {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-    .kpi-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 9px;
-      background: var(--primary-soft);
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 14px;
-    }
-    .kpi-val {
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: -0.6px;
-      color: var(--ink);
-    }
-    .kpi-sub {
-      margin-top: 6px;
-      font-size: 12px;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .trend-up {
-      color: var(--emerald);
-      background: var(--emerald-soft);
-      padding: 2px 7px;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 11px;
-    }
-
-    /* CARDS & GRIDS */
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1.35fr 0.95fr;
-      gap: 18px;
-      align-items: start;
-    }
-    .grid-equal {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 18px;
-      align-items: start;
-    }
-    @media (max-width: 1040px) {
-      .grid-2, .grid-equal { grid-template-columns: 1fr; }
-      .app-shell { grid-template-columns: 1fr; }
-      .sidebar {
-        position: static;
-        height: auto;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        padding: 12px 16px;
-      }
-      .brand-box { border-bottom: none; margin-bottom: 0; padding: 0; }
-      .nav-list { flex-direction: row; flex-wrap: wrap; width: 100%; margin-top: 8px; }
-      .nav-btn { width: auto; padding: 7px 11px; font-size: 12px; }
-      .nav-section-label, .sidebar-footer { display: none; }
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-    .card-head {
-      padding: 15px var(--card-pad);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .card-title {
-      font-size: 14.5px;
-      font-weight: 800;
-      color: var(--ink);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .card-body { padding: var(--card-pad); }
-
-    /* QUICK ACTION TILES ON OVERVIEW */
-    .quick-tiles {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-    @media (max-width: 820px) { .quick-tiles { grid-template-columns: repeat(2, 1fr); } }
-    .q-tile {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 15px;
-      cursor: pointer;
-      text-align: left;
-      transition: all 0.15s ease;
-      font-family: inherit;
-      color: var(--ink);
-      box-shadow: var(--shadow-sm);
-    }
-    .q-tile:hover {
-      border-color: var(--primary);
-      transform: translateY(-1px);
-      box-shadow: var(--shadow);
-    }
-    .q-tile strong { display: block; font-size: 13.5px; font-weight: 800; margin-top: 6px; }
-    .q-tile span { font-size: 11.5px; color: var(--muted); }
-
-    /* TERMINAL SUB-TABS */
-    .terminal-tabs {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      background: var(--surface-2);
-      border-bottom: 1px solid var(--border);
-    }
-    @media (max-width: 640px) { .terminal-tabs { grid-template-columns: repeat(2, 1fr); } }
-    .t-tab {
-      padding: 13px 10px;
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      border-bottom: 2.5px solid transparent;
-      font-family: inherit;
-      transition: all 0.15s;
-    }
-    .t-tab:hover { color: var(--ink); background: var(--surface-3); }
-    .t-tab.active {
-      color: var(--primary);
-      background: var(--surface);
-      border-bottom-color: var(--primary);
-    }
-    .t-pane { display: none; padding: var(--card-pad); }
-    .t-pane.active { display: block; }
-
-    /* OPERATOR CARDS */
-    .op-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    @media (max-width: 620px) { .op-grid { grid-template-columns: repeat(2, 1fr); } }
-    .op-card {
-      border: 1.5px solid var(--border);
-      background: var(--surface-2);
-      border-radius: var(--radius-sm);
-      padding: 11px 10px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .op-card:hover { border-color: var(--border-strong); }
-    .op-card.selected {
-      border-color: var(--primary);
-      background: var(--primary-soft);
-      box-shadow: 0 0 0 3px var(--primary-soft);
-    }
-    .op-badge {
-      width: 32px;
-      height: 32px;
-      border-radius: 9px;
-      margin: 0 auto 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 12px;
-      color: #fff;
-    }
-    .op-name { font-size: 12.5px; font-weight: 800; color: var(--ink); }
-    .op-rate { font-size: 11px; color: var(--emerald); font-weight: 700; }
-
-    /* FORMS */
-    .field { margin-bottom: 14px; }
-    .field-label {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--ink-2);
-      margin-bottom: 6px;
-    }
-    .link-btn {
-      background: none;
-      border: none;
-      color: var(--primary);
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
-      text-decoration: underline;
-      font-family: inherit;
-    }
-    .input, .select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-sm);
-      background: var(--surface);
-      color: var(--ink);
-      font-size: 13.5px;
-      font-family: inherit;
-      transition: border-color 0.15s;
-    }
-    .input:focus, .select:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px var(--primary-soft);
-    }
-
-    /* FILTER CHIPS */
-    .chip-bar {
-      display: flex;
-      gap: 7px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-    .chip {
-      padding: 6px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--border-strong);
-      background: var(--surface-2);
-      color: var(--ink-2);
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-    }
-    .chip.active {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
-    }
-
-    /* PACKAGE CARDS */
-    .pkg-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 9px;
-      margin-bottom: 14px;
-    }
-    @media (max-width: 560px) { .pkg-grid { grid-template-columns: 1fr; } }
-    .pkg-card {
-      border: 1.5px solid var(--border);
-      background: var(--surface-2);
-      border-radius: var(--radius-sm);
-      padding: 11px 13px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.14s;
-    }
-    .pkg-card:hover { border-color: var(--border-strong); }
-    .pkg-card.selected {
-      border-color: var(--primary);
-      background: var(--primary-soft);
-    }
-    .pkg-title { font-size: 13px; font-weight: 800; color: var(--ink); }
-    .pkg-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .pkg-price { font-size: 14.5px; font-weight: 900; color: var(--primary); white-space: nowrap; }
-
-    /* SUMMARY / ACCOUNTING BOX */
-    .summary-box {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 12px 14px;
-      margin-bottom: 14px;
-      font-size: 13px;
-    }
-    .sum-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 3.5px 0;
-      color: var(--ink-2);
-    }
-    .sum-row.total {
-      border-top: 1px dashed var(--border-strong);
-      margin-top: 6px;
-      padding-top: 8px;
-      font-weight: 800;
-      font-size: 14px;
-      color: var(--ink);
-    }
-    .profit-txt { color: var(--emerald); font-weight: 800; }
-
-    /* BUTTONS */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      padding: 10.5px 16px;
-      border-radius: var(--radius-sm);
-      border: 1px solid transparent;
-      font-size: 13.5px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.15s;
-    }
-    .btn-block { width: 100%; }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--primary-dark); }
-    .btn-emerald { background: var(--emerald); color: #fff; }
-    .btn-emerald:hover { filter: brightness(0.93); }
-    .btn-outline {
-      background: var(--surface);
-      color: var(--ink);
-      border-color: var(--border-strong);
-    }
-    .btn-outline:hover { background: var(--surface-2); }
-    .btn-sm { padding: 6px 11px; font-size: 12px; }
-
-    /* VIRTUAL CREDIT CARD PREVIEW */
-    .vcard-preview {
-      background: linear-gradient(135deg, #0f172a 0%, var(--primary) 100%);
-      color: #fff;
-      border-radius: 16px;
-      padding: 18px 20px;
-      margin-bottom: 14px;
-      box-shadow: 0 12px 26px rgba(15, 23, 42, 0.22);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 152px;
-    }
-    .vcard-num {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      margin: 14px 0;
-    }
-    .vcard-foot {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      text-transform: uppercase;
-      opacity: 0.9;
-    }
-
-    /* TABLES */
-    .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td {
-      padding: var(--cell-pad);
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    th {
-      background: var(--surface-2);
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 3px 9px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 800;
-    }
-    .badge-ok { background: var(--emerald-soft); color: var(--emerald); }
-    .badge-wait { background: var(--amber-soft); color: var(--amber); }
-    .badge-primary { background: var(--primary-soft); color: var(--primary); }
-
-    /* TOGGLE SWITCH */
-    .switch-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 11px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .switch-item:last-child { border-bottom: none; }
-    .toggle {
-      position: relative;
-      width: 42px;
-      height: 24px;
-      border-radius: 999px;
-      background: var(--border-strong);
-      border: none;
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: background 0.15s;
-    }
-    .toggle.on { background: var(--emerald); }
-    .toggle::after {
-      content: '';
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #fff;
-      transition: transform 0.15s;
-    }
-    .toggle.on::after { transform: translateX(18px); }
-
-    /* CUSTOMIZER SLIDE-OVER DRAWER */
-    .drawer-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.48);
-      backdrop-filter: blur(2px);
-      display: none;
-      justify-content: flex-end;
-      z-index: 250;
-    }
-    .drawer-backdrop.open { display: flex; }
-    .customizer-drawer {
-      width: 100%;
-      max-width: 400px;
-      background: var(--surface);
-      color: var(--ink);
-      height: 100%;
-      overflow-y: auto;
-      box-shadow: var(--shadow-lg);
-      border-left: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-    }
-    .drawer-head {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      background: var(--surface);
-      z-index: 5;
-    }
-    .drawer-body { padding: 18px 20px; flex: 1; }
-    .cust-group {
-      margin-bottom: 18px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-    .cust-group:last-child { border-bottom: none; }
-    .cust-title {
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-    .swatch-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    .swatch {
-      height: 36px;
-      border-radius: 9px;
-      border: 2.5px solid transparent;
-      cursor: pointer;
-      transition: transform 0.12s;
-    }
-    .swatch:hover { transform: scale(1.06); }
-    .swatch.active {
-      border-color: var(--ink);
-      box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--ink);
-    }
-    .seg-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 7px;
-    }
-    .seg-grid.two { grid-template-columns: repeat(2, 1fr); }
-    .seg-btn {
-      padding: 8px 8px;
-      border-radius: 8px;
-      border: 1.5px solid var(--border-strong);
-      background: var(--surface-2);
-      color: var(--ink-2);
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-      text-align: center;
-    }
-    .seg-btn.active {
-      border-color: var(--primary);
-      background: var(--primary-soft);
-      color: var(--primary);
-    }
-
-    /* RECEIPT MODAL (THERMAL 80MM OR A4 CORPORATE) */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.58);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      z-index: 260;
-    }
-    .modal-backdrop.open { display: flex; }
-    .receipt-card {
-      background: #ffffff;
-      color: #0f172a;
-      width: 100%;
-      max-width: 440px;
-      border-radius: 14px;
-      box-shadow: var(--shadow-lg);
-      overflow: hidden;
-    }
-    .receipt-card.thermal {
-      max-width: 345px;
-      font-family: 'Courier New', Courier, monospace;
-      border-radius: 4px;
-      border-top: 6px solid #0f172a;
-    }
-    .rcp-header {
-      background: var(--primary);
-      color: #fff;
-      padding: 16px 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .receipt-card.thermal .rcp-header {
-      background: #fff;
-      color: #0f172a;
-      border-bottom: 2px dashed #94a3b8;
-      text-align: center;
-      display: block;
-    }
-    .rcp-body { padding: 18px; font-size: 13px; }
-    .rcp-line {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 0;
-      border-bottom: 1px dashed #cbd5e1;
-      gap: 10px;
-    }
-    .rcp-approved {
-      margin-top: 12px;
-      padding: 9px;
-      border-radius: 8px;
-      background: #dcfce7;
-      color: #166534;
-      text-align: center;
-      font-weight: 800;
-      font-size: 12px;
-    }
-
-    /* SVG CHART BARS */
-    .chart-bar { transition: opacity 0.15s; cursor: pointer; }
-    .chart-bar:hover { opacity: 0.82; }
-
-    /* TOAST */
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #0f172a;
-      color: #fff;
-      padding: 12px 16px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      box-shadow: var(--shadow-lg);
-      display: none;
-      z-index: 400;
-      border-left: 4px solid var(--primary);
-    }
-    .toast.show { display: block; }
-  </style>
+  <title>FaturaPay Enterprise v5.5 — Özelleştirilebilir TL Yükleme, Fatura Tahsilat & Alt Bayi Otomasyonu</title>
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
 
-  <div class="app-shell">
-    <!-- ==================== SIDEBAR / NAVIGATION ==================== -->
-    <aside class="sidebar">
-      <div class="brand-box">
-        <div class="brand-mark" id="brandLogoTxt">FP</div>
-        <div>
-          <div class="brand-name" id="brandNameTxt">FaturaPay Kurumsal</div>
-          <div class="brand-tagline" id="brandSubTxt">Bayi &amp; Tahsilat Otomasyonu</div>
-        </div>
+  <!-- ==================== TOP 3-WORLD SWITCHER & THEME STUDIO RIBBON ==================== -->
+  <div class="world-bar">
+    <div class="world-bar-inner">
+      <div class="world-left">
+        <span class="pulse-dot"></span>
+        <span><strong style="color:#fff;">CANLI KURUMSAL SÜRÜM (v5.5):</strong> Müşteri Vitrini, Alt Bayi Gişesi ve Süper Admin ERP ekranlarını canlı test edin</span>
       </div>
-
-      <div class="nav-section-label">İşlem &amp; Yönetim Menüsü</div>
-      <nav class="nav-list">
-        <button class="nav-btn active" onclick="openView('overview', this)">
-          <span class="nav-btn-left"><span>📊</span><span>Genel Bakış &amp; Analitik</span></span>
-        </button>
-        <button class="nav-btn" onclick="openView('terminal', this)">
-          <span class="nav-btn-left"><span>⚡</span><span>Gişe İşlem Terminali</span></span>
-          <span class="nav-pill">Canlı</span>
-        </button>
-        <button class="nav-btn" onclick="openView('dealers', this)">
-          <span class="nav-btn-left"><span>🏪</span><span>Alt Bayiler &amp; Gruplar</span></span>
-          <span class="nav-pill" id="navDealerCount">18</span>
-        </button>
-        <button class="nav-btn" onclick="openView('ledger', this)">
-          <span class="nav-btn-left"><span>📑</span><span>Cari Ekstre &amp; Muhasebe</span></span>
-        </button>
-        <button class="nav-btn" onclick="openView('admin', this)">
-          <span class="nav-btn-left"><span>⚙️</span><span>Süper Admin (API &amp; POS)</span></span>
-          <span class="nav-pill" id="navWireCount">1</span>
-        </button>
-      </nav>
-
-      <div class="sidebar-footer">
-        <div class="api-health-box">
-          <div style="font-weight:800; color:#fff; margin-bottom:4px;">
-            <span class="dot-online"></span>Servis Durumu: Çevrimiçi
-          </div>
-          <div class="health-row"><span>GSM Operatör API</span><strong style="color:#34d399;">14 ms</strong></div>
-          <div class="health-row"><span>Kurum Fatura Merkezi</span><strong style="color:#34d399;">22 ms</strong></div>
-          <div class="health-row"><span>PayTR / Param 3D POS</span><strong style="color:#34d399;">Aktif</strong></div>
-        </div>
-      </div>
-    </aside>
-
-    <!-- ==================== MAIN AREA ==================== -->
-    <div class="main-area">
-      <!-- TOPBAR -->
-      <header class="topbar">
-        <div class="topbar-left">
-          <div class="dealer-chip">
-            <span>🏢 Aktif Gişe: <strong id="activeBranchTxt">Ege Merkez İletişim (#BY-1042)</strong></span>
-            <span class="tier-badge">GOLD BAYİ • %3,5</span>
-          </div>
-        </div>
-
-        <div class="topbar-right">
-          <div class="wallet-stat">
-            <small>Kullanılabilir Cari Kasa</small>
-            <strong id="topBalance">₺14.850,00</strong>
-          </div>
-          <div class="wallet-stat profit">
-            <small>Bugünkü Net Hakediş</small>
-            <strong id="topProfit">₺642,50</strong>
-          </div>
-          <button class="customize-trigger" onclick="toggleCustomizer(true)">
-            🎨 Tasarım &amp; Marka Özelleştir
-          </button>
-        </div>
-      </header>
-
-      <div class="content-wrap">
-
-        <!-- ==================== VIEW 1: EXECUTIVE OVERVIEW ==================== -->
-        <section id="view-overview" class="view-section active">
-          <div class="page-head">
-            <div>
-              <h1>Finansal Genel Bakış &amp; Canlı Gişe Özeti</h1>
-              <p>Tüm GSM TL/paket, kurum fatura tahsilatları, E-Pin satışları ve alt bayi cari hareketleri gerçek zamanlı güncellenir.</p>
-            </div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <button class="btn btn-outline btn-sm" onclick="toggleCustomizer(true)">🎨 Kurumsal Renk / Logo Değiştir</button>
-              <button class="btn btn-primary btn-sm" onclick="jumpToTerminal('gsm')">⚡ Hızlı TL / Fatura İşlemi</button>
-            </div>
-          </div>
-
-          <div class="kpi-row">
-            <div class="kpi-card">
-              <div class="kpi-top">
-                <span class="kpi-label">Mevcut Cari Kasa</span>
-                <span class="kpi-icon">₺</span>
-              </div>
-              <div class="kpi-val" id="ovBalance">₺14.850,00</div>
-              <div class="kpi-sub"><span class="trend-up">InnoDB Kilitli</span><span>Eksi limit: ₺5.000,00</span></div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-top">
-                <span class="kpi-label">Bugünkü Net Bayi Kârı</span>
-                <span class="kpi-icon">↗</span>
-              </div>
-              <div class="kpi-val" id="ovProfit">₺642,50</div>
-              <div class="kpi-sub"><span class="trend-up">+%18,4</span><span>Düne göre artış</span></div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-top">
-                <span class="kpi-label">Günlük İşlem Başarısı</span>
-                <span class="kpi-icon">✓</span>
-              </div>
-              <div class="kpi-val" id="ovTxCount">47 İşlem</div>
-              <div class="kpi-sub"><span class="trend-up">%99,4 Onay</span><span>Ort. API hızı 1.1 sn</span></div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-top">
-                <span class="kpi-label">Alt Bayi Ağı Cirosu</span>
-                <span class="kpi-icon">🏪</span>
-              </div>
-              <div class="kpi-val">₺984.350</div>
-              <div class="kpi-sub"><span class="trend-up" id="ovDealerCountTxt">18 Aktif Bayi</span><span>Aylık toplam hacim</span></div>
-            </div>
-          </div>
-
-          <!-- QUICK JUMP TILES -->
-          <div class="quick-tiles">
-            <button class="q-tile" onclick="jumpToTerminal('gsm')">
-              <span class="badge badge-primary">GSM Operatör API</span>
-              <strong>📱 TL &amp; Paket Yükle</strong>
-              <span>Turkcell, Vodafone, Türk Telekom, KKTC</span>
-            </button>
-            <button class="q-tile" onclick="jumpToTerminal('bill')">
-              <span class="badge badge-ok">Çoklu Sepet Destekli</span>
-              <strong>🧾 Fatura Sorgula &amp; Öde</strong>
-              <span>Elektrik, Su, Doğalgaz, İnternet, Vergi</span>
-            </button>
-            <button class="q-tile" onclick="jumpToTerminal('epin')">
-              <span class="badge badge-wait">Anında Teslim PIN</span>
-              <strong>🎮 Dijital Kod &amp; E-Pin</strong>
-              <span>Google Play, App Store, Dijital Platformlar</span>
-            </button>
-            <button class="q-tile" onclick="jumpToTerminal('pos')">
-              <span class="badge badge-primary">3D Secure Webhook</span>
-              <strong>💳 Sanal POS Bakiye</strong>
-              <span>PayTR, Param, iyzico &amp; 7/24 FAST</span>
-            </button>
-          </div>
-
-          <div class="grid-2">
-            <!-- 7-DAY SVG VOLUME CHART -->
-            <div class="card">
-              <div class="card-head">
-                <div class="card-title">📈 Son 7 Günlük Tahsilat &amp; TL Yükleme Hacmi</div>
-                <span class="badge badge-ok">Canlı Veri Analitiği</span>
-              </div>
-              <div class="card-body">
-                <svg viewBox="0 0 620 210" style="width:100%; height:auto; display:block;">
-                  <line x1="40" y1="25" x2="600" y2="25" stroke="var(--border)" stroke-dasharray="4 4"/>
-                  <line x1="40" y1="75" x2="600" y2="75" stroke="var(--border)" stroke-dasharray="4 4"/>
-                  <line x1="40" y1="125" x2="600" y2="125" stroke="var(--border)" stroke-dasharray="4 4"/>
-                  <line x1="40" y1="175" x2="600" y2="175" stroke="var(--border)"/>
-
-                  <text x="6" y="30" fill="var(--muted)" font-size="10">₺45B</text>
-                  <text x="6" y="80" fill="var(--muted)" font-size="10">₺30B</text>
-                  <text x="6" y="130" fill="var(--muted)" font-size="10">₺15B</text>
-                  <text x="14" y="178" fill="var(--muted)" font-size="10">₺0</text>
-
-                  <!-- Bars -->
-                  <rect class="chart-bar" x="62" y="95" width="44" height="80" rx="6" fill="var(--primary)" opacity="0.55"/>
-                  <rect class="chart-bar" x="140" y="78" width="44" height="97" rx="6" fill="var(--primary)" opacity="0.65"/>
-                  <rect class="chart-bar" x="218" y="86" width="44" height="89" rx="6" fill="var(--primary)" opacity="0.65"/>
-                  <rect class="chart-bar" x="296" y="58" width="44" height="117" rx="6" fill="var(--primary)" opacity="0.78"/>
-                  <rect class="chart-bar" x="374" y="48" width="44" height="127" rx="6" fill="var(--primary)" opacity="0.85"/>
-                  <rect class="chart-bar" x="452" y="64" width="44" height="111" rx="6" fill="var(--primary)" opacity="0.78"/>
-                  <rect class="chart-bar" x="530" y="32" width="44" height="143" rx="6" fill="var(--primary)"/>
-
-                  <!-- Labels -->
-                  <text x="84" y="196" text-anchor="middle" fill="var(--muted)" font-size="11">Pzt</text>
-                  <text x="162" y="196" text-anchor="middle" fill="var(--muted)" font-size="11">Sal</text>
-                  <text x="240" y="196" text-anchor="middle" fill="var(--muted)" font-size="11">Çar</text>
-                  <text x="318" y="196" text-anchor="middle" fill="var(--muted)" font-size="11">Per</text>
-                  <text x="396" y="196" text-anchor="middle" fill="var(--muted)" font-size="11">Cum</text>
-                  <text x="474" y="196" text-anchor="middle" fill="var(--muted)" font-size="11">Cmt</text>
-                  <text x="552" y="196" text-anchor="middle" fill="var(--ink)" font-weight="800" font-size="11">Bugün</text>
-                </svg>
-              </div>
-            </div>
-
-            <!-- RECENT TRANSACTIONS PREVIEW -->
-            <div class="card">
-              <div class="card-head">
-                <div class="card-title">🕒 Son Gişe İşlemleri</div>
-                <button class="link-btn" onclick="openViewByName('ledger')">Tüm Cari Ekstre →</button>
-              </div>
-              <div class="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>İşlem / Kurum</th>
-                      <th>Tutar</th>
-                      <th>Kâr</th>
-                      <th>Fiş</th>
-                    </tr>
-                  </thead>
-                  <tbody id="overviewTxBody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ==================== VIEW 2: COUNTER TRANSACTION TERMINAL ==================== -->
-        <section id="view-terminal" class="view-section">
-          <div class="page-head">
-            <div>
-              <h1>⚡ Hızlı Gişe İşlem Terminali</h1>
-              <p>Tek ekrandan operatör sorgulu GSM yükleme, çoklu fatura sepeti tahsilatı, E-Pin satışı ve 3D Sanal POS bakiye yükleme.</p>
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <!-- TERMINAL TABS CARD -->
-            <div class="card">
-              <div class="terminal-tabs">
-                <button class="t-tab active" data-pane="gsm" onclick="switchTerminalTab('gsm', this)">📱 GSM TL / Paket</button>
-                <button class="t-tab" data-pane="bill" onclick="switchTerminalTab('bill', this)">🧾 Fatura &amp; Sepet</button>
-                <button class="t-tab" data-pane="epin" onclick="switchTerminalTab('epin', this)">🎮 E-Pin &amp; Kod</button>
-                <button class="t-tab" data-pane="pos" onclick="switchTerminalTab('pos', this)">💳 Sanal POS</button>
-              </div>
-
-              <!-- PANE 1: GSM -->
-              <div id="tpane-gsm" class="t-pane active">
-                <div class="field-label">
-                  <span>1. GSM Operatörü (Numara Taşıma MNP Sorgulu)</span>
-                  <span id="mnpStatusTxt" style="color:var(--emerald); font-size:11.5px;">✓ Şebeke Hazır</span>
-                </div>
-                <div class="op-grid">
-                  <div class="op-card selected" onclick="pickOperator('Turkcell', 3.5, this)">
-                    <div class="op-badge" style="background:#eab308; color:#0f172a;">TC</div>
-                    <div class="op-name">Turkcell</div>
-                    <div class="op-rate">%3,5 İskonto</div>
-                  </div>
-                  <div class="op-card" onclick="pickOperator('Vodafone', 4.0, this)">
-                    <div class="op-badge" style="background:#dc2626;">VF</div>
-                    <div class="op-name">Vodafone</div>
-                    <div class="op-rate">%4,0 İskonto</div>
-                  </div>
-                  <div class="op-card" onclick="pickOperator('Türk Telekom', 4.2, this)">
-                    <div class="op-badge" style="background:#0284c7;">TT</div>
-                    <div class="op-name">Türk Telekom</div>
-                    <div class="op-rate">%4,2 İskonto</div>
-                  </div>
-                  <div class="op-card" onclick="pickOperator('KKTCell / Telsim', 4.5, this)">
-                    <div class="op-badge" style="background:#7c3aed;">KK</div>
-                    <div class="op-name">Kıbrıs GSM</div>
-                    <div class="op-rate">%4,5 İskonto</div>
-                  </div>
-                </div>
-
-                <div class="field">
-                  <div class="field-label">
-                    <span>2. Abone Cep Telefonu Numarası</span>
-                    <button class="link-btn" onclick="runMnpLookup()">🔄 MNP Operatör Sorgula</button>
-                  </div>
-                  <input id="gsmPhone" class="input" value="0532 418 92 10" placeholder="05XX XXX XX XX" />
-                </div>
-
-                <div class="chip-bar">
-                  <button class="chip active" onclick="filterPackages('all', this)">Tümü</button>
-                  <button class="chip" onclick="filterPackages('paket', this)">Ses + İnternet Paketleri</button>
-                  <button class="chip" onclick="filterPackages('tl', this)">Tam TL Kontör</button>
-                </div>
-
-                <div class="pkg-grid" id="gsmPkgGrid"></div>
-
-                <div class="summary-box">
-                  <div class="sum-row"><span>Müşteri Gişe Satış Fiyatı:</span><strong id="gsmSaleTxt">₺320,00</strong></div>
-                  <div class="sum-row"><span>Bayi İskontolu Cari Maliyeti (<span id="gsmDiscTxt">%3,5</span>):</span><strong id="gsmCostTxt">₺308,80</strong></div>
-                  <div class="sum-row total"><span>Bu İşlemden Net Bayi Kârınız:</span><span class="profit-txt" id="gsmNetProfitTxt">+₺11,20</span></div>
-                </div>
-
-                <button id="btnExecGsm" class="btn btn-primary btn-block" onclick="submitGsmOrder()">
-                  ⚡ Operatör API ile Anında Yükle &amp; Fiş Üret
-                </button>
-              </div>
-
-              <!-- PANE 2: UTILITY BILLS + MULTI-BILL CART -->
-              <div id="tpane-bill" class="t-pane">
-                <div class="chip-bar">
-                  <button class="chip active" onclick="switchBillCat('elektrik', this)">⚡ Elektrik</button>
-                  <button class="chip" onclick="switchBillCat('su', this)">💧 Su / İZSU</button>
-                  <button class="chip" onclick="switchBillCat('gaz', this)">🔥 Doğalgaz</button>
-                  <button class="chip" onclick="switchBillCat('internet', this)">🌐 İnternet &amp; TV</button>
-                  <button class="chip" onclick="switchBillCat('gsmfatura', this)">📱 GSM Faturalı</button>
-                </div>
-
-                <div class="grid-equal" style="gap:10px;">
-                  <div class="field">
-                    <div class="field-label"><span>Kurum Seçimi</span></div>
-                    <select id="billInstSelect" class="select" onchange="queryInstitutionBill()"></select>
-                  </div>
-                  <div class="field">
-                    <div class="field-label"><span>Bayi Hizmet Komisyonu (Özelleştirilebilir)</span></div>
-                    <select id="billFeeSelect" class="select" onchange="queryInstitutionBill()">
-                      <option value="12"> +₺12,00 Hizmet Bedeli</option>
-                      <option value="15" selected> +₺15,00 Hizmet Bedeli (Önerilen)</option>
-                      <option value="20"> +₺20,00 Hizmet Bedeli</option>
-                      <option value="25"> +₺25,00 Hizmet Bedeli</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="field">
-                  <div class="field-label">
-                    <span>Abone / Tesisat / Sözleşme Numarası</span>
-                    <button class="link-btn" onclick="document.getElementById('billSubInput').value='1008492031'; queryInstitutionBill();">Örnek Abone Getir</button>
-                  </div>
-                  <div style="display:flex; gap:8px;">
-                    <input id="billSubInput" class="input" value="1008492031" placeholder="Abone veya Tesisat No" />
-                    <button class="btn btn-outline" onclick="queryInstitutionBill()">🔍 Sorgula</button>
-                  </div>
-                </div>
-
-                <div class="summary-box" style="border-color: var(--emerald); background: var(--emerald-soft);">
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                    <strong id="qBillTitle" style="color:var(--ink);">Gediz Elektrik Perakende — Açık Fatura</strong>
-                    <span class="badge badge-ok">Online Kapama Aktif</span>
-                  </div>
-                  <div class="sum-row"><span>Abone (KVKK Maskeli) / Son Ödeme:</span><strong id="qBillOwner">M*** A*** K*** • 04.11.2026</strong></div>
-                  <div class="sum-row"><span>Kurum Fatura Ana Tutarı:</span><strong id="qBillBase">₺845,60</strong></div>
-                  <div class="sum-row"><span>Bayi Hizmet Bedeli (Net Kâr):</span><strong class="profit-txt" id="qBillFee">+₺15,00</strong></div>
-                  <div class="sum-row total"><span>Müşteriden Tahsil Edilecek:</span><strong id="qBillTotal">₺860,60</strong></div>
-
-                  <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
-                    <button class="btn btn-emerald" style="flex:1;" onclick="paySingleBillNow()">✅ Tek Faturayı Hemen Öde</button>
-                    <button class="btn btn-outline" style="flex:1;" onclick="addBillToCart()">➕ Çoklu Fatura Sepetine Ekle</button>
-                  </div>
-                </div>
-
-                <!-- MULTI-BILL CART -->
-                <div id="billCartBox" class="summary-box" style="display:none;">
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <strong>🧺 Çoklu Fatura Tahsilat Sepeti (<span id="cartCountTxt">0</span> Fatura)</strong>
-                    <button class="link-btn" onclick="clearBillCart()">Sepeti Temizle</button>
-                  </div>
-                  <div id="cartItemsList" style="margin-bottom:8px;"></div>
-                  <div class="sum-row total">
-                    <span>Sepet Genel Toplamı:</span>
-                    <strong id="cartGrandTotal">₺0,00</strong>
-                  </div>
-                  <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="checkoutBillCart()">
-                    🧾 Sepetteki Tüm Faturaları Tek Seferde Tahsil Et
-                  </button>
-                </div>
-              </div>
-
-              <!-- PANE 3: E-PIN & DIGITAL CODES -->
-              <div id="tpane-epin" class="t-pane">
-                <div class="field-label"><span>Anında Teslim Dijital Hediye Kartı &amp; Oyun E-Pin Seçimi</span></div>
-                <div class="pkg-grid" id="epinGrid"></div>
-                <div class="field">
-                  <div class="field-label"><span>Müşteri Cep No (SMS ile Kod Gönderimi — Opsiyonel)</span></div>
-                  <input id="epinPhone" class="input" value="0541 191 86 11" placeholder="05XX XXX XX XX" />
-                </div>
-                <button class="btn btn-primary btn-block" onclick="purchaseEpin()">
-                  🔑 Dijital PIN Kodunu Üret &amp; Fiş Yazdır
-                </button>
-              </div>
-
-              <!-- PANE 4: 3D VIRTUAL POS WITH INTERACTIVE CARD -->
-              <div id="tpane-pos" class="t-pane">
-                <div class="vcard-preview">
-                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <strong style="font-size:13px; letter-spacing:0.6px;">3D SECURE KURUMSAL POS</strong>
-                    <span style="font-size:12px; background:rgba(255,255,255,0.2); padding:3px 9px; border-radius:999px;" id="vcardGwBadge">PayTR POS</span>
-                  </div>
-                  <div class="vcard-num" id="vcardNumPreview">4543 •••• •••• 8821</div>
-                  <div class="vcard-foot">
-                    <span id="vcardHolderPreview">EGE MERKEZ İLETİŞİM</span>
-                    <span>SKT: 09/29 • 3D ONAYLI</span>
-                  </div>
-                </div>
-
-                <div class="grid-equal" style="gap:10px;">
-                  <div class="field">
-                    <div class="field-label"><span>Sanal POS / Ödeme Altyapısı</span></div>
-                    <select id="posGw" class="select" onchange="refreshPosCalc()">
-                      <option value="PayTR POS">PayTR 3D Secure Sanal POS</option>
-                      <option value="Param POS">Param Kurumsal POS (Taksitli)</option>
-                      <option value="iyzico POS">iyzico Korumalı 3D POS</option>
-                      <option value="FAST Havale">7/24 Banka FAST / Havale (%0 Komisyon)</option>
-                    </select>
-                  </div>
-                  <div class="field">
-                    <div class="field-label"><span>Yüklenecek Net Cari Tutar (TL)</span></div>
-                    <input id="posAmt" type="number" class="input" value="5000" min="100" step="100" oninput="refreshPosCalc()" />
-                  </div>
-                </div>
-
-                <div class="grid-equal" style="gap:10px;">
-                  <div class="field">
-                    <div class="field-label"><span>Kart Üzerindeki İsim / Gönderen</span></div>
-                    <input id="posHolder" class="input" value="EGE MERKEZ İLETİŞİM" oninput="document.getElementById('vcardHolderPreview').textContent = this.value || 'BAYİ YETKİLİSİ'" />
-                  </div>
-                  <div class="field">
-                    <div class="field-label"><span>Çekim Tipi</span></div>
-                    <select id="posInstallment" class="select" onchange="refreshPosCalc()">
-                      <option value="0.019">Tek Çekim (%1,90 POS Komisyonu)</option>
-                      <option value="0.042">3 Taksit (%4,20 Vade Farkı)</option>
-                      <option value="0.075">6 Taksit (%7,50 Vade Farkı)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="summary-box">
-                  <div class="sum-row"><span>Cari Hesaba Eklenecek Net Tutar:</span><strong id="posNetOut">₺5.000,00</strong></div>
-                  <div class="sum-row"><span>POS Hizmet / Vade Komisyonu:</span><strong id="posFeeOut">₺95,00</strong></div>
-                  <div class="sum-row total"><span>Toplam Çekilecek Tutar:</span><strong id="posTotalOut">₺5.095,00</strong></div>
-                </div>
-
-                <button class="btn btn-primary btn-block" onclick="completePosPayment()">
-                  💳 3D Secure Ödemeyi Onayla / FAST Bildirimi Gönder
-                </button>
-              </div>
-            </div>
-
-            <!-- RIGHT: LIVE RECEIPT & TRANSACTION STREAM -->
-            <div class="card">
-              <div class="card-head">
-                <div class="card-title">🧾 Canlı İşlem Akışı &amp; Makbuz Arşivi</div>
-                <span class="badge badge-primary" id="terminalTxBadge">47 İşlem</span>
-              </div>
-              <div class="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>İşlem / Abone</th>
-                      <th>Tutar</th>
-                      <th>Kâr</th>
-                      <th>Makbuz</th>
-                    </tr>
-                  </thead>
-                  <tbody id="terminalTxBody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ==================== VIEW 3: SUB-DEALERS & COMMISSION GROUPS ==================== -->
-        <section id="view-dealers" class="view-section">
-          <div class="page-head">
-            <div>
-              <h1>🏪 Alt Bayi Ağı, Komisyon Grupları &amp; Cari Limit Yönetimi</h1>
-              <p>Sınırsız sayıda alt bayi açabilir, her bayiye özel iskonto grubu, eksi bakiye (kredi) limiti ve statik IP güvenliği tanımlayabilirsiniz.</p>
-            </div>
-          </div>
-
-          <div class="grid-2" style="grid-template-columns: 0.85fr 1.35fr;">
-            <div class="card">
-              <div class="card-head">
-                <div class="card-title">➕ Yeni Alt Bayi Tanımla</div>
-              </div>
-              <div class="card-body">
-                <div class="field">
-                  <div class="field-label"><span>Bayi Ticari Ünvanı</span></div>
-                  <input id="dlName" class="input" value="Karşıyaka Çarşı Fatura &amp; İletişim" />
-                </div>
-                <div class="field">
-                  <div class="field-label"><span>Yetkili &amp; Cep Telefonu</span></div>
-                  <input id="dlContact" class="input" value="Ahmet Yılmaz • 0533 610 44 12" />
-                </div>
-                <div class="grid-equal" style="gap:10px;">
-                  <div class="field">
-                    <div class="field-label"><span>Komisyon Grubu</span></div>
-                    <select id="dlTier" class="select">
-                      <option value="Gold Bayi (%3,5)">Gold Bayi (%3,5)</option>
-                      <option value="Standart Bayi (%2,5)">Standart Bayi (%2,5)</option>
-                      <option value="VIP Dağıtıcı (%4,2)">VIP Dağıtıcı (%4,2)</option>
-                    </select>
-                  </div>
-                  <div class="field">
-                    <div class="field-label"><span>Açılış Bakiyesi (TL)</span></div>
-                    <input id="dlBal" type="number" class="input" value="7500" />
-                  </div>
-                </div>
-                <div class="field">
-                  <div class="field-label"><span>Tanımlı Kredi / Eksi Bakiye Limiti (TL)</span></div>
-                  <input id="dlCredit" type="number" class="input" value="2500" />
-                </div>
-                <button class="btn btn-emerald btn-block" onclick="addSubDealer()">
-                  🏪 Alt Bayi Hesabını Oluştur &amp; Aktif Et
-                </button>
-              </div>
-            </div>
-
-            <div class="card">
-              <div class="card-head">
-                <div class="card-title">Aktif Alt Bayiler &amp; Hızlı Bakiye Transferi</div>
-                <input id="dealerSearch" class="input" style="max-width:220px; padding:6px 10px; font-size:12.5px;" placeholder="Bayi ara..." oninput="renderDealers()" />
-              </div>
-              <div class="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Bayi Ünvanı &amp; Kod</th>
-                      <th>Yetkili</th>
-                      <th>Grup</th>
-                      <th>Cari Bakiye</th>
-                      <th>Durum</th>
-                      <th>Hızlı Müdahale</th>
-                    </tr>
-                  </thead>
-                  <tbody id="dealersTableBody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ==================== VIEW 4: FULL ACCOUNTING LEDGER ==================== -->
-        <section id="view-ledger" class="view-section">
-          <div class="page-head">
-            <div>
-              <h1>📑 Cari Hesap Ekstresi (Önceki / Sonraki Bakiye Kilitli Muhasebe)</h1>
-              <p>Her işlem öncesi ve sonrası cari kasa bakiyesi kuruşu kuruşuna kayıt altına alınır; Excel/CSV olarak muhasebeye aktarılabilir.</p>
-            </div>
-            <button class="btn btn-emerald btn-sm" onclick="exportLedgerCsv()">📥 Excel / CSV Muhasebe Dışa Aktar</button>
-          </div>
-
-          <div class="card">
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Ref No &amp; Tarih</th>
-                    <th>İşlem Türü</th>
-                    <th>Kurum / Abone Detayı</th>
-                    <th>Önceki Bakiye</th>
-                    <th>İşlem Tutarı</th>
-                    <th>Net Kâr</th>
-                    <th>Sonraki Bakiye</th>
-                    <th>Makbuz</th>
-                  </tr>
-                </thead>
-                <tbody id="fullLedgerBody"></tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <!-- ==================== VIEW 5: SUPER ADMIN & WHITE-LABEL SETTINGS ==================== -->
-        <section id="view-admin" class="view-section">
-          <div class="page-head">
-            <div>
-              <h1>⚙️ Süper Admin — Sağlayıcı API, Sanal POS &amp; Marka Yönetimi</h1>
-              <p>Havale onayları, çoklu kontör/fatura API yönlendirme (failover), Sanal POS anahtarları ve özelleştirilebilir tema stüdyosu.</p>
-            </div>
-            <button class="btn btn-primary btn-sm" onclick="toggleCustomizer(true)">🎨 Canlı Tasarım Stüdyosunu Aç</button>
-          </div>
-
-          <div class="card" style="margin-bottom:18px;">
-            <div class="card-head">
-              <div class="card-title">⏳ Onay Bekleyen Banka Havale / FAST Bildirimleri</div>
-              <span class="badge badge-wait" id="adminWireBadge">1 Bekleyen</span>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Zaman</th>
-                    <th>Gönderen Bayi</th>
-                    <th>Banka &amp; Dekont Notu</th>
-                    <th>Tutar</th>
-                    <th>Durum</th>
-                    <th>İşlem</th>
-                  </tr>
-                </thead>
-                <tbody id="adminWireBody"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="grid-equal">
-            <div class="card">
-              <div class="card-head">
-                <div class="card-title">🔌 Kontör &amp; Fatura Sağlayıcı API Yönlendirme</div>
-                <button class="btn btn-outline btn-sm" onclick="showToast('✓ Tüm API servisleri test edildi: Ort. yanıt 16 ms (200 OK)')">API Bağlantı Testi</button>
-              </div>
-              <div class="card-body">
-                <div class="switch-item">
-                  <div>
-                    <strong>1. Birincil GSM TL &amp; Paket Sağlayıcı REST/XML API</strong>
-                    <div style="font-size:12px; color:var(--muted);">Turkcell, Vodafone, Türk Telekom otomatik paket listesi ve anlık bakiye senkronu</div>
-                  </div>
-                  <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-                </div>
-                <div class="switch-item">
-                  <div>
-                    <strong>2. Yedek Kontör API Otomatik Geçiş (Smart Failover)</strong>
-                    <div style="font-size:12px; color:var(--muted);">Ana sağlayıcıda paket kapalı veya bakiye yetersizse işlemi kesintisiz 2. API'ye aktarır</div>
-                  </div>
-                  <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-                </div>
-                <div class="switch-item">
-                  <div>
-                    <strong>3. Merkezi Fatura Sorgu &amp; Online Kapama Servisi</strong>
-                    <div style="font-size:12px; color:var(--muted);">250+ Elektrik, Su, Doğalgaz, Telekom kurumu gerçek zamanlı borç sorgulama</div>
-                  </div>
-                  <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-                </div>
-                <div class="switch-item">
-                  <div>
-                    <strong>4. Başarısız İşlem Otomatik Cari İade Koruması</strong>
-                    <div style="font-size:12px; color:var(--muted);">Operatörden iptal/hata dönen tutarı saniyesinde bayi cari hesabına geri yükler</div>
-                  </div>
-                  <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-                </div>
-              </div>
-            </div>
-
-            <div class="card">
-              <div class="card-head">
-                <div class="card-title">🛡️ Sanal POS &amp; Veritabanı Kasa Güvenliği</div>
-                <span class="badge badge-ok">HMAC-SHA256 + Row-Lock</span>
-              </div>
-              <div class="card-body">
-                <div class="switch-item">
-                  <div>
-                    <strong>PayTR, Param POS &amp; iyzico 3D Secure Tahsilat</strong>
-                    <div style="font-size:12px; color:var(--muted);">Bayiler kredi/banka kartıyla 7/24 komisyonlu veya taksitli cari bakiye yükleyebilir</div>
-                  </div>
-                  <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-                </div>
-                <div class="switch-item">
-                  <div>
-                    <strong>POS Komisyonunu Bayiye Otomatik Yansıt</strong>
-                    <div style="font-size:12px; color:var(--muted);">Açık olduğunda POS kesintisi merkez kasadan değil bayi ödemesinden tahsil edilir</div>
-                  </div>
-                  <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-                </div>
-                <div class="switch-item">
-                  <div>
-                    <strong>Mükerrer Çekim Kilidi (MySQL InnoDB Transaction Lock)</strong>
-                    <div style="font-size:12px; color:var(--muted);">Eşzamanlı çift tıklama veya mükerrer API isteğinde çift bakiye düşümünü %100 önler</div>
-                  </div>
-                  <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-                </div>
-                <div class="switch-item">
-                  <div>
-                    <strong>Alt Bayi Statik IP &amp; SMS 2FA Güvenlik Duvarı</strong>
-                    <div style="font-size:12px; color:var(--muted);">Yetkisiz lokasyonlardan bayi girişini kısıtlar ve tüm IP loglarını kayıt altına alır</div>
-                  </div>
-                  <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
+      <div class="world-tabs">
+        <button class="world-tab" onclick="switchWorld('storefront', this)">🌐 1. Müşteri &amp; Bayilik Vitrin Sitesi</button>
+        <button class="world-tab active" onclick="switchWorld('portal', this)">⚡ 2. Alt Bayi Gişe &amp; İşlem Paneli</button>
+        <button class="world-tab" onclick="switchWorld('adminworld', this)">🛡️ 3. Merkez Süper Admin ERP</button>
+        <button class="world-studio-btn" onclick="openStudio(true)">🎨 8 Hazır Tema &amp; Tasarım Özelleştir</button>
       </div>
     </div>
   </div>
 
-  <!-- ==================== LIVE WHITE-LABEL THEME & DESIGN CUSTOMIZER DRAWER ==================== -->
-  <div id="customizerBackdrop" class="drawer-backdrop" onclick="if(event.target===this) toggleCustomizer(false)">
-    <aside class="customizer-drawer">
-      <div class="drawer-head">
-        <div>
-          <strong style="font-size:15px;">🎨 Tasarım &amp; Marka Özelleştirici</strong>
-          <div style="font-size:11.5px; color:var(--muted);">Kod bilmeden yönetim panelinden canlı görünüm ayarı</div>
+  <!-- ==================================================================================
+       WORLD 1: PUBLIC CUSTOMER STOREFRONT & DEALER APPLICATION WEBSITE (B2C + B2B LANDING)
+       ================================================================================== -->
+  <div id="world-storefront" class="storefront-wrap">
+    <header class="sf-nav">
+      <div class="sf-nav-inner">
+        <div style="display:flex; align-items:center; gap:11px;">
+          <div class="brand-mark js-brand-mark">FP</div>
+          <div>
+            <div style="font-weight:900; font-size:16px;" class="js-brand-name">FaturaPay Kurumsal</div>
+            <div style="font-size:11.5px; color:var(--muted);" class="js-brand-sub">TL Yükleme • Fatura &amp; Bayi ERP</div>
+          </div>
         </div>
-        <button class="btn btn-outline btn-sm" onclick="toggleCustomizer(false)">Kapat ✕</button>
+        <div class="sf-links">
+          <a href="#sf-paketler">Bayilik Paketleri &amp; Kâr Oranları</a>
+          <a href="#sf-basvuru">Online Bayilik Başvurusu</a>
+          <span style="font-size:12.5px; font-weight:700; color:var(--primary);">📞 <span class="js-brand-phone">0850 308 00 00</span></span>
+          <button class="btn btn-primary btn-xs" onclick="switchWorld('portal', document.querySelectorAll('.world-tab')[1])">🔐 Bayi Girişi Yap</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="sf-hero">
+      <div>
+        <div class="sf-pill">⚡ Türkiye Geneli 200+ Fatura Kurumu • 6 GSM Operatörü • 3D Sanal POS</div>
+        <h1>Tek Panelden <span>TL Yükleme, Fatura Tahsilat</span> ve Kademeli Alt Bayi Ağı</h1>
+        <p>Hem bireysel müşterilerinize web sitenizden 3D Secure kartla online TL ve fatura ödeme imkânı sunun, hem de kendi alt bayilerinizi açarak her işlemden otomatik komisyon kazanın.</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a href="#sf-basvuru" class="btn btn-primary" style="text-decoration:none;">🏪 Ücretsiz Bayilik Başvurusu</a>
+          <button class="btn btn-outline" onclick="switchWorld('portal', document.querySelectorAll('.world-tab')[1])">⚡ Canlı Bayi Gişesini Dene →</button>
+          <button class="btn btn-outline" onclick="openStudio(true)">🎨 Site Temasını Değiştir</button>
+        </div>
+
+        <div class="sf-trust-row">
+          <div class="sf-stat-box"><strong>200+ Kurum</strong><span>Elektrik, Su, Gaz, Telekom</span></div>
+          <div class="sf-stat-box"><strong>1.1 Saniye</strong><span>Ort. Operatör API Onayı</span></div>
+          <div class="sf-stat-box"><strong>7/24 Otomatik</strong><span>3D Sanal POS &amp; FAST Cari</span></div>
+        </div>
       </div>
 
-      <div class="drawer-body">
-        <!-- 1. WHITE-LABEL BRANDING -->
-        <div class="cust-group">
-          <div class="cust-title">1. Kurumsal Marka &amp; Başlık (White-Label)</div>
+      <!-- B2C DIRECT ONLINE TOP-UP / BILL PAYMENT WIDGET -->
+      <div class="b2c-widget">
+        <div class="b2c-tabs">
+          <button class="b2c-tab active" onclick="switchB2cTab('tl', this)">📱 Bireysel Hızlı TL / Paket</button>
+          <button class="b2c-tab" onclick="switchB2cTab('bill', this)">🧾 Online Fatura Sorgula &amp; Öde</button>
+        </div>
+        <div id="b2c-tl" style="padding:20px;">
           <div class="field">
-            <div class="field-label"><span>Site / Platform Adı (Menü &amp; Fiş Başlığı)</span></div>
-            <input id="custBrandName" class="input" value="FaturaPay Kurumsal" oninput="applyBranding()" />
+            <div class="lbl"><span>Cep Telefonu Numaranız</span><span>Tüm Operatörler</span></div>
+            <input class="input" value="0532 418 92 10" placeholder="05XX XXX XX XX" />
           </div>
-          <div class="grid-equal" style="gap:8px;">
-            <div class="field" style="margin-bottom:0;">
-              <div class="field-label"><span>Logo Harf</span></div>
-              <input id="custBrandShort" class="input" maxlength="3" value="FP" oninput="applyBranding()" />
+          <div class="field">
+            <div class="lbl"><span>Yüklenecek Paket veya TL</span></div>
+            <select class="select">
+              <option>Turkcell Süper 20 GB + 1000 DK — ₺320,00</option>
+              <option>Vodafone Red 30 GB + 1500 DK — ₺410,00</option>
+              <option>Türk Telekom 250 TL Tam Kontör — ₺250,00</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="submitB2cDemoOrder('TL')">💳 3D Secure Kartla Anında Yükle</button>
+        </div>
+        <div id="b2c-bill" style="padding:20px; display:none;">
+          <div class="field">
+            <div class="lbl"><span>Fatura Kurumu Seçin</span></div>
+            <select class="select">
+              <option>Gediz Elektrik Perakende</option>
+              <option>İZSU İzmir Su ve Kanalizasyon</option>
+              <option>İzmirgaz Doğalgaz Dağıtım</option>
+              <option>Türk Telekom Ev İnterneti</option>
+            </select>
+          </div>
+          <div class="field">
+            <div class="lbl"><span>Abone / Tesisat Numarası</span></div>
+            <input class="input" value="1008492031" />
+          </div>
+          <button class="btn btn-emerald btn-full" onclick="submitB2cDemoOrder('FATURA')">🔍 Borç Sorgula &amp; Online Öde</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEALER TIERS -->
+    <section id="sf-paketler" class="sf-section">
+      <div class="sf-sec-head">
+        <h2>Kademeli Bayilik &amp; Fiyat Grupları</h2>
+        <p>İletişim bayileri, fatura ödeme merkezleri, marketler ve bölge dağıtıcıları için yüksek kâr marjlı şeffaf gruplar.</p>
+      </div>
+      <div class="tier-cards">
+        <div class="tier-card">
+          <h3>Bronz / Standart Gişe</h3>
+          <p style="font-size:12.5px; color:var(--muted); margin-top:4px;">Yeni başlayan ödeme noktaları ve büfeler için</p>
+          <ul class="tier-list">
+            <li><span>GSM TL / Paket İskontosu</span><strong>%2,4 - %3,0</strong></li>
+            <li><span>Fatura Tahsilat Hakedişi</span><strong>+₺10,00 / Fatura</strong></li>
+            <li><span>Dijital Kod &amp; E-Pin Kârı</span><strong>%3,0 İskonto</strong></li>
+            <li><span>3D Sanal POS Bakiye Yükleme</span><strong>7/24 Aktif</strong></li>
+          </ul>
+          <a href="#sf-basvuru" class="btn btn-outline btn-full" style="text-decoration:none;">Hemen Başvur</a>
+        </div>
+
+        <div class="tier-card featured">
+          <span class="tier-ribbon">EN ÇOK TERCİH EDİLEN</span>
+          <h3>Gold Kurumsal Bayi</h3>
+          <p style="font-size:12.5px; color:var(--muted); margin-top:4px;">Telefoncular ve fatura tahsilat gişeleri için</p>
+          <ul class="tier-list">
+            <li><span>GSM TL / Paket İskontosu</span><strong>%3,6 - %4,2</strong></li>
+            <li><span>Fatura Tahsilat Hakedişi</span><strong>+₺15,00 / Fatura</strong></li>
+            <li><span>Kasiyer Alt-Kullanıcı Tanımlama</span><strong>Sınırsız Personel</strong></li>
+            <li><span>80mm Termal Fiş &amp; Barkod Okuma</span><strong>Tam Entegre</strong></li>
+          </ul>
+          <a href="#sf-basvuru" class="btn btn-primary btn-full" style="text-decoration:none;">Gold Bayilik Başvurusu</a>
+        </div>
+
+        <div class="tier-card">
+          <h3>VIP Bölge Dağıtıcısı</h3>
+          <p style="font-size:12.5px; color:var(--muted); margin-top:4px;">Kendi alt bayilerini kurmak isteyen toptancılar için</p>
+          <ul class="tier-list">
+            <li><span>GSM TL / Paket İskontosu</span><strong>%4,4 - %5,3</strong></li>
+            <li><span>Kendi Alt Bayilerini Açabilme</span><strong>B2B2C Kademeli</strong></li>
+            <li><span>Alt Bayi Satışlarından Marj Farkı</span><strong>Otomatik Hakediş</strong></li>
+            <li><span>XML / REST Dış API Çıkışı</span><strong>Ücretsiz API</strong></li>
+          </ul>
+          <a href="#sf-basvuru" class="btn btn-outline btn-full" style="text-decoration:none;">Dağıtıcı Başvurusu</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIVE DEALER APPLICATION FORM (GOES DIRECTLY TO ADMIN APPROVAL QUEUE!) -->
+    <section id="sf-basvuru" class="sf-section">
+      <div class="card" style="max-width:780px; margin:0 auto;">
+        <div class="card-head">
+          <div class="card-title">📝 Online Bayilik Başvuru Formu (Canlı Test — Direkt Süper Admin Ekranına Düşer!)</div>
+          <span class="badge b-ok">Ücretsiz Başvuru</span>
+        </div>
+        <div class="card-body">
+          <div class="two-col">
+            <div class="field">
+              <div class="lbl"><span>İşletme / Tabela Ünvanı</span></div>
+              <input id="appCompany" class="input" value="Güzelyalı İletişim & Fatura Merkezi" />
             </div>
-            <div class="field" style="margin-bottom:0;">
-              <div class="field-label"><span>Alt Slogan</span></div>
-              <input id="custBrandSub" class="input" value="Bayi & Tahsilat Otomasyonu" oninput="applyBranding()" />
+            <div class="field">
+              <div class="lbl"><span>Yetkili Ad Soyad</span></div>
+              <input id="appOwner" class="input" value="Mehmet Aksoy" />
             </div>
           </div>
+          <div class="three-col">
+            <div class="field">
+              <div class="lbl"><span>Cep Telefonu (SMS Şifre İçin)</span></div>
+              <input id="appPhone" class="input" value="0541 191 86 11" />
+            </div>
+            <div class="field">
+              <div class="lbl"><span>İl / İlçe</span></div>
+              <input id="appCity" class="input" value="İzmir / Konak" />
+            </div>
+            <div class="field">
+              <div class="lbl"><span>Talep Edilen Bayi Grubu</span></div>
+              <select id="appTier" class="select">
+                <option value="gold">Gold Kurumsal Bayi</option>
+                <option value="vip">VIP Bölge Dağıtıcısı</option>
+                <option value="gumus">Gümüş Bayi</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-emerald btn-full" onclick="submitPublicDealerApplication()">
+            🚀 Başvuruyu Gönder ve Süper Admin Onay Kuyruğunda Gör
+          </button>
         </div>
+      </div>
+    </section>
 
-        <!-- 2. SURFACE THEME -->
-        <div class="cust-group">
-          <div class="cust-title">2. Arayüz Renk Modu</div>
-          <div class="seg-grid">
-            <button class="seg-btn active" id="th-light" onclick="setSurfaceTheme('light')">☀️ Kurumsal Açık</button>
-            <button class="seg-btn" id="th-dark" onclick="setSurfaceTheme('dark')">🌙 Koyu Fintech</button>
-            <button class="seg-btn" id="th-banking" onclick="setSurfaceTheme('banking')">🏛️ Banka Lacivert</button>
-          </div>
-        </div>
+    <footer class="sf-footer">
+      <div class="sf-footer-inner">
+        <div><strong style="color:#fff;" class="js-brand-name">FaturaPay Kurumsal</strong> — %100 Açık Kaynak Kurumsal TL, Fatura &amp; Bayi Otomasyonu</div>
+        <div>256-Bit SSL • 3D Secure Sanal POS • Müşteri Destek: <span class="js-brand-phone">0850 308 00 00</span></div>
+      </div>
+    </footer>
+  </div>
 
-        <!-- 3. BRAND ACCENT COLOR -->
-        <div class="cust-group">
-          <div class="cust-title">3. Ana Marka Rengi (6 Hazır + Özel Seçici)</div>
-          <div class="swatch-grid">
-            <button class="swatch active" style="background:#4f46e5;" title="Stripe İndigo" onclick="setAccentColor('#4f46e5', '#4338ca', this)"></button>
-            <button class="swatch" style="background:#0284c7;" title="Banka Mavisi" onclick="setAccentColor('#0284c7', '#0369a1', this)"></button>
-            <button class="swatch" style="background:#059669;" title="Zümrüt Finans" onclick="setAccentColor('#059669', '#047857', this)"></button>
-            <button class="swatch" style="background:#7c3aed;" title="Kraliyet Moru" onclick="setAccentColor('#7c3aed', '#6d28d9', this)"></button>
-            <button class="swatch" style="background:#ea580c;" title="Telekom Turuncu" onclick="setAccentColor('#ea580c', '#c2410c', this)"></button>
-            <button class="swatch" style="background:#be123c;" title="Kurumsal Bordo" onclick="setAccentColor('#be123c', '#9f1239', this)"></button>
-          </div>
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:12.5px;">
-            <span>Özel HEX Renk Seçici:</span>
-            <input id="customColorInput" type="color" value="#4f46e5" style="width:46px; height:32px; border:none; background:none; cursor:pointer;" oninput="setAccentColor(this.value, this.value, null)" />
-          </div>
-        </div>
+  <!-- ==================================================================================
+       WORLD 2 & 3: DEALER COUNTER ERP & SUPER ADMIN PORTAL
+       ================================================================================== -->
+  <div id="world-portal" class="portal-wrap active">
+    <div class="app-shell">
 
-        <!-- 4. NAVIGATION LAYOUT -->
-        <div class="cust-group">
-          <div class="cust-title">4. Menü &amp; Yerleşim Düzeni</div>
-          <div class="seg-grid two">
-            <button class="seg-btn active" id="ly-sidebar" onclick="setLayoutMode('sidebar')">◧ Sol Kurumsal Menü</button>
-            <button class="seg-btn" id="ly-topnav" onclick="setLayoutMode('topnav')">⊤ Üst Gişe / Kiosk Modu</button>
-          </div>
-        </div>
-
-        <!-- 5. CORNER RADIUS & DENSITY -->
-        <div class="cust-group">
-          <div class="cust-title">5. Kart Köşe Stili &amp; Gişe Yoğunluğu</div>
-          <div class="seg-grid" style="margin-bottom:8px;">
-            <button class="seg-btn" onclick="setRadius('6px', '5px', this)">Keskin (6px)</button>
-            <button class="seg-btn active" onclick="setRadius('14px', '9px', this)">Modern (14px)</button>
-            <button class="seg-btn" onclick="setRadius('20px', '13px', this)">Oval (20px)</button>
-          </div>
-          <div class="seg-grid two">
-            <button class="seg-btn active" id="dn-comfortable" onclick="setDensity('comfortable')">Ferah Görünüm</button>
-            <button class="seg-btn" id="dn-compact" onclick="setDensity('compact')">Kompakt Gişe</button>
+      <!-- SIDEBAR / TOPNAV -->
+      <aside class="sidebar">
+        <div class="brand-box">
+          <div class="brand-mark js-brand-mark">FP</div>
+          <div>
+            <div class="brand-name js-brand-name">FaturaPay Kurumsal</div>
+            <div class="brand-sub js-brand-sub">TL Yükleme • Fatura &amp; Bayi ERP</div>
           </div>
         </div>
 
-        <!-- 6. RECEIPT PRINT FORMAT -->
-        <div class="cust-group">
-          <div class="cust-title">6. Varsayılan Tahsilat Makbuzu / Fiş Tipi</div>
-          <div class="seg-grid two">
-            <button class="seg-btn active" id="rcpfmt-corporate" onclick="setReceiptFormat('corporate')">📄 Kurumsal A4 / Dijital</button>
-            <button class="seg-btn" id="rcpfmt-thermal" onclick="setReceiptFormat('thermal')">🧾 80mm Termal POS Fişi</button>
+        <div class="nav-group-title">Bayi Gişe Operasyonları</div>
+        <nav class="nav-menu">
+          <button class="nav-item active" data-view="overview" onclick="openPortalView('overview', this)">
+            <span>📊 Genel Bakış &amp; BI Analitik</span>
+          </button>
+          <button class="nav-item" data-view="terminal" onclick="openPortalView('terminal', this)">
+            <span>⚡ Hızlı Gişe Terminali</span>
+            <span class="nav-badge">5 Servis</span>
+          </button>
+          <button class="nav-item" data-view="ledger" onclick="openPortalView('ledger', this)">
+            <span>📑 Cari Ekstre &amp; Z-Raporu</span>
+          </button>
+          <button class="nav-item" data-view="cashiers" onclick="openPortalView('cashiers', this)">
+            <span>👥 Kasiyer &amp; Alt Personel</span>
+          </button>
+          <button class="nav-item" data-view="tickets" onclick="openPortalView('tickets', this)">
+            <span>🎧 Destek &amp; İptal/İade</span>
+          </button>
+
+          <div class="nav-group-title">Merkez Dağıtıcı &amp; Admin</div>
+          <button class="nav-item" data-view="dealers" onclick="openPortalView('dealers', this)">
+            <span>🏪 Kademeli Alt Bayiler</span>
+            <span class="nav-badge" id="navDealerBadge">19</span>
+          </button>
+          <button class="nav-item" data-view="tiers" onclick="openPortalView('tiers', this)">
+            <span>💰 Fiyat Grupları &amp; Marjlar</span>
+          </button>
+          <button class="nav-item" data-view="admin" onclick="openPortalView('admin', this)">
+            <span>🛡️ Süper Admin (API &amp; POS)</span>
+            <span class="nav-badge" id="navAdminBadge">3</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-foot js-mod-apihealth">
+          <div class="latency-box">
+            <div style="font-weight:800; color:var(--sidebar-ink);">🟢 Merkez API Omurgası Aktif</div>
+            <div class="lat-row"><span>Turkcell / VF / TT XML</span><strong style="color:#34d399;">14 ms</strong></div>
+            <div class="lat-row"><span>200+ Kurum Fatura API</span><strong style="color:#34d399;">21 ms</strong></div>
+            <div class="lat-row"><span>PayTR / Param 3D POS</span><strong style="color:#34d399;">Aktif</strong></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN COLUMN -->
+      <div class="main-col">
+        <!-- TOPBAR -->
+        <header class="topbar">
+          <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
+            <div class="branch-pill">
+              <span>🏢 Gişe: <strong id="activeBranchName">Ege Merkez İletişim &amp; Fatura (#BY-1042)</strong></span>
+              <span class="badge b-pri" id="topTierBadge">GOLD BAYİ • %3,6</span>
+            </div>
+          </div>
+
+          <div class="wallet-strip">
+            <div class="w-box">
+              <small>Net Cari Kasa</small>
+              <strong id="topBalTxt">₺24.850,00</strong>
+            </div>
+            <div class="w-box credit">
+              <small>Kredi Dahil Limit</small>
+              <strong id="topLimitTxt">₺29.850,00</strong>
+            </div>
+            <div class="w-box profit">
+              <small>Bugünkü Net Kâr</small>
+              <strong id="topProfitTxt">₺1.184,50</strong>
+            </div>
+            <button class="btn btn-primary btn-xs" onclick="openStudio(true)">🎨 Tema &amp; Marka Stüdyosu</button>
+          </div>
+        </header>
+
+        <div class="portal-content">
+
+          <!-- ==================== PVIEW 1: EXECUTIVE BI OVERVIEW ==================== -->
+          <section id="pview-overview" class="p-view active">
+            <div class="p-head">
+              <div>
+                <h1>İş Zekası (BI) Finansal Özet &amp; Canlı Gişe Kontrolü</h1>
+                <p>Duyuru: Turkcell &amp; Vodafone yeni dönem paket API fiyatları otomatik senkronize edildi • 200+ Fatura kurumu kesintisiz açık.</p>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-outline btn-xs" onclick="openZReportModal()">🖨️ Gün Sonu Z-Raporu Al</button>
+                <button class="btn btn-primary btn-xs" onclick="jumpTerminalService('gsm')">⚡ Hızlı Gişe İşlemi Başlat</button>
+              </div>
+            </div>
+
+            <div class="kpi-grid">
+              <div class="kpi">
+                <div class="kpi-top"><span class="kpi-lbl">Net Cari Bakiye</span><span class="kpi-ico">₺</span></div>
+                <div class="kpi-num" id="kpiBal">₺24.850,00</div>
+                <div class="kpi-foot"><span class="badge b-ok">+₺5.000 Kredi</span><span>InnoDB Satır Kilitli</span></div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-top"><span class="kpi-lbl">Bugünkü Bayi Hakedişi</span><span class="kpi-ico">↗</span></div>
+                <div class="kpi-num" id="kpiProfit">₺1.184,50</div>
+                <div class="kpi-foot"><span class="badge b-ok">+%22,4</span><span>Düne göre net kâr artışı</span></div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-top"><span class="kpi-lbl">Günlük Başarılı İşlem</span><span class="kpi-ico">✓</span></div>
+                <div class="kpi-num" id="kpiTxCount">68 İşlem</div>
+                <div class="kpi-foot"><span class="badge b-pri">%99,6 Onay</span><span>Askıda kalan otomatik iade</span></div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-top"><span class="kpi-lbl">Alt Bayi Ağı Toplam Ciro</span><span class="kpi-ico">🏪</span></div>
+                <div class="kpi-num">₺1.248.900</div>
+                <div class="kpi-foot"><span class="badge b-ok">Kademeli Marj</span><span>Aylık konsolide hacim</span></div>
+              </div>
+            </div>
+
+            <div class="split-grid">
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-title">📈 Haftalık Ciro, Tahsilat &amp; Operatör Dağılım Analizi</div>
+                  <div style="display:flex; gap:6px;">
+                    <button class="btn btn-outline btn-xs" onclick="jumpTerminalService('gsm')">📱 TL Yükle</button>
+                    <button class="btn btn-outline btn-xs" onclick="jumpTerminalService('bill')">🧾 Fatura Öde</button>
+                    <button class="btn btn-outline btn-xs" onclick="jumpTerminalService('pos')">💳 POS Bakiye</button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <svg viewBox="0 0 640 195" style="width:100%; height:auto; display:block; margin-bottom:14px;">
+                    <line x1="42" y1="20" x2="620" y2="20" stroke="var(--border)" stroke-dasharray="4 4"/>
+                    <line x1="42" y1="70" x2="620" y2="70" stroke="var(--border)" stroke-dasharray="4 4"/>
+                    <line x1="42" y1="120" x2="620" y2="120" stroke="var(--border)" stroke-dasharray="4 4"/>
+                    <line x1="42" y1="165" x2="620" y2="165" stroke="var(--border)"/>
+                    <text x="4" y="25" fill="var(--muted)" font-size="10">₺60B</text>
+                    <text x="4" y="75" fill="var(--muted)" font-size="10">₺40B</text>
+                    <text x="4" y="125" fill="var(--muted)" font-size="10">₺20B</text>
+                    <text x="14" y="168" fill="var(--muted)" font-size="10">₺0</text>
+
+                    <rect x="64" y="88" width="46" height="77" rx="6" fill="var(--primary)" opacity="0.55"/>
+                    <rect x="144" y="72" width="46" height="93" rx="6" fill="var(--primary)" opacity="0.65"/>
+                    <rect x="224" y="79" width="46" height="86" rx="6" fill="var(--primary)" opacity="0.65"/>
+                    <rect x="304" y="54" width="46" height="111" rx="6" fill="var(--primary)" opacity="0.78"/>
+                    <rect x="384" y="42" width="46" height="123" rx="6" fill="var(--primary)" opacity="0.88"/>
+                    <rect x="464" y="58" width="46" height="107" rx="6" fill="var(--primary)" opacity="0.76"/>
+                    <rect x="544" y="26" width="46" height="139" rx="6" fill="var(--primary)"/>
+
+                    <text x="87" y="185" text-anchor="middle" fill="var(--muted)" font-size="11">Pzt</text>
+                    <text x="167" y="185" text-anchor="middle" fill="var(--muted)" font-size="11">Sal</text>
+                    <text x="247" y="185" text-anchor="middle" fill="var(--muted)" font-size="11">Çar</text>
+                    <text x="327" y="185" text-anchor="middle" fill="var(--muted)" font-size="11">Per</text>
+                    <text x="407" y="185" text-anchor="middle" fill="var(--muted)" font-size="11">Cum</text>
+                    <text x="487" y="185" text-anchor="middle" fill="var(--muted)" font-size="11">Cmt</text>
+                    <text x="567" y="185" text-anchor="middle" fill="var(--ink)" font-weight="800" font-size="11">Bugün</text>
+                  </svg>
+
+                  <div class="three-col">
+                    <div class="calc-panel" style="margin:0;">
+                      <small style="color:var(--muted); font-weight:700;">GSM TL &amp; PAKET PAYI</small>
+                      <strong style="display:block; font-size:16px; margin-top:2px;">%48,2 Ciro</strong>
+                    </div>
+                    <div class="calc-panel" style="margin:0;">
+                      <small style="color:var(--muted); font-weight:700;">KURUM FATURA TAHSİLAT</small>
+                      <strong style="display:block; font-size:16px; margin-top:2px;">%39,5 Ciro</strong>
+                    </div>
+                    <div class="calc-panel" style="margin:0;">
+                      <small style="color:var(--muted); font-weight:700;">E-PİN &amp; DİJİTAL KOD</small>
+                      <strong style="display:block; font-size:16px; margin-top:2px;">%12,3 Ciro</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-title">🕒 Son Gişe Hareketleri</div>
+                  <button class="link-action" onclick="openPortalView('ledger')">Tam Cari Ekstre →</button>
+                </div>
+                <div class="tbl-wrap">
+                  <table>
+                    <thead><tr><th>Kurum / Abone</th><th>Tutar</th><th>Kâr</th><th>Fiş</th></tr></thead>
+                    <tbody id="ovMiniTxBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== PVIEW 2: 5-IN-1 COUNTER TRANSACTION TERMINAL ==================== -->
+          <section id="pview-terminal" class="p-view">
+            <div class="p-head">
+              <div>
+                <h1>⚡ Hızlı Gişe İşlem Terminali (5 Servis Tek Ekranda)</h1>
+                <p>MNP &amp; numara geçmişi sorgulu TL yükleme, toplu numara gönderimi, barkodlu çoklu fatura sepeti, SMS teslimli E-Pin ve 3D OTP Sanal POS.</p>
+              </div>
+            </div>
+
+            <div class="split-grid">
+              <div class="card">
+                <div class="srv-tabs">
+                  <button class="srv-tab active" data-srv="gsm" onclick="switchServiceTab('gsm', this)">📱 GSM TL / Paket</button>
+                  <button class="srv-tab" data-srv="bulk" onclick="switchServiceTab('bulk', this)">📋 Toplu TL Yükle</button>
+                  <button class="srv-tab" data-srv="bill" onclick="switchServiceTab('bill', this)">🧾 Fatura &amp; Barkod</button>
+                  <button class="srv-tab js-mod-epin" data-srv="epin" onclick="switchServiceTab('epin', this)">🎮 E-Pin &amp; Kod</button>
+                  <button class="srv-tab" data-srv="pos" onclick="switchServiceTab('pos', this)">💳 3D POS &amp; IBAN</button>
+                </div>
+
+                <!-- SPANE 1: SINGLE GSM + MNP + NUMBER HISTORY -->
+                <div id="spane-gsm" class="srv-pane active">
+                  <div class="lbl"><span>1. GSM Operatörü (Fiyat Grubunuza Göre Canlı İskonto)</span></div>
+                  <div class="op-grid" id="opGrid"></div>
+
+                  <div class="field">
+                    <div class="lbl">
+                      <span>2. Abone GSM Numarası</span>
+                      <button class="link-action" onclick="checkMnpAndHistory()">📡 BTK MNP &amp; Numara Yükleme Geçmişi Sorgula</button>
+                    </div>
+                    <input id="gsmNumberInput" class="input" value="0532 418 92 10" placeholder="05XX XXX XX XX" />
+                  </div>
+
+                  <div id="numHistoryBox" class="calc-panel" style="display:none; border-color:var(--primary); background:var(--primary-soft);"></div>
+
+                  <div class="chips">
+                    <button class="chip active" onclick="setPkgFilter('all', this)">Tüm Paketler (10)</button>
+                    <button class="chip" onclick="setPkgFilter('paket', this)">Ses + İnternet Paketleri</button>
+                    <button class="chip" onclick="setPkgFilter('tl', this)">Tam TL Kontör</button>
+                    <button class="chip js-mod-intl" onclick="setPkgFilter('yurtdisi', this)">Kıbrıs &amp; Yurt Dışı</button>
+                  </div>
+
+                  <div class="pkg-list" id="gsmPkgList"></div>
+
+                  <div class="calc-panel">
+                    <div class="c-row"><span>Merkez Ana Sağlayıcı API Maliyeti:</span><span id="gsmApiRawOut">₺305,90</span></div>
+                    <div class="c-row"><span>Sizin Bayi İskontolu Maliyetiniz (<span id="gsmDiscOut">%3,6</span>):</span><strong id="gsmCostOut">₺308,48</strong></div>
+                    <div class="c-row"><span>Müşteri Gişe Satış Fiyatı:</span><strong id="gsmRetailOut">₺320,00</strong></div>
+                    <div class="c-row tot"><span>Bu İşlemden Anlık Net Bayi Kârınız:</span><span class="txt-profit" id="gsmProfitOut">+₺11,52</span></div>
+                  </div>
+
+                  <button class="btn btn-primary btn-full" onclick="executeGsmSingle()">
+                    ⚡ Operatör API Üzerinden Anında Yükle &amp; Fiş Üret
+                  </button>
+                </div>
+
+                <!-- SPANE 2: BULK MULTI-NUMBER GSM TOP-UP -->
+                <div id="spane-bulk" class="srv-pane">
+                  <div class="calc-panel" style="background:var(--primary-soft); border-color:var(--primary-border);">
+                    <strong>📋 Kurumsal Toplu Numara TL / Paket Gönderimi</strong>
+                    <div style="font-size:11.5px; color:var(--ink-2); margin-top:3px;">Excel'den veya listeden alt alta yapıştırdığınız tüm numaralara seçili operatör üzerinden tek seferde API yüklemesi yapılır.</div>
+                  </div>
+                  <div class="field">
+                    <div class="lbl"><span>Her Satıra 1 Cep Numarası Yazın</span><span>Varsayılan Paket: 250 TL Tam Kontör</span></div>
+                    <textarea id="bulkPhonesInput" class="textarea" rows="5">0532 418 92 10
+0533 610 44 12
+0535 991 34 67</textarea>
+                  </div>
+                  <button class="btn btn-primary btn-full" onclick="executeBulkGsm()">
+                    🚀 Listedeki Tüm Numaralara Toplu Yükleme Başlat
+                  </button>
+                </div>
+
+                <!-- SPANE 3: 200+ INSTITUTION BILLS, BARCODE READER & MULTI-PERIOD CART -->
+                <div id="spane-bill" class="srv-pane">
+                  <div class="chips">
+                    <button class="chip active" onclick="selectBillCategory('elektrik', this)">⚡ Elektrik (7+)</button>
+                    <button class="chip" onclick="selectBillCategory('su', this)">💧 Su / İZSU (7+)</button>
+                    <button class="chip" onclick="selectBillCategory('gaz', this)">🔥 Doğalgaz (6+)</button>
+                    <button class="chip" onclick="selectBillCategory('internet', this)">🌐 İnternet / TV (7+)</button>
+                    <button class="chip" onclick="selectBillCategory('kamu', this)">🏛️ MTV / Trafik / SGK / HGS</button>
+                  </div>
+
+                  <div class="two-col" style="gap:10px;">
+                    <div class="field">
+                      <div class="lbl"><span>Kurum Seçimi (200+ Entegre Kurum)</span></div>
+                      <select id="instSelect" class="select" onchange="querySubscriberInvoices()"></select>
+                    </div>
+                    <div class="field">
+                      <div class="lbl"><span>Gişe Hizmet Bedeli (Kârınız)</span></div>
+                      <select id="billServiceFee" class="select" onchange="querySubscriberInvoices()">
+                        <option value="10">+₺10,00 Servis Ücreti</option>
+                        <option value="15" selected>+₺15,00 Servis Ücreti (Grup Varsayılan)</option>
+                        <option value="20">+₺20,00 Servis Ücreti</option>
+                        <option value="25">+₺25,00 Servis Ücreti</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <div class="lbl">
+                      <span>Abone / Tesisat No veya El Terminali Barkod Okutma</span>
+                      <button class="link-action" onclick="simulateBarcodeScan()">📷 Fatura Barkodu / Karekod Okut</button>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                      <input id="billSubNo" class="input" value="1008492031" placeholder="Abone veya Tesisat No" />
+                      <button class="btn btn-outline" onclick="querySubscriberInvoices()">🔍 Borç Sorgula</button>
+                    </div>
+                  </div>
+
+                  <div class="lbl"><span>Aboneye Ait Açık Faturalar (Tek veya Çoklu Dönem Seçebilirsiniz)</span></div>
+                  <div id="queriedInvoicesList"></div>
+
+                  <div class="calc-panel">
+                    <div class="c-row"><span>Seçili Fatura Ana Borç + Gecikme:</span><strong id="qBaseSum">₺845,60</strong></div>
+                    <div class="c-row"><span>Bayi Hizmet Komisyonu (Net Kâr):</span><strong class="txt-profit" id="qFeeSum">+₺15,00</strong></div>
+                    <div class="c-row tot"><span>Müşteriden Tahsil Edilecek Toplam:</span><strong id="qTotalSum">₺860,60</strong></div>
+                  </div>
+
+                  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="btn btn-emerald" style="flex:1;" onclick="paySelectedBillsDirect()">✅ Seçili Faturayı Hemen Tahsil Et</button>
+                    <button class="btn btn-outline" style="flex:1;" onclick="pushSelectedToBillCart()">➕ Çoklu Müşteri Sepetine Ekle</button>
+                  </div>
+
+                  <div id="multiCartWrap" class="calc-panel" style="display:none; margin-top:12px; border-color:var(--primary);">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                      <strong>🧺 Çoklu Fatura Sepeti (<span id="multiCartCount">0</span> Adet)</strong>
+                      <button class="link-action" onclick="clearMultiBillCart()">Temizle</button>
+                    </div>
+                    <div id="multiCartRows"></div>
+                    <div class="c-row tot"><span>Sepet Genel Toplamı:</span><strong id="multiCartTotal">₺0,00</strong></div>
+                    <button class="btn btn-primary btn-full" style="margin-top:9px;" onclick="checkoutMultiBillCart()">
+                      🧾 Sepetteki Tüm Faturaları Tek Makbuzda Kapat
+                    </button>
+                  </div>
+                </div>
+
+                <!-- SPANE 4: E-PIN & SMS DELIVERY -->
+                <div id="spane-epin" class="srv-pane">
+                  <div class="lbl"><span>Anında PIN Üretimi + Netgsm Müşteri SMS Gönderimi</span></div>
+                  <div class="pkg-list" id="epinCatalogGrid"></div>
+                  <div class="field">
+                    <div class="lbl"><span>Müşteri Cep Numarası (Kod SMS Olarak İletilir)</span></div>
+                    <input id="epinSmsPhone" class="input" value="0541 191 86 11" />
+                  </div>
+                  <button class="btn btn-primary btn-full" onclick="buyEpinNow()">
+                    🔑 Dijital Kodu Üret, Müşteriye SMS Gönder &amp; Fiş Bas
+                  </button>
+                </div>
+
+                <!-- SPANE 5: 3D VIRTUAL POS (BIN + OTP MODAL) & IBAN FAST -->
+                <div id="spane-pos" class="srv-pane">
+                  <div class="cc-visual">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                      <div class="cc-chip"></div>
+                      <span style="font-size:11.5px; font-weight:800; background:rgba(255,255,255,0.18); padding:3px 10px; border-radius:999px;" id="ccVisualBank">PayTR 3D POS • Garanti Bonus</span>
+                    </div>
+                    <div class="cc-num" id="ccVisualNum">4543 6012 8840 8821</div>
+                    <div style="display:flex; justify-content:space-between; font-size:11.5px; opacity:0.9;">
+                      <span id="ccVisualHolder">EGE MERKEZ İLETİŞİM</span>
+                      <span>SKT: 10/29 • 3D SECURE</span>
+                    </div>
+                  </div>
+
+                  <div class="two-col" style="gap:10px;">
+                    <div class="field">
+                      <div class="lbl"><span>Sanal POS Entegrasyonu</span></div>
+                      <select id="posGateway" class="select" onchange="detectBinAndRenderInstallments()">
+                        <option value="PayTR 3D POS">PayTR iFrame / Direct 3D POS</option>
+                        <option value="Param Kurumsal POS">Param Kurumsal Sanal POS</option>
+                        <option value="iyzico Korumalı POS">iyzico 3D Secure POS</option>
+                        <option value="Moka / Sipay POS">Moka &amp; Sipay Ticari POS</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <div class="lbl"><span>Yüklenecek Net Cari Tutar (TL)</span></div>
+                      <input id="posTopupAmt" type="number" class="input" value="5000" step="500" oninput="detectBinAndRenderInstallments()" />
+                    </div>
+                  </div>
+
+                  <div class="two-col" style="gap:10px;">
+                    <div class="field">
+                      <div class="lbl"><span>Kart Numarası (BIN Otomatik Algılar: 4543 / 5400 / 5549)</span></div>
+                      <input id="ccNumInput" class="input" value="4543 6012 8840 8821" oninput="detectBinAndRenderInstallments()" />
+                    </div>
+                    <div class="field">
+                      <div class="lbl"><span>Kart Üzerindeki İsim</span></div>
+                      <input class="input" value="EGE MERKEZ İLETİŞİM" oninput="document.getElementById('ccVisualHolder').textContent=this.value||'BAYİ YETKİLİSİ'" />
+                    </div>
+                  </div>
+
+                  <div class="tbl-wrap js-mod-posmatrix" style="margin-bottom:12px;">
+                    <table>
+                      <thead><tr><th>Taksit Seçeneği</th><th>Komisyon</th><th>Aylık Ödeme</th><th>Karttan Çekilecek</th></tr></thead>
+                      <tbody id="installmentBody"></tbody>
+                    </table>
+                  </div>
+
+                  <button class="btn btn-primary btn-full" style="margin-bottom:18px;" onclick="trigger3dSecureModal()">
+                    🔒 3D Secure SMS Onayı İle Anında Bakiye Yükle
+                  </button>
+
+                  <div style="border-top:1px solid var(--border); padding-top:14px;">
+                    <div class="lbl"><span>🏦 %0 Komisyonlu 7/24 FAST &amp; Banka Havale Hesaplarımız</span></div>
+                    <div id="ibanListWrap"></div>
+                    <div class="three-col" style="margin-top:10px;">
+                      <select id="wireBankSelect" class="select">
+                        <option>Ziraat Bankası FAST</option>
+                        <option>Garanti BBVA Havale</option>
+                        <option>İş Bankası FAST</option>
+                      </select>
+                      <input id="wireAmtInput" type="number" class="input" value="7500" placeholder="Tutar (TL)" />
+                      <input id="wireDecontInput" class="input" placeholder="Dekont / İsim Notu" value="Ege Merkez FAST" />
+                    </div>
+                    <button class="btn btn-outline btn-full" style="margin-top:8px;" onclick="sendWireNotification()">
+                      📨 Havale / FAST Ödeme Bildirimi Gönder
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RIGHT SIDE LIVE STREAM -->
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-title">🧾 Canlı İşlem &amp; Fiş Geçmişi</div>
+                  <button class="btn btn-outline btn-xs" onclick="openZReportModal()">Z-Raporu</button>
+                </div>
+                <div class="tbl-wrap">
+                  <table>
+                    <thead><tr><th>İşlem / Abone</th><th>Tutar</th><th>Kâr</th><th>Fiş</th></tr></thead>
+                    <tbody id="termMiniTxBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== PVIEW 3: FULL ACCOUNTING LEDGER & Z-REPORT ==================== -->
+          <section id="pview-ledger" class="p-view">
+            <div class="p-head">
+              <div>
+                <h1>📑 Cari Hesap Ekstresi (Önceki / Sonraki Bakiye Kilitli Muhasebe)</h1>
+                <p>Tüm işlemler veritabanı transaction kilidiyle kayıt altına alınır; durum filtresi, "Bugün" filtresi ve Excel dışa aktarım desteklidir.</p>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-outline btn-xs" onclick="renderLedgerTables(true); toast('📅 Sadece bugünkü cari hareketler filtrelendi.')">📅 Sadece Bugün</button>
+                <button class="btn btn-outline btn-xs" onclick="renderLedgerTables(false)">Tüm Tarihler</button>
+                <select id="ledgerStatusFilter" class="select" style="width:auto; padding:5px 10px; font-size:12px;" onchange="renderLedgerTables(false)">
+                  <option value="all">Tüm Durumlar</option>
+                  <option value="ok">Onaylananlar</option>
+                  <option value="pending">Operatörde Bekleyen</option>
+                </select>
+                <button class="btn btn-amber btn-xs" onclick="openZReportModal()">🖨️ Gün Sonu Z-Raporu</button>
+                <button class="btn btn-emerald btn-xs" onclick="downloadLedgerCsv()">📥 Excel / CSV İndir</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="tbl-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Ref &amp; Zaman</th>
+                      <th>Kategori</th>
+                      <th>Kurum / Abone</th>
+                      <th>Önceki Bakiye</th>
+                      <th>İşlem Tutarı</th>
+                      <th>Net Kâr</th>
+                      <th>Sonraki Bakiye</th>
+                      <th>Durum</th>
+                      <th>Dekont</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ledgerFullBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== PVIEW 4: SUB-DEALER CASHIER SUB-USERS ==================== -->
+          <section id="pview-cashiers" class="p-view">
+            <div class="p-head">
+              <div>
+                <h1>👥 Alt Bayi Kasiyer &amp; Vardiya Personeli Yetkilendirme</h1>
+                <p>Bayiler kendi şubelerindeki kasiyerlere günlük işlem limiti koyabilir ve iptal/kasa görme yetkilerini kısıtlayabilir.</p>
+              </div>
+            </div>
+            <div class="split-grid" style="grid-template-columns: 0.8fr 1.2fr;">
+              <div class="card">
+                <div class="card-head"><div class="card-title">➕ Yeni Kasiyer / Gişe Personeli Aç</div></div>
+                <div class="card-body">
+                  <div class="field">
+                    <div class="lbl"><span>Personel Ad Soyad &amp; Gişe No</span></div>
+                    <input id="newCashierName" class="input" value="Zeynep Karaca (Gişe-3)" />
+                  </div>
+                  <div class="field">
+                    <div class="lbl"><span>Günlük Maksimum İşlem Tutar Limiti (TL)</span></div>
+                    <input id="newCashierLimit" type="number" class="input" value="12000" />
+                  </div>
+                  <button class="btn btn-primary btn-full" onclick="addCashierUser()">👤 Kasiyer Hesabını Tanımla</button>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-head"><div class="card-title">Aktif Kasiyerler &amp; Günlük Limit Kullanımı</div></div>
+                <div class="tbl-wrap">
+                  <table>
+                    <thead><tr><th>Personel</th><th>Rol</th><th>Günlük Kota</th><th>İptal Yetkisi</th><th>Durum</th></tr></thead>
+                    <tbody id="cashiersBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== PVIEW 5: SUPPORT TICKETS & CANCELLATION ==================== -->
+          <section id="pview-tickets" class="p-view">
+            <div class="p-head">
+              <div>
+                <h1>🎧 Destek, Fatura İptal &amp; Bakiye İade Talepleri</h1>
+                <p>Hatalı abone numarası veya askıda kalan işlemler için merkez operasyon birimine anlık bilet açabilirsiniz.</p>
+              </div>
+            </div>
+            <div class="split-grid" style="grid-template-columns: 0.8fr 1.2fr;">
+              <div class="card">
+                <div class="card-head"><div class="card-title">✉️ Yeni Destek / İptal Talebi Aç</div></div>
+                <div class="card-body">
+                  <div class="field">
+                    <div class="lbl"><span>Talep Kategorisi</span></div>
+                    <select id="ticketCat" class="select">
+                      <option>Fatura İptal / İade Talebi</option>
+                      <option>GSM Paket / Numara Kontrolü</option>
+                      <option>Sanal POS / Havale Bakiye Destek</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <div class="lbl"><span>İşlem Ref No ve Açıklama</span></div>
+                    <input id="ticketSubject" class="input" placeholder="Örn: #FT-92104 sehven yanlış abone ödendi, iptal rica ederim" />
+                  </div>
+                  <button class="btn btn-primary btn-full" onclick="createSupportTicket()">📨 Destek Talebini Gönder</button>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-head"><div class="card-title">Açık &amp; Yanıtlanan Talepleriniz</div></div>
+                <div class="tbl-wrap">
+                  <table>
+                    <thead><tr><th>Talep No</th><th>Konu &amp; Merkez Yanıtı</th><th>Kategori</th><th>Durum</th></tr></thead>
+                    <tbody id="ticketsBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== PVIEW 6: MULTI-LEVEL SUB-DEALERS (B2B2C) ==================== -->
+          <section id="pview-dealers" class="p-view">
+            <div class="p-head">
+              <div>
+                <h1>🏪 Kademeli Alt Bayi Ağacı (Ana Bayi → Bölge Bayi → Alt Gişe)</h1>
+                <p>Herhangi bir alt bayinin yanındaki <strong>"Gişeye Geç"</strong> butonuyla tek tıkla o bayinin gözünden ve komisyon oranlarıyla test yapabilirsiniz.</p>
+              </div>
+            </div>
+
+            <div class="split-grid" style="grid-template-columns: 0.78fr 1.22fr;">
+              <div class="card">
+                <div class="card-head"><div class="card-title">➕ Yeni Alt Bayi / Dağıtıcı Hesabı Aç</div></div>
+                <div class="card-body">
+                  <div class="field">
+                    <div class="lbl"><span>Bayi Ticari Ünvanı</span></div>
+                    <input id="admDealerName" class="input" value="Çiğli Merkez Fatura &amp; Kontör" />
+                  </div>
+                  <div class="two-col" style="gap:8px;">
+                    <div class="field">
+                      <div class="lbl"><span>İl / İlçe</span></div>
+                      <input id="admDealerCity" class="input" value="İzmir / Çiğli" />
+                    </div>
+                    <div class="field">
+                      <div class="lbl"><span>Yetkili &amp; Tel</span></div>
+                      <input id="admDealerPhone" class="input" value="Caner Ak • 0532 504 11 22" />
+                    </div>
+                  </div>
+                  <div class="three-col" style="gap:8px;">
+                    <div class="field">
+                      <div class="lbl"><span>Fiyat Grubu</span></div>
+                      <select id="admDealerTier" class="select">
+                        <option value="gold">Gold Bayi</option>
+                        <option value="vip">VIP Dağıtıcı</option>
+                        <option value="gumus">Gümüş Bayi</option>
+                        <option value="bronz">Bronz Gişe</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <div class="lbl"><span>Açılış Cari (TL)</span></div>
+                      <input id="admDealerBal" type="number" class="input" value="5000" />
+                    </div>
+                    <div class="field">
+                      <div class="lbl"><span>Kredi Limit (TL)</span></div>
+                      <input id="admDealerLim" type="number" class="input" value="2000" />
+                    </div>
+                  </div>
+                  <button class="btn btn-emerald btn-full" onclick="createSubDealerAdmin()">🏪 Alt Bayiyi Oluştur &amp; SMS Gönder</button>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-title">Alt Bayi Cari Listesi &amp; Kademeli Hiyerarşi</div>
+                  <input id="subDealerSearch" class="input" style="max-width:210px; padding:6px 10px;" placeholder="Bayi, kod veya ilçe ara..." oninput="renderSubDealers()" />
+                </div>
+                <div class="tbl-wrap">
+                  <table>
+                    <thead><tr><th>Bayi &amp; Üst Hiyerarşi</th><th>İletişim &amp; IP</th><th>Fiyat Grubu</th><th>Cari &amp; Kredi</th><th>Durum</th><th>Yönetim</th></tr></thead>
+                    <tbody id="subDealersTable"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== PVIEW 7: DYNAMIC PRICE GROUPS & COMMISSION FORMULA ENGINE ==================== -->
+          <section id="pview-tiers" class="p-view">
+            <div class="p-head">
+              <div>
+                <h1>💰 Canlı Fiyat Grupları &amp; Kademeli Kâr Marjı Motoru</h1>
+                <p>Aşağıdaki oranları değiştirdiğiniz anda tüm gişe terminalindeki GSM maliyetleri, fatura hakedişleri, E-Pin kârları ve Sanal POS komisyonları canlı hesaplanır!</p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="tbl-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Fiyat Grubu Adı</th>
+                      <th>GSM TL/Paket İskontosu (%)</th>
+                      <th>Varsayılan Fatura Komisyonu (₺)</th>
+                      <th>E-Pin / Kod İskontosu (%)</th>
+                      <th>Sanal POS Kesinti Oranı (%)</th>
+                      <th>Canlı Simülasyon</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tierMatrixBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== PVIEW 8: SUPER ADMIN BACK-OFFICE (QUEUES, API, CRON, IP LOGS) ==================== -->
+          <section id="pview-admin" class="p-view">
+            <div class="p-head">
+              <div>
+                <h1>🛡️ Merkez Süper Admin — Onay Kuyrukları, Sağlayıcı API, Cron &amp; Güvenlik</h1>
+                <p>FAST bakiye bildirimleri, vitrin bayilik başvuruları, XML/SOAP sağlayıcı yönlendirme ve şüpheli IP giriş denetimi.</p>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-amber btn-xs" onclick="runCronPendingSync()">🔄 Cron Çalıştır: Askıdaki İşlemleri Sorgula</button>
+                <button class="btn btn-primary btn-xs" onclick="openStudio(true)">🎨 Site Tasarımını Özelleştir</button>
+              </div>
+            </div>
+
+            <div class="two-col" style="margin-bottom:16px;">
+              <div class="card">
+                <div class="card-head"><div class="card-title">⏳ Bekleyen Havale / FAST Bakiye Talepleri</div></div>
+                <div class="tbl-wrap">
+                  <table>
+                    <thead><tr><th>Zaman</th><th>Bayi</th><th>Banka / Dekont</th><th>Tutar</th><th>Durum</th><th>Onay</th></tr></thead>
+                    <tbody id="admWireBody"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-head"><div class="card-title">🆕 Vitrinden Gelen Bayilik Başvuruları</div></div>
+                <div class="tbl-wrap">
+                  <table>
+                    <thead><tr><th>Zaman</th><th>İşletme</th><th>Yetkili</th><th>Grup</th><th>Onay</th></tr></thead>
+                    <tbody id="admAppsBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="two-col" style="margin-bottom:16px;">
+              <div class="card">
+                <div class="card-head"><div class="card-title">🔌 Kontör, Fatura &amp; SMS Sağlayıcı API Köprüleri</div></div>
+                <div class="card-body">
+                  <div class="sw-row">
+                    <div><strong>Ana Kontör / Paket Tedarikçi XML &amp; REST API</strong><div style="font-size:11.5px; color:var(--muted);">Operatör fiyat değişimlerini fiyat gruplarına otomatik yansıtır</div></div>
+                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+                  </div>
+                  <div class="sw-row">
+                    <div><strong>Akıllı Yedek API Geçişi (Multi-Provider Failover)</strong><div style="font-size:11.5px; color:var(--muted);">1. tedarikçi zaman aşımı verirse işlemi otomatik 2. API'den tamamlar</div></div>
+                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+                  </div>
+                  <div class="sw-row">
+                    <div><strong>Merkezi Fatura Tahsilat &amp; Barkod Sorgu API</strong><div style="font-size:11.5px; color:var(--muted);">200+ Elektrik, Su, Doğalgaz, Telekom gerçek zamanlı borç kapama</div></div>
+                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+                  </div>
+                  <div class="sw-row">
+                    <div><strong>Netgsm Başlıklı SMS &amp; Kritik Bakiye Uyarı Servisi</strong><div style="font-size:11.5px; color:var(--muted);">2FA giriş, E-Pin kod teslimi ve bakiye azaldı SMS bildirimleri</div></div>
+                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-head"><div class="card-title">🛡️ Güvenlik, Sesli Uyarı &amp; Sanal POS Koruması</div></div>
+                <div class="card-body">
+                  <div class="sw-row">
+                    <div><strong>PayTR, Param, iyzico &amp; Moka 3D Webhook Otomasyonu</strong><div style="font-size:11.5px; color:var(--muted);">3D ödeme onaylandığı saniye manuel onaysız cari kasaya yükler</div></div>
+                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+                  </div>
+                  <div class="sw-row">
+                    <div><strong>MySQL InnoDB Satır Kilidi (Mükerrer Çekim Önleyici)</strong><div style="font-size:11.5px; color:var(--muted);">Aynı anda çift tıklama veya çift callback isteğinde bakiye kaybını %100 engeller</div></div>
+                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+                  </div>
+                  <div class="sw-row">
+                    <div><strong>Farklı IP Girişinde Otomatik SMS Doğrulama Zorunluluğu</strong><div style="font-size:11.5px; color:var(--muted);">Bayi hesabına kayıtlı IP dışından girildiğinde yöneticiyi uyarır</div></div>
+                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+                  </div>
+                  <div class="sw-row">
+                    <div><strong>Canlı Sesli Bildirim Sesi (Yeni İşlem &amp; Bakiye Talebi)</strong><div style="font-size:11.5px; color:var(--muted);">Yeni bildirim düştüğünde gişe/yönetici sesli uyarı verir</div></div>
+                    <button class="toggle on" onclick="STATE.soundEnabled=!STATE.soundEnabled; this.classList.toggle('on');"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><div class="card-title">🕵️‍♂️ Son Yönetici &amp; Bayi IP Güvenlik Denetim Kayıtları (Audit Log)</div></div>
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr><th>Tarih / Saat</th><th>Kullanıcı / Bayi</th><th>IP Adresi &amp; Konum</th><th>Güvenlik Olayı</th></tr></thead>
+                  <tbody id="ipLogsBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================================
+       MODAL 1: REALISTIC BANK 3D SECURE SMS OTP VERIFICATION
+       ================================================================================== -->
+  <div id="modal3dBackdrop" class="backdrop" onclick="if(event.target===this) this.classList.remove('open')">
+    <div class="modal-box" style="max-width:400px;">
+      <div class="m-head" style="background:#0f172a;">
+        <div>
+          <strong>🔒 3D Secure Banka SMS Doğrulaması</strong>
+          <div style="font-size:11px; opacity:0.8;" id="otp3dGatewayTxt">PayTR 3D POS</div>
+        </div>
+        <button class="btn btn-outline btn-xs" onclick="document.getElementById('modal3dBackdrop').classList.remove('open')">✕</button>
+      </div>
+      <div class="m-body">
+        <div class="calc-panel">
+          <div class="c-row"><span>İşyeri:</span><strong class="js-brand-name">FaturaPay Kurumsal</strong></div>
+          <div class="c-row"><span>Yüklenecek Net Cari:</span><strong id="otp3dAmountTxt">₺5.000,00</strong></div>
+          <div class="c-row"><span>Kayıtlı Cep Tel:</span><strong>0541 *** ** 11</strong></div>
+        </div>
+        <div class="field">
+          <div class="lbl"><span>6 Haneli Tek Kullanımlık Banka SMS Şifresi</span></div>
+          <input class="input" style="text-align:center; font-family:var(--font-mono); font-size:18px; font-weight:800; letter-spacing:5px;" value="482910" maxlength="6" />
+        </div>
+        <button class="btn btn-emerald btn-full" onclick="confirm3dOtpPayment()">✓ SMS Şifresini Doğrula ve Bakiyeyi Yükle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================================
+       MODAL 2: 80MM THERMAL POS RECEIPT (QR + BARCODE) & A4 CORPORATE STAMPED RECEIPT
+       ================================================================================== -->
+  <div id="receiptBackdrop" class="backdrop" onclick="if(event.target===this) this.classList.remove('open')">
+    <div id="rcpModalCard" class="modal-box">
+      <div class="m-head">
+        <div>
+          <strong style="font-size:14.5px;" id="rcpBrandTitle">FaturaPay Kurumsal</strong>
+          <div style="font-size:11px; opacity:0.88;" id="rcpRefCode">İŞLEM REF: #FP-90421</div>
+        </div>
+        <button class="btn btn-outline btn-xs" style="background:#fff; color:#0f172a;" onclick="document.getElementById('receiptBackdrop').classList.remove('open')">✕</button>
+      </div>
+      <div class="m-body">
+        <div class="m-line"><span>İşlem Kategorisi:</span><strong id="rcpType">-</strong></div>
+        <div class="m-line"><span>Kurum / Operatör:</span><strong id="rcpProv">-</strong></div>
+        <div class="m-line"><span>Abone / Detay:</span><strong id="rcpTarg">-</strong></div>
+        <div class="m-line"><span>İşlem Zamanı:</span><strong id="rcpTime">-</strong></div>
+        <div class="m-line"><span>Tahsilat Tutarı:</span><strong id="rcpAmt" style="font-size:15px;">-</strong></div>
+        <div class="m-line"><span>Tahsilat Noktası:</span><strong id="rcpBranch">-</strong></div>
+
+        <div style="margin-top:12px; padding:8px; border-radius:8px; background:#dcfce7; color:#166534; text-align:center; font-weight:800; font-size:11.5px;">
+          ✓ MERKEZ API ONAYLI • RESMİ TAHSİLAT BELGESİDİR
+        </div>
+
+        <!-- SVG QR + BARCODE -->
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; padding-top:10px; border-top:1px dashed #cbd5e1;">
+          <svg width="54" height="54" viewBox="0 0 54 54">
+            <rect width="54" height="54" fill="#f8fafc" rx="4"/>
+            <rect x="6" y="6" width="14" height="14" fill="#0f172a"/><rect x="9" y="9" width="8" height="8" fill="#fff"/><rect x="11" y="11" width="4" height="4" fill="#0f172a"/>
+            <rect x="34" y="6" width="14" height="14" fill="#0f172a"/><rect x="37" y="9" width="8" height="8" fill="#fff"/><rect x="39" y="11" width="4" height="4" fill="#0f172a"/>
+            <rect x="6" y="34" width="14" height="14" fill="#0f172a"/><rect x="9" y="37" width="8" height="8" fill="#fff"/><rect x="11" y="39" width="4" height="4" fill="#0f172a"/>
+            <rect x="24" y="24" width="6" height="6" fill="#0f172a"/><rect x="34" y="34" width="12" height="5" fill="#0f172a"/><rect x="24" y="39" width="18" height="7" fill="#0f172a"/>
+          </svg>
+          <div style="flex:1; text-align:right; font-size:10.5px; color:#475569;">
+            <div style="font-family:var(--font-mono); letter-spacing:2px; font-weight:800; color:#0f172a;">|| ||| | |||| || ||| | ||||</div>
+            <div>Karekod Doğrulamalı E-Makbuz</div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:7px; margin-top:14px; flex-wrap:wrap;">
+          <button class="btn btn-primary" style="flex:1;" onclick="window.print()">🖨️ Yazdır / PDF</button>
+          <button class="btn btn-outline" style="flex:1;" onclick="toggleReceiptModeLive()">🔄 80mm Termal / A4</button>
+          <button class="btn btn-emerald btn-full" onclick="toast('📲 Tahsilat dekontu müşterinin WhatsApp hattına iletildi!')">📲 Müşteriye WhatsApp Dekont Gönder</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================================
+       MODAL 3: END-OF-DAY Z-REPORT (KASA MUTABAKATI)
+       ================================================================================== -->
+  <div id="zReportBackdrop" class="backdrop" onclick="if(event.target===this) this.classList.remove('open')">
+    <div class="modal-box" style="max-width:420px;">
+      <div class="m-head">
+        <strong>📊 Gün Sonu Z-Raporu &amp; Gişe Mutabakatı</strong>
+        <button class="btn btn-outline btn-xs" style="background:#fff; color:#0f172a;" onclick="document.getElementById('zReportBackdrop').classList.remove('open')">✕</button>
+      </div>
+      <div class="m-body">
+        <div class="m-line"><span>Rapor Tarihi:</span><strong>30.10.2026 (Bugün)</strong></div>
+        <div class="m-line"><span>Şube / Gişe:</span><strong>Ege Merkez (#BY-1042)</strong></div>
+        <div class="m-line"><span>Onaylı İşlem Adedi:</span><strong id="zRepCount">-</strong></div>
+        <div class="m-line"><span>Toplam Gişe Tahsilat Cirosu:</span><strong id="zRepTurnover">-</strong></div>
+        <div class="m-line"><span>Bugünkü Net Bayi Komisyon Kârı:</span><strong id="zRepProfit" style="color:#059669;">-</strong></div>
+        <div class="m-line"><span>Kapanış Net Cari Kasa Bakiyesi:</span><strong id="zRepClosing">-</strong></div>
+        <div style="display:flex; gap:8px; margin-top:14px;">
+          <button class="btn btn-primary btn-full" onclick="window.print()">🖨️ Z-Raporunu Yazdır</button>
+          <button class="btn btn-outline btn-full" onclick="document.getElementById('zReportBackdrop').classList.remove('open')">Kapat</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================================
+       SLIDE-OVER STUDIO: 8 DESIGN THEMES + FULL WHITE-LABEL & MODULE CUSTOMIZER
+       ================================================================================== -->
+  <div id="studioDrawerWrap" class="drawer-wrap" onclick="if(event.target===this) openStudio(false)">
+    <aside class="studio-drawer">
+      <div class="st-head">
+        <div>
+          <strong style="font-size:14.5px;">🎨 Kurumsal Tema &amp; Marka Stüdyosu</strong>
+          <div style="font-size:11px; color:var(--muted);">8 hazır tasarım teması + kodsuz tam özelleştirme</div>
+        </div>
+        <button class="btn btn-outline btn-xs" onclick="openStudio(false)">Kapat ✕</button>
+      </div>
+
+      <div class="st-body">
+        <!-- 1. 8 ONE-CLICK DESIGN THEMES -->
+        <div class="st-sec">
+          <div class="st-sec-title">1. Hazır Kurumsal Tasarım Temaları (8 Seçkin Stil)</div>
+          <div class="preset-grid">
+            <button class="preset-card active" onclick="applyPresetTheme('stripe', this)"><span class="p-dot" style="background:#4f46e5;"></span>Stripe Finans İndigo</button>
+            <button class="preset-card" onclick="applyPresetTheme('paytr', this)"><span class="p-dot" style="background:#0284c7;"></span>PayTR Kurumsal Mavi</button>
+            <button class="preset-card" onclick="applyPresetTheme('zumrut', this)"><span class="p-dot" style="background:#059669;"></span>FaturaMatik Zümrüt</button>
+            <button class="preset-card" onclick="applyPresetTheme('oled', this)"><span class="p-dot" style="background:#111827; border:2px solid #22d3ee;"></span>Linear OLED Gece</button>
+            <button class="preset-card" onclick="applyPresetTheme('telekom', this)"><span class="p-dot" style="background:#ea580c;"></span>Telekom Enerji</button>
+            <button class="preset-card" onclick="applyPresetTheme('royal', this)"><span class="p-dot" style="background:#7c3aed;"></span>Kraliyet Fintech Mor</button>
+            <button class="preset-card" onclick="applyPresetTheme('vipgold', this)"><span class="p-dot" style="background:#d97706;"></span>VIP Altın &amp; Obsidyen</button>
+            <button class="preset-card" onclick="applyPresetTheme('kamu', this)"><span class="p-dot" style="background:#1e3a8a;"></span>Merkez Banka Klasik</button>
+          </div>
+        </div>
+
+        <!-- 2. WHITE-LABEL BRANDING -->
+        <div class="st-sec">
+          <div class="st-sec-title">2. Marka Kimliği, Logo &amp; İletişim (White-Label)</div>
+          <div class="two-col" style="gap:8px;">
+            <div class="field">
+              <div class="lbl"><span>Platform / Site Adı</span></div>
+              <input id="stBrandName" class="input" value="FaturaPay Kurumsal" oninput="updateLiveBrandIdentity()" />
+            </div>
+            <div class="field">
+              <div class="lbl"><span>Logo Harf (2-3 Harf)</span></div>
+              <input id="stBrandShort" class="input" maxlength="3" value="FP" oninput="updateLiveBrandIdentity()" />
+            </div>
+          </div>
+          <div class="two-col" style="gap:8px;">
+            <div class="field">
+              <div class="lbl"><span>Alt Slogan</span></div>
+              <input id="stBrandSub" class="input" value="TL Yükleme • Fatura & Bayi ERP" oninput="updateLiveBrandIdentity()" />
+            </div>
+            <div class="field">
+              <div class="lbl"><span>Müşteri Destek Hattı</span></div>
+              <input id="stBrandPhone" class="input" value="0850 308 00 00" oninput="updateLiveBrandIdentity()" />
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <div class="lbl"><span>Özel Logo Görsel URL (Opsiyonel PNG/SVG)</span></div>
+            <input id="stLogoUrl" class="input" placeholder="https://siteniz.com/logo.png" oninput="updateLiveBrandIdentity()" />
+          </div>
+        </div>
+
+        <!-- 3. CUSTOM COLORS & SURFACE -->
+        <div class="st-sec">
+          <div class="st-sec-title">3. Özel Renk Seçici, Zemin &amp; Menü Rengi</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; font-size:12px;">
+            <label style="display:flex; align-items:center; gap:6px;">Ana Renk: <input id="stPrimaryHex" type="color" value="#4f46e5" oninput="applyBrandColors(this.value, this.value, null)" /></label>
+            <label style="display:flex; align-items:center; gap:6px;">Vurgu Rengi: <input id="stAccentHex" type="color" value="#0ea5e9" oninput="applyBrandColors(document.getElementById('stPrimaryHex').value, null, this.value)" /></label>
+          </div>
+          <div class="seg-row" style="margin-bottom:8px;">
+            <button class="seg active" id="seg-th-light" onclick="setStudioSurface('light')">☀️ Açık Mod</button>
+            <button class="seg" id="seg-th-dark" onclick="setStudioSurface('dark')">🌙 Gece OLED</button>
+            <button class="seg" id="seg-th-banking" onclick="setStudioSurface('banking')">🏛️ Banka Gri</button>
+          </div>
+          <div class="seg-row">
+            <button class="seg active" id="seg-sb-dark" onclick="setStudioSidebar('dark')">Koyu Menü</button>
+            <button class="seg" id="seg-sb-light" onclick="setStudioSidebar('light')">Beyaz Menü</button>
+            <button class="seg" id="seg-sb-brand" onclick="setStudioSidebar('brand')">Marka Rengi Menü</button>
+          </div>
+        </div>
+
+        <!-- 4. LAYOUT, TYPOGRAPHY, RADIUS SLIDER & SHADOW -->
+        <div class="st-sec">
+          <div class="st-sec-title">4. Menü Yeri, Yazı Tipi &amp; Köşe Yuvarlaklığı (<span id="stRadiusValTxt">14px</span>)</div>
+          <div class="seg-row two" style="margin-bottom:8px;">
+            <button class="seg active" id="seg-ly-sidebar" onclick="setStudioLayout('sidebar')">◧ Sol Kurumsal Menü</button>
+            <button class="seg" id="seg-ly-topnav" onclick="setStudioLayout('topnav')">⊤ Üst Gişe / Kiosk Modu</button>
+          </div>
+          <div class="seg-row" style="margin-bottom:8px;">
+            <button class="seg active" onclick="setStudioFont('inter', this)">Inter Fintech</button>
+            <button class="seg" onclick="setStudioFont('jakarta', this)">Plus Jakarta</button>
+            <button class="seg" onclick="setStudioFont('mono', this)">Gişe Mono</button>
+          </div>
+          <div class="seg-row" style="margin-bottom:8px;">
+            <button class="seg" onclick="setStudioFontSize(13, this)">Küçük (13px)</button>
+            <button class="seg active" onclick="setStudioFontSize(14, this)">Standart (14px)</button>
+            <button class="seg" onclick="setStudioFontSize(15, this)">Büyük Gişe (15px)</button>
+          </div>
+          <input id="stRadiusRange" type="range" min="0" max="22" value="14" style="width:100%; margin:6px 0;" oninput="setStudioRadius(this.value)" />
+          <div class="seg-row" style="margin-top:6px;">
+            <button class="seg" onclick="setStudioShadow('flat', this)">Düz Çizgi</button>
+            <button class="seg active" onclick="setStudioShadow('soft', this)">Yumuşak Gölge</button>
+            <button class="seg" onclick="setStudioShadow('deep', this)">Derin Kart</button>
+          </div>
+        </div>
+
+        <!-- 5. DENSITY, RECEIPT & MODULE VISIBILITY TOGGLES -->
+        <div class="st-sec">
+          <div class="st-sec-title">5. Fiş Formatı &amp; Modül Aç / Kapat Kontrolü</div>
+          <div class="seg-row two" style="margin-bottom:8px;">
+            <button class="seg active" id="seg-dn-comfortable" onclick="setStudioDensity('comfortable')">Ferah Panel</button>
+            <button class="seg" id="seg-dn-compact" onclick="setStudioDensity('compact')">Kompakt Gişe</button>
+          </div>
+          <div class="seg-row two" style="margin-bottom:10px;">
+            <button class="seg active" id="seg-rcp-corporate" onclick="setStudioReceipt('corporate')">📄 A4 Karekod Makbuz</button>
+            <button class="seg" id="seg-rcp-thermal" onclick="setStudioReceipt('thermal')">🧾 80mm Termal POS Fişi</button>
+          </div>
+
+          <div class="sw-row">
+            <span style="font-size:12px; font-weight:700;">🎮 E-Pin &amp; Oyun Kodu Modülü</span>
+            <button class="toggle on" onclick="this.classList.toggle('on'); toggleModuleVisibility('.js-mod-epin', this.classList.contains('on'));"></button>
+          </div>
+          <div class="sw-row">
+            <span style="font-size:12px; font-weight:700;">🌍 Kıbrıs &amp; Yurt Dışı Paketler</span>
+            <button class="toggle on" onclick="this.classList.toggle('on'); toggleModuleVisibility('.js-mod-intl', this.classList.contains('on'));"></button>
+          </div>
+          <div class="sw-row">
+            <span style="font-size:12px; font-weight:700;">💳 Sanal POS Taksit Tablosu</span>
+            <button class="toggle on" onclick="this.classList.toggle('on'); toggleModuleVisibility('.js-mod-posmatrix', this.classList.contains('on'));"></button>
+          </div>
+          <div class="sw-row">
+            <span style="font-size:12px; font-weight:700;">💬 Canlı WhatsApp Destek Balonu</span>
+            <button class="toggle on" onclick="this.classList.toggle('on'); toggleModuleVisibility('.js-mod-wa', this.classList.contains('on'));"></button>
           </div>
         </div>
 
         <div style="display:flex; gap:8px;">
-          <button class="btn btn-primary" style="flex:1;" onclick="saveThemeConfig()">💾 Ayarları Kaydet</button>
-          <button class="btn btn-outline" onclick="resetThemeConfig()">Sıfırla</button>
+          <button class="btn btn-primary" style="flex:1;" onclick="exportThemeJson()">💾 Kaydet &amp; JSON İndir</button>
+          <button class="btn btn-outline" onclick="resetStudioAll()">Sıfırla</button>
         </div>
       </div>
     </aside>
   </div>
 
-  <!-- ==================== PRINTABLE RECEIPT MODAL ==================== -->
-  <div id="receiptModal" class="modal-backdrop" onclick="if(event.target===this) closeReceiptModal()">
-    <div id="receiptCardBox" class="receipt-card">
-      <div class="rcp-header">
-        <div>
-          <strong style="font-size:15px;" id="rcpBrandHeader">FaturaPay Kurumsal</strong>
-          <div style="font-size:11.5px; opacity:0.85;" id="rcpRefTxt">İŞLEM REF: #FP-89412</div>
-        </div>
-        <button class="btn btn-outline btn-sm" style="background:#fff; color:#0f172a;" onclick="closeReceiptModal()">✕</button>
-      </div>
-      <div class="rcp-body">
-        <div class="rcp-line"><span>İşlem Türü:</span><strong id="mType">-</strong></div>
-        <div class="rcp-line"><span>Kurum / Operatör:</span><strong id="mProvider">-</strong></div>
-        <div class="rcp-line"><span>Abone / Detay:</span><strong id="mTarget">-</strong></div>
-        <div class="rcp-line"><span>Tarih / Saat:</span><strong id="mDate">-</strong></div>
-        <div class="rcp-line"><span>Tahsilat Tutarı:</span><strong id="mAmount" style="font-size:15px;">-</strong></div>
-        <div class="rcp-line"><span>İşlem Noktası:</span><strong>Ege Merkez İletişim (#BY-1042)</strong></div>
-        <div class="rcp-approved">✓ MERKEZ API ONAYLI • TAHSİLAT TAMAMLANDI</div>
-        <div style="text-align:center; margin-top:10px; font-size:11px; color:#64748b; letter-spacing:2px;">
-          ||| || |||| | ||| |||| || | ||| ||||
-        </div>
-        <div style="display:flex; gap:8px; margin-top:14px;">
-          <button class="btn btn-primary" style="flex:1;" onclick="window.print()">🖨️ Yazdır / PDF</button>
-          <button class="btn btn-outline" style="flex:1;" onclick="toggleReceiptFormatLive()">🔄 Fiş Görünümü Değiştir</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- FLOATING WHATSAPP SUPPORT BUBBLE (TOGGLEABLE IN STUDIO) -->
+  <button class="wa-float js-mod-wa" onclick="toast('💬 Canlı WhatsApp Bayi Destek Hattı: ' + document.getElementById('stBrandPhone').value)">
+    💬 Bayi Canlı Destek
+  </button>
 
-  <div id="toast" class="toast"></div>
+  <div id="toastBox" class="toast"></div>
 
-  <script>
-    // ==================== STATE ====================
-    let balance = 14850.00;
-    let dailyProfit = 642.50;
-    let dailyTxTotalCount = 47;
-    let receiptFormat = 'corporate'; // 'corporate' | 'thermal'
-
-    let currentOp = { name: 'Turkcell', discount: 3.5 };
-    let currentPkgFilter = 'all';
-    let selectedPkgId = 'p2';
-
-    const allPackages = [
-      { id: 'p1', kind: 'tl', title: '250 TL Tam Kontör', meta: 'Direkt Hat Bakiyesi • Anında', price: 250 },
-      { id: 'p2', kind: 'paket', title: 'Süper 20 GB + 1000 DK', meta: '28 Günlük + Sosyal Medya', price: 320 },
-      { id: 'p3', kind: 'paket', title: 'Platinum 35 GB + 1500 DK', meta: '28 Günlük Her Yöne + WhatsApp', price: 440 },
-      { id: 'p4', kind: 'tl', title: '500 TL Tam Kontör', meta: 'Direkt Hat Bakiyesi • Anında', price: 500 },
-      { id: 'p5', kind: 'paket', title: 'Star 15 GB + 750 DK', meta: '28 Günlük Ekonomik Paket', price: 265 },
-      { id: 'p6', kind: 'tl', title: '1.000 TL Tam Kontör', meta: 'Kurumsal / Yüksek TL Yükleme', price: 1000 }
-    ];
-
-    const billCatalog = {
-      elektrik: [
-        { name: 'Gediz Elektrik Perakende (İzmir / Manisa)', base: 845.60, owner: 'M*** A*** K***' },
-        { name: 'Enerjisa Elektrik (Başkent / Ayedaş / Toroslar)', base: 1140.20, owner: 'H*** T***' },
-        { name: 'CK Boğaziçi / Akdeniz Elektrik', base: 715.80, owner: 'S*** D***' }
-      ],
-      su: [
-        { name: 'İZSU — İzmir Su ve Kanalizasyon İdaresi', base: 412.80, owner: 'E*** Y***' },
-        { name: 'İSKİ — İstanbul Su ve Kanalizasyon', base: 538.40, owner: 'K*** B***' },
-        { name: 'ASKİ — Ankara Su ve Kanalizasyon', base: 392.00, owner: 'A*** Ö***' }
-      ],
-      gaz: [
-        { name: 'İzmirgaz Doğalgaz Dağıtım A.Ş.', base: 1285.00, owner: 'C*** Ş***' },
-        { name: 'İGDAŞ İstanbul Doğalgaz', base: 1490.75, owner: 'F*** K***' },
-        { name: 'Başkent Doğalgaz A.Ş.', base: 1610.20, owner: 'N*** A***' }
-      ],
-      internet: [
-        { name: 'Türk Telekom Ev İnterneti (TTNET)', base: 499.00, owner: 'O*** Ç***' },
-        { name: 'Turkcell Superonline Fiber', base: 545.00, owner: 'B*** E***' },
-        { name: 'TurkNet Özgür İletişim', base: 499.90, owner: 'Z*** M***' }
-      ],
-      gsmfatura: [
-        { name: 'Turkcell Faturalı Hat Tahsilatı', base: 620.00, owner: '0532 *** 92 10' },
-        { name: 'Vodafone Faturalı Hat Tahsilatı', base: 485.50, owner: '0542 *** 11 40' },
-        { name: 'Türk Telekom Mobil Faturalı Hat', base: 430.00, owner: '0505 *** 74 22' }
-      ]
-    };
-
-    let activeBillCat = 'elektrik';
-    let currentQueriedBill = null;
-    let billCart = [];
-
-    const epinCatalog = [
-      { id: 'e1', title: 'Google Play 250 TL Hediye Kodu', meta: 'Anında Dijital PIN • %4,5 Bayi Kârı', price: 250, profit: 11.25 },
-      { id: 'e2', title: 'App Store & iTunes 500 TL Kodu', meta: 'Anında Dijital PIN • %4,5 Bayi Kârı', price: 500, profit: 22.50 },
-      { id: 'e3', title: 'Valorant 1.450 VP Riot PIN', meta: 'Oyun E-Pin • %5,0 Bayi Kârı', price: 375, profit: 18.75 },
-      { id: 'e4', title: 'PUBG Mobile 660 UC Kod', meta: 'Oyun E-Pin • %5,0 Bayi Kârı', price: 390, profit: 19.50 }
-    ];
-    let selectedEpinId = 'e1';
-
-    const ledger = [
-      { ref: 'FP-88419', date: 'Bugün 13:18', type: 'Fatura Tahsilat', provider: 'İZSU İzmir Su', target: 'Abone: 40918274', before: 15262.80, amount: 425.30, profit: 12.50, after: 14850.00 },
-      { ref: 'FP-88415', date: 'Bugün 12:48', type: 'GSM Paket Yükleme', provider: 'Turkcell Süper 20 GB', target: '0532 714 ** 88', before: 15571.60, amount: 320.00, profit: 11.20, after: 15262.80 },
-      { ref: 'FP-88408', date: 'Bugün 12:21', type: 'Fatura Tahsilat', provider: 'Gediz Elektrik Perakende', target: 'Abone: 1009482110', before: 16486.60, amount: 930.00, profit: 15.00, after: 15571.60 },
-      { ref: 'FP-88399', date: 'Bugün 11:15', type: 'Sanal POS Yükleme', provider: 'PayTR 3D Secure POS', target: 'Cari Bakiye Artışı', before: 11486.60, amount: 5000.00, profit: 0, after: 16486.60 },
-      { ref: 'FP-88392', date: 'Bugün 10:52', type: 'GSM Paket Yükleme', provider: 'Vodafone Platinum 35 GB', target: '0542 309 ** 19', before: 11909.00, amount: 440.00, profit: 17.60, after: 11486.60 }
-    ];
-
-    const dealers = [
-      { code: '#BY-1042', name: 'Ege Merkez İletişim & Fatura', contact: 'Murat Kaya • 0532 411 20 30', tier: 'Gold Bayi (%3,5)', balance: 14850.00, active: true },
-      { code: '#BY-1039', name: 'Bornova Dijital Ödeme Gişesi', contact: 'Selin Demir • 0544 820 11 94', tier: 'VIP Dağıtıcı (%4,2)', balance: 38420.00, active: true },
-      { code: '#BY-1034', name: 'Buca Kontör & Telekom Noktası', contact: 'Serkan Aydın • 0506 712 88 05', tier: 'Standart Bayi (%2,5)', balance: 6290.00, active: true },
-      { code: '#BY-1028', name: 'Konak FaturaMatik Şube-2', contact: 'Kemal Özkan • 0535 991 34 67', tier: 'Gold Bayi (%3,5)', balance: 19740.00, active: true }
-    ];
-
-    const wireQueue = [
-      { id: 101, date: 'Bugün 13:05', dealer: 'Buca Kontör & Telekom (#BY-1034)', bank: 'Ziraat Bankası FAST • Dekont #994120', amount: 4000.00, status: 'pending' }
-    ];
-
-    // ==================== HELPERS ====================
-    function fmtTL(val) {
-      return '₺' + Number(val).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      clearTimeout(window.__tTimer);
-      window.__tTimer = setTimeout(() => t.classList.remove('show'), 3400);
-    }
-
-    function syncAllBalances() {
-      const bStr = fmtTL(balance);
-      const pStr = fmtTL(dailyProfit);
-      document.getElementById('topBalance').textContent = bStr;
-      document.getElementById('ovBalance').textContent = bStr;
-      document.getElementById('topProfit').textContent = pStr;
-      document.getElementById('ovProfit').textContent = pStr;
-      document.getElementById('ovTxCount').textContent = dailyTxTotalCount + ' İşlem';
-      document.getElementById('terminalTxBadge').textContent = dailyTxTotalCount + ' İşlem';
-      dealers[0].balance = balance;
-      renderDealers();
-    }
-
-    // ==================== NAVIGATION ====================
-    function openView(name, btn) {
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-      document.getElementById('view-' + name).classList.add('active');
-    }
-
-    function openViewByName(name) {
-      const idxMap = { overview: 0, terminal: 1, dealers: 2, ledger: 3, admin: 4 };
-      const btns = document.querySelectorAll('.nav-btn');
-      openView(name, btns[idxMap[name]]);
-    }
-
-    function jumpToTerminal(tabName) {
-      openViewByName('terminal');
-      const tabBtn = document.querySelector(`.t-tab[data-pane="${tabName}"]`);
-      if (tabBtn) switchTerminalTab(tabName, tabBtn);
-    }
-
-    function switchTerminalTab(pane, btn) {
-      document.querySelectorAll('.t-tab').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      document.querySelectorAll('.t-pane').forEach(p => p.classList.remove('active'));
-      document.getElementById('tpane-' + pane).classList.add('active');
-    }
-
-    // ==================== GSM TOP-UP ====================
-    function pickOperator(name, discount, cardEl) {
-      currentOp = { name, discount };
-      document.querySelectorAll('.op-card').forEach(c => c.classList.remove('selected'));
-      cardEl.classList.add('selected');
-      renderGsmPackages();
-    }
-
-    function filterPackages(kind, chipEl) {
-      currentPkgFilter = kind;
-      chipEl.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-      chipEl.classList.add('active');
-      const visible = allPackages.filter(p => kind === 'all' || p.kind === kind);
-      if (!visible.some(p => p.id === selectedPkgId) && visible[0]) {
-        selectedPkgId = visible[0].id;
-      }
-      renderGsmPackages();
-    }
-
-    function renderGsmPackages() {
-      const visible = allPackages.filter(p => currentPkgFilter === 'all' || p.kind === currentPkgFilter);
-      const grid = document.getElementById('gsmPkgGrid');
-      grid.innerHTML = visible.map(p => `
-        <div class="pkg-card ${p.id === selectedPkgId ? 'selected' : ''}" onclick="selectedPkgId='${p.id}'; renderGsmPackages();">
-          <div>
-            <div class="pkg-title">${currentOp.name} ${p.title}</div>
-            <div class="pkg-meta">${p.meta}</div>
-          </div>
-          <div class="pkg-price">₺${p.price}</div>
-        </div>
-      `).join('');
-
-      const pkg = allPackages.find(p => p.id === selectedPkgId) || allPackages[0];
-      const profit = +(pkg.price * (currentOp.discount / 100)).toFixed(2);
-      const cost = +(pkg.price - profit).toFixed(2);
-
-      document.getElementById('gsmSaleTxt').textContent = fmtTL(pkg.price);
-      document.getElementById('gsmDiscTxt').textContent = '%' + currentOp.discount.toString().replace('.', ',');
-      document.getElementById('gsmCostTxt').textContent = fmtTL(cost);
-      document.getElementById('gsmNetProfitTxt').textContent = '+' + fmtTL(profit);
-    }
-
-    function runMnpLookup() {
-      const phone = document.getElementById('gsmPhone').value.trim();
-      document.getElementById('mnpStatusTxt').textContent = '✓ MNP Sorgu: ' + currentOp.name + ' Aktif Hat (' + (phone || 'Doğrulandı') + ')';
-      showToast('✓ BTK MNP Numara Taşıma Sorgusu: Hat ' + currentOp.name + ' şebekesinde aktif.');
-    }
-
-    function submitGsmOrder() {
-      const phone = document.getElementById('gsmPhone').value.trim() || '0532 418 92 10';
-      const pkg = allPackages.find(p => p.id === selectedPkgId) || allPackages[0];
-      const profit = +(pkg.price * (currentOp.discount / 100)).toFixed(2);
-      const cost = +(pkg.price - profit).toFixed(2);
-
-      if (balance < cost) {
-        showToast('Yetersiz cari kasa! Lütfen Sanal POS sekmesinden bakiye yükleyin.');
-        return;
-      }
-
-      const btn = document.getElementById('btnExecGsm');
-      btn.disabled = true;
-      btn.textContent = '⏳ Operatör API Üzerinden Yükleniyor...';
-
-      setTimeout(() => {
-        const before = balance;
-        balance = +(balance - cost).toFixed(2);
-        dailyProfit = +(dailyProfit + profit).toFixed(2);
-        dailyTxTotalCount++;
-        const tx = {
-          ref: 'FP-' + Math.floor(88500 + Math.random() * 900),
-          date: 'Şimdi',
-          type: 'GSM TL/Paket',
-          provider: currentOp.name + ' ' + pkg.title,
-          target: phone,
-          before,
-          amount: pkg.price,
-          profit,
-          after: balance
-        };
-        ledger.unshift(tx);
-        syncAllBalances();
-        renderAllTransactionTables();
-        btn.disabled = false;
-        btn.textContent = '⚡ Operatör API ile Anında Yükle & Fiş Üret';
-        showReceipt(tx);
-        showToast('✓ ' + phone + ' numarasına ' + currentOp.name + ' yüklemesi tamamlandı!');
-      }, 550);
-    }
-
-    // ==================== UTILITY BILLS & MULTI-BILL CART ====================
-    function switchBillCat(cat, chipEl) {
-      activeBillCat = cat;
-      chipEl.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-      chipEl.classList.add('active');
-      const sel = document.getElementById('billInstSelect');
-      sel.innerHTML = billCatalog[cat].map((item, i) => `<option value="${i}">${item.name}</option>`).join('');
-      queryInstitutionBill();
-    }
-
-    function queryInstitutionBill() {
-      const idx = Number(document.getElementById('billInstSelect').value || 0);
-      const fee = Number(document.getElementById('billFeeSelect').value || 15);
-      const item = billCatalog[activeBillCat][idx];
-      const subNo = document.getElementById('billSubInput').value.trim() || '1008492031';
-      currentQueriedBill = {
-        instName: item.name,
-        base: item.base,
-        fee,
-        total: +(item.base + fee).toFixed(2),
-        owner: item.owner,
-        subNo
-      };
-      document.getElementById('qBillTitle').textContent = item.name + ' — Açık Fatura';
-      document.getElementById('qBillOwner').textContent = item.owner + ' • Abone: ' + subNo;
-      document.getElementById('qBillBase').textContent = fmtTL(item.base);
-      document.getElementById('qBillFee').textContent = '+' + fmtTL(fee);
-      document.getElementById('qBillTotal').textContent = fmtTL(item.base + fee);
-    }
-
-    function paySingleBillNow() {
-      if (!currentQueriedBill) queryInstitutionBill();
-      if (balance < currentQueriedBill.base) {
-        showToast('Yetersiz bayi cari bakiyesi!');
-        return;
-      }
-      const before = balance;
-      balance = +(balance - currentQueriedBill.base).toFixed(2);
-      dailyProfit = +(dailyProfit + currentQueriedBill.fee).toFixed(2);
-      dailyTxTotalCount++;
-      const tx = {
-        ref: 'FT-' + Math.floor(91000 + Math.random() * 900),
-        date: 'Şimdi',
-        type: 'Fatura Tahsilat',
-        provider: currentQueriedBill.instName.split('—')[0].trim(),
-        target: 'Abone: ' + currentQueriedBill.subNo,
-        before,
-        amount: currentQueriedBill.total,
-        profit: currentQueriedBill.fee,
-        after: balance
-      };
-      ledger.unshift(tx);
-      syncAllBalances();
-      renderAllTransactionTables();
-      showReceipt(tx);
-      showToast('✓ Fatura tahsil edildi ve kurum online kapaması tamamlandı!');
-    }
-
-    function addBillToCart() {
-      if (!currentQueriedBill) queryInstitutionBill();
-      billCart.push({ ...currentQueriedBill, id: Date.now() + Math.random() });
-      renderBillCart();
-      showToast('➕ Fatura tahsilat sepetine eklendi (' + billCart.length + ' adet).');
-    }
-
-    function clearBillCart() {
-      billCart = [];
-      renderBillCart();
-    }
-
-    function renderBillCart() {
-      const box = document.getElementById('billCartBox');
-      if (billCart.length === 0) {
-        box.style.display = 'none';
-        return;
-      }
-      box.style.display = 'block';
-      document.getElementById('cartCountTxt').textContent = billCart.length;
-      const grand = billCart.reduce((s, b) => s + b.total, 0);
-      document.getElementById('cartGrandTotal').textContent = fmtTL(grand);
-      document.getElementById('cartItemsList').innerHTML = billCart.map((b, i) => `
-        <div class="sum-row">
-          <span>${i + 1}. ${b.instName.split('(')[0].trim()} (#${b.subNo})</span>
-          <strong>${fmtTL(b.total)}</strong>
-        </div>
-      `).join('');
-    }
-
-    function checkoutBillCart() {
-      const totalBase = billCart.reduce((s, b) => s + b.base, 0);
-      const totalFee = billCart.reduce((s, b) => s + b.fee, 0);
-      const totalCustomer = billCart.reduce((s, b) => s + b.total, 0);
-      if (balance < totalBase) {
-        showToast('Sepet toplamı için cari bakiye yetersiz!');
-        return;
-      }
-      const before = balance;
-      balance = +(balance - totalBase).toFixed(2);
-      dailyProfit = +(dailyProfit + totalFee).toFixed(2);
-      dailyTxTotalCount += billCart.length;
-      const count = billCart.length;
-      const tx = {
-        ref: 'SEP-' + Math.floor(70000 + Math.random() * 9000),
-        date: 'Şimdi',
-        type: 'Çoklu Fatura (' + count + ' Adet)',
-        provider: count + ' Kurum Toplu Tahsilat',
-        target: 'Toplu Gişe Sepeti',
-        before,
-        amount: totalCustomer,
-        profit: totalFee,
-        after: balance
-      };
-      billCart = [];
-      renderBillCart();
-      ledger.unshift(tx);
-      syncAllBalances();
-      renderAllTransactionTables();
-      showReceipt(tx);
-      showToast('✓ Sepetteki ' + count + ' adet fatura tek işlemde tahsil edildi!');
-    }
-
-    // ==================== E-PIN ====================
-    function renderEpins() {
-      const grid = document.getElementById('epinGrid');
-      grid.innerHTML = epinCatalog.map(e => `
-        <div class="pkg-card ${e.id === selectedEpinId ? 'selected' : ''}" onclick="selectedEpinId='${e.id}'; renderEpins();">
-          <div>
-            <div class="pkg-title">${e.title}</div>
-            <div class="pkg-meta">${e.meta}</div>
-          </div>
-          <div class="pkg-price">₺${e.price}</div>
-        </div>
-      `).join('');
-    }
-
-    function purchaseEpin() {
-      const item = epinCatalog.find(e => e.id === selectedEpinId) || epinCatalog[0];
-      const cost = +(item.price - item.profit).toFixed(2);
-      if (balance < cost) {
-        showToast('Yetersiz cari bakiye!');
-        return;
-      }
-      const before = balance;
-      balance = +(balance - cost).toFixed(2);
-      dailyProfit = +(dailyProfit + item.profit).toFixed(2);
-      dailyTxTotalCount++;
-      const pinCode = 'PIN-' + Math.random().toString(36).substring(2, 6).toUpperCase() + '-' + Math.floor(1000 + Math.random() * 9000);
-      const tx = {
-        ref: 'EP-' + Math.floor(51000 + Math.random() * 8000),
-        date: 'Şimdi',
-        type: 'Dijital E-Pin',
-        provider: item.title,
-        target: 'Kod: ' + pinCode,
-        before,
-        amount: item.price,
-        profit: item.profit,
-        after: balance
-      };
-      ledger.unshift(tx);
-      syncAllBalances();
-      renderAllTransactionTables();
-      showReceipt(tx);
-      showToast('🔑 E-Pin üretildi: ' + pinCode);
-    }
-
-    // ==================== VIRTUAL POS ====================
-    function refreshPosCalc() {
-      const gw = document.getElementById('posGw').value;
-      const amt = Math.max(0, Number(document.getElementById('posAmt').value || 0));
-      const rate = gw === 'FAST Havale' ? 0 : Number(document.getElementById('posInstallment').value || 0.019);
-      const fee = +(amt * rate).toFixed(2);
-      document.getElementById('vcardGwBadge').textContent = gw;
-      document.getElementById('posNetOut').textContent = fmtTL(amt);
-      document.getElementById('posFeeOut').textContent = gw === 'FAST Havale' ? '₺0,00 (%0 FAST)' : fmtTL(fee);
-      document.getElementById('posTotalOut').textContent = fmtTL(amt + fee);
-    }
-
-    function completePosPayment() {
-      const gw = document.getElementById('posGw').value;
-      const amt = Math.max(100, Number(document.getElementById('posAmt').value || 1000));
-      if (gw === 'FAST Havale') {
-        wireQueue.unshift({
-          id: Date.now(),
-          date: 'Şimdi',
-          dealer: 'Ege Merkez İletişim (#BY-1042)',
-          bank: 'Garanti BBVA FAST Bildirimi',
-          amount: amt,
-          status: 'pending'
-        });
-        renderWires();
-        showToast('✓ Havale bildirimi iletildi! Süper Admin sekmesinden onaylayabilirsiniz.');
-        return;
-      }
-      const before = balance;
-      balance = +(balance + amt).toFixed(2);
-      const tx = {
-        ref: 'POS-' + Math.floor(31000 + Math.random() * 8000),
-        date: 'Şimdi',
-        type: '3D POS Bakiye',
-        provider: gw,
-        target: 'Cari Hesap Yükleme',
-        before,
-        amount: amt,
-        profit: 0,
-        after: balance
-      };
-      ledger.unshift(tx);
-      syncAllBalances();
-      renderAllTransactionTables();
-      showToast('✓ 3D Secure ödeme onaylandı! ' + fmtTL(amt) + ' kasaya eklendi.');
-    }
-
-    // ==================== SUB-DEALERS & WIRES ====================
-    function renderDealers() {
-      const q = (document.getElementById('dealerSearch')?.value || '').toLowerCase();
-      const totalCount = 14 + dealers.length;
-      document.getElementById('navDealerCount').textContent = totalCount;
-      document.getElementById('ovDealerCountTxt').textContent = totalCount + ' Aktif Bayi';
-
-      const filtered = dealers.filter(d => d.name.toLowerCase().includes(q) || d.code.toLowerCase().includes(q));
-      document.getElementById('dealersTableBody').innerHTML = filtered.map((d, i) => `
-        <tr>
-          <td><strong>${d.name}</strong><div style="font-size:11px; color:var(--muted);">${d.code}</div></td>
-          <td>${d.contact}</td>
-          <td><span class="badge badge-primary">${d.tier}</span></td>
-          <td><strong>${fmtTL(d.balance)}</strong></td>
-          <td><span class="badge ${d.active ? 'badge-ok' : 'badge-wait'}">${d.active ? 'Aktif' : 'Askıda'}</span></td>
-          <td>
-            <div style="display:flex; gap:6px;">
-              <button class="btn btn-outline btn-sm" onclick="creditSubDealer(${i}, 1000)">+₺1.000</button>
-              <button class="btn btn-outline btn-sm" onclick="dealers[${i}].active=!dealers[${i}].active; renderDealers();">${d.active ? 'Askıya Al' : 'Aktif Et'}</button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function addSubDealer() {
-      const name = document.getElementById('dlName').value.trim();
-      const contact = document.getElementById('dlContact').value.trim();
-      const tier = document.getElementById('dlTier').value;
-      const bal = Math.max(0, Number(document.getElementById('dlBal').value || 0));
-      if (!name) return showToast('Lütfen bayi ticari ünvanını yazın.');
-      const code = '#BY-' + Math.floor(1050 + Math.random() * 850);
-      dealers.unshift({ code, name, contact: contact || 'Yetkili Tanımlı', tier, balance: bal, active: true });
-      document.getElementById('dlName').value = '';
-      renderDealers();
-      showToast('✓ ' + name + ' (' + code + ') alt bayisi açıldı!');
-    }
-
-    function creditSubDealer(idx, amount) {
-      dealers[idx].balance = +(dealers[idx].balance + amount).toFixed(2);
-      if (idx === 0) balance = dealers[0].balance;
-      syncAllBalances();
-      showToast('✓ ' + dealers[idx].name + ' cari hesabına +₺1.000 eklendi.');
-    }
-
-    function renderWires() {
-      const pending = wireQueue.filter(w => w.status === 'pending').length;
-      document.getElementById('navWireCount').textContent = pending;
-      document.getElementById('adminWireBadge').textContent = pending + ' Bekleyen';
-      document.getElementById('adminWireBody').innerHTML = wireQueue.map((w, idx) => `
-        <tr>
-          <td>${w.date}</td>
-          <td><strong>${w.dealer}</strong></td>
-          <td>${w.bank}</td>
-          <td><strong>${fmtTL(w.amount)}</strong></td>
-          <td><span class="badge ${w.status === 'pending' ? 'badge-wait' : 'badge-ok'}">${w.status === 'pending' ? 'Onay Bekliyor' : 'Onaylandı'}</span></td>
-          <td>
-            ${w.status === 'pending'
-              ? `<button class="btn btn-emerald btn-sm" onclick="approveWireItem(${idx})">✓ Onayla &amp; Cariye İşle</button>`
-              : `<span style="font-size:12px; color:var(--muted);">İşlendi</span>`}
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function approveWireItem(idx) {
-      const w = wireQueue[idx];
-      if (!w || w.status !== 'pending') return;
-      w.status = 'approved';
-      const before = balance;
-      balance = +(balance + w.amount).toFixed(2);
-      ledger.unshift({
-        ref: 'HVL-' + Math.floor(20000 + Math.random() * 9000),
-        date: 'Şimdi',
-        type: 'FAST Havale Onayı',
-        provider: w.bank,
-        target: w.dealer,
-        before,
-        amount: w.amount,
-        profit: 0,
-        after: balance
-      });
-      syncAllBalances();
-      renderWires();
-      renderAllTransactionTables();
-      showToast('✓ Havale onaylandı ve ' + fmtTL(w.amount) + ' cari kasaya işlendi!');
-    }
-
-    // ==================== TABLES & CSV EXPORT ====================
-    function renderAllTransactionTables() {
-      const shortRows = ledger.slice(0, 6).map((t, i) => `
-        <tr>
-          <td>
-            <strong style="display:block; color:var(--ink);">${t.provider}</strong>
-            <span style="font-size:11px; color:var(--muted);">${t.target} • ${t.date}</span>
-          </td>
-          <td><strong>${fmtTL(t.amount)}</strong></td>
-          <td class="profit-txt">${t.profit > 0 ? '+' + fmtTL(t.profit) : '—'}</td>
-          <td><button class="btn btn-outline btn-sm" onclick="showReceiptByIndex(${i})">Fiş</button></td>
-        </tr>
-      `).join('');
-      document.getElementById('overviewTxBody').innerHTML = shortRows;
-      document.getElementById('terminalTxBody').innerHTML = shortRows;
-
-      document.getElementById('fullLedgerBody').innerHTML = ledger.map((t, i) => `
-        <tr>
-          <td><strong>#${t.ref}</strong><div style="font-size:11px; color:var(--muted);">${t.date}</div></td>
-          <td><span class="badge badge-primary">${t.type}</span></td>
-          <td><strong>${t.provider}</strong><div style="font-size:11.5px; color:var(--muted);">${t.target}</div></td>
-          <td>${fmtTL(t.before)}</td>
-          <td><strong>${fmtTL(t.amount)}</strong></td>
-          <td class="profit-txt">${t.profit > 0 ? '+' + fmtTL(t.profit) : '—'}</td>
-          <td><strong>${fmtTL(t.after)}</strong></td>
-          <td><button class="btn btn-outline btn-sm" onclick="showReceiptByIndex(${i})">Makbuz</button></td>
-        </tr>
-      `).join('');
-    }
-
-    function exportLedgerCsv() {
-      const headers = ['Ref No', 'Tarih', 'Islem Turu', 'Kurum/Operator', 'Abone', 'Onceki Bakiye', 'Tutar', 'Net Kar', 'Sonraki Bakiye'];
-      const rows = ledger.map(t => [t.ref, t.date, t.type, t.provider, t.target, t.before, t.amount, t.profit, t.after]);
-      const csv = '\uFEFF' + [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(';')).join('\n');
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'cari-hesap-ekstresi.csv';
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast('📥 Cari hesap ekstresi Excel uyumlu CSV olarak indirildi.');
-    }
-
-    // ==================== RECEIPT MODAL ====================
-    function showReceiptByIndex(idx) {
-      showReceipt(ledger[idx]);
-    }
-
-    function showReceipt(tx) {
-      const box = document.getElementById('receiptCardBox');
-      box.classList.toggle('thermal', receiptFormat === 'thermal');
-      document.getElementById('rcpBrandHeader').textContent = document.getElementById('brandNameTxt').textContent;
-      document.getElementById('rcpRefTxt').textContent = 'İŞLEM REF: #' + tx.ref;
-      document.getElementById('mType').textContent = tx.type;
-      document.getElementById('mProvider').textContent = tx.provider;
-      document.getElementById('mTarget').textContent = tx.target;
-      document.getElementById('mDate').textContent = new Date().toLocaleString('tr-TR');
-      document.getElementById('mAmount').textContent = fmtTL(tx.amount);
-      document.getElementById('receiptModal').classList.add('open');
-    }
-
-    function closeReceiptModal() {
-      document.getElementById('receiptModal').classList.remove('open');
-    }
-
-    function toggleReceiptFormatLive() {
-      setReceiptFormat(receiptFormat === 'corporate' ? 'thermal' : 'corporate');
-      document.getElementById('receiptCardBox').classList.toggle('thermal', receiptFormat === 'thermal');
-    }
-
-    // ==================== LIVE DESIGN & BRAND CUSTOMIZER ====================
-    function toggleCustomizer(open) {
-      document.getElementById('customizerBackdrop').classList.toggle('open', open);
-    }
-
-    function applyBranding() {
-      const name = document.getElementById('custBrandName').value.trim() || 'FaturaPay Kurumsal';
-      const shortTxt = document.getElementById('custBrandShort').value.trim() || 'FP';
-      const sub = document.getElementById('custBrandSub').value.trim() || 'Bayi & Tahsilat Otomasyonu';
-      document.getElementById('brandNameTxt').textContent = name;
-      document.getElementById('brandLogoTxt').textContent = shortTxt.toUpperCase();
-      document.getElementById('brandSubTxt').textContent = sub;
-      document.title = name + ' — TL Yükleme, Fatura Tahsilat & Alt Bayi Sistemi';
-    }
-
-    function setSurfaceTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-      ['light', 'dark', 'banking'].forEach(t => {
-        document.getElementById('th-' + t)?.classList.toggle('active', t === theme);
-      });
-    }
-
-    function hexToRgba(hex, alpha) {
-      const clean = hex.replace('#', '');
-      const bigint = parseInt(clean.length === 3 ? clean.split('').map(c => c + c).join('') : clean, 16);
-      const r = (bigint >> 16) & 255;
-      const g = (bigint >> 8) & 255;
-      const b = bigint & 255;
-      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-    }
-
-    function setAccentColor(primaryHex, darkHex, swatchEl) {
-      document.documentElement.style.setProperty('--primary', primaryHex);
-      document.documentElement.style.setProperty('--primary-dark', darkHex || primaryHex);
-      document.documentElement.style.setProperty('--primary-soft', hexToRgba(primaryHex, 0.12));
-      document.documentElement.style.setProperty('--primary-border', hexToRgba(primaryHex, 0.30));
-      document.getElementById('customColorInput').value = primaryHex;
-      document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
-      if (swatchEl) swatchEl.classList.add('active');
-    }
-
-    function setLayoutMode(mode) {
-      document.documentElement.setAttribute('data-layout', mode);
-      document.getElementById('ly-sidebar').classList.toggle('active', mode === 'sidebar');
-      document.getElementById('ly-topnav').classList.toggle('active', mode === 'topnav');
-    }
-
-    function setRadius(rMain, rSm, btn) {
-      document.documentElement.style.setProperty('--radius', rMain);
-      document.documentElement.style.setProperty('--radius-sm', rSm);
-      btn.parentElement.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    }
-
-    function setDensity(mode) {
-      document.documentElement.setAttribute('data-density', mode);
-      document.getElementById('dn-comfortable').classList.toggle('active', mode === 'comfortable');
-      document.getElementById('dn-compact').classList.toggle('active', mode === 'compact');
-    }
-
-    function setReceiptFormat(fmt) {
-      receiptFormat = fmt;
-      document.getElementById('rcpfmt-corporate').classList.toggle('active', fmt === 'corporate');
-      document.getElementById('rcpfmt-thermal').classList.toggle('active', fmt === 'thermal');
-    }
-
-    function saveThemeConfig() {
-      const cfg = {
-        brandName: document.getElementById('custBrandName').value,
-        brandShort: document.getElementById('custBrandShort').value,
-        brandSub: document.getElementById('custBrandSub').value,
-        theme: document.documentElement.getAttribute('data-theme'),
-        layout: document.documentElement.getAttribute('data-layout'),
-        density: document.documentElement.getAttribute('data-density'),
-        primary: document.getElementById('customColorInput').value,
-        receiptFormat
-      };
-      try { localStorage.setItem('faturapay_theme_v4', JSON.stringify(cfg)); } catch {}
-      showToast('💾 Kurumsal tema ve marka ayarlarınız tarayıcıya kaydedildi!');
-      toggleCustomizer(false);
-    }
-
-    function resetThemeConfig() {
-      try { localStorage.removeItem('faturapay_theme_v4'); } catch {}
-      document.getElementById('custBrandName').value = 'FaturaPay Kurumsal';
-      document.getElementById('custBrandShort').value = 'FP';
-      document.getElementById('custBrandSub').value = 'Bayi & Tahsilat Otomasyonu';
-      applyBranding();
-      setSurfaceTheme('light');
-      setAccentColor('#4f46e5', '#4338ca', document.querySelector('.swatch'));
-      setLayoutMode('sidebar');
-      setDensity('comfortable');
-      setReceiptFormat('corporate');
-      document.documentElement.style.setProperty('--radius', '14px');
-      document.documentElement.style.setProperty('--radius-sm', '9px');
-      showToast('↺ Varsayılan kurumsal tasarım ayarlarına dönüldü.');
-    }
-
-    function loadSavedTheme() {
-      try {
-        const raw = localStorage.getItem('faturapay_theme_v4');
-        if (!raw) return;
-        const cfg = JSON.parse(raw);
-        if (cfg.brandName) document.getElementById('custBrandName').value = cfg.brandName;
-        if (cfg.brandShort) document.getElementById('custBrandShort').value = cfg.brandShort;
-        if (cfg.brandSub) document.getElementById('custBrandSub').value = cfg.brandSub;
-        applyBranding();
-        if (cfg.theme) setSurfaceTheme(cfg.theme);
-        if (cfg.layout) setLayoutMode(cfg.layout);
-        if (cfg.density) setDensity(cfg.density);
-        if (cfg.primary) setAccentColor(cfg.primary, cfg.primary, null);
-        if (cfg.receiptFormat) setReceiptFormat(cfg.receiptFormat);
-      } catch {}
-    }
-
-    // ==================== INIT ====================
-    renderGsmPackages();
-    switchBillCat('elektrik', document.querySelector('#tpane-bill .chip'));
-    renderEpins();
-    refreshPosCalc();
-    renderDealers();
-    renderWires();
-    renderAllTransactionTables();
-    loadSavedTheme();
-  </script>
+  <script src="./app.js"></script>
 </body>
 </html>
